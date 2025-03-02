@@ -4,7 +4,6 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import tech.vitalis.caringu.h2Usuario.Usuario;
 
 @Data
 public class RespostaUsuarioDTO {
