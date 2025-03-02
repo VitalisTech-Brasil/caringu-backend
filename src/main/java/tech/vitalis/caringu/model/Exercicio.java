@@ -1,9 +1,6 @@
 package tech.vitalis.caringu.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -11,12 +8,18 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "exercicio")
 public class Exercicio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column (name = "id")
     private Long id;
+
+    @Column (name = "nome", nullable = false)
     private String nome;
+
+    @Column (name = "grupo_muscular", nullable = false)
     private String grupoMuscular;
 
     public Long getId() {
