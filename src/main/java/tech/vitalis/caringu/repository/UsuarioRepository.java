@@ -1,4 +1,6 @@
 package tech.vitalis.caringu.repository;
 
-public interface UsuarioRepository {
-}
+import org.springframework.data.jpa.repository.JpaRepository;
+import tech.vitalis.caringu.model.Usuario;
+
+public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {}

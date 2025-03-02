@@ -1,4 +1,4 @@
-package tech.vitalis.caringu.h2Usuario.dtos;
+package tech.vitalis.caringu.dtos;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
