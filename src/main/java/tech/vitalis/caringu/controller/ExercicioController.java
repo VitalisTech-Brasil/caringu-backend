@@ -42,5 +42,9 @@ public class ExercicioController {
         return exercicioService.atualizarParteExercicio(id, exercicio).getBody();
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> removerExercicio(@PathVariable Long id) {
+        return exercicioService.removerExercicio(id);
+    }
 
 }

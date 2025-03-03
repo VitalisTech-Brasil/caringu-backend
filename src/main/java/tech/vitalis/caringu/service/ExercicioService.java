@@ -3,6 +3,7 @@ package tech.vitalis.caringu.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import tech.vitalis.caringu.model.Exercicio;
 import tech.vitalis.caringu.repository.ExercicioRepository;
 
@@ -65,5 +66,13 @@ public class ExercicioService {
 
         Exercicio exercicioAtualizado = exercicioRepository.save(exercicioExistente);
         return ResponseEntity.status(200).body(exercicioAtualizado);
+    }
+
+    public ResponseEntity<Void> removerExercicio(@PathVariable Long id) {
+        if (exercicioRepository.existsById(id)) {
+            exercicioRepository.deleteById(id);
+            return ResponseEntity.status(204).build();
+        }
+        return ResponseEntity.status(404).build();
     }
 }
