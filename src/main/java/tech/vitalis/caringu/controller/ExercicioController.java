@@ -8,6 +8,7 @@ import tech.vitalis.caringu.model.Exercicio;
 import tech.vitalis.caringu.service.ExercicioService;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -30,6 +31,17 @@ public class ExercicioController {
     @GetMapping
     public ResponseEntity<List<Exercicio>> pegarExercicios() {
         return exercicioService.pegarExercicios();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Exercicio> pegarExercicioPorId(@PathVariable Long id) {
+        Optional<Exercicio> exercicio = exercicioService.buscarExercicioPorId(id);
+
+        if (exercicio.isPresent()) {
+            return ResponseEntity.status(200).body(exercicio.get());
+        }
+
+        return ResponseEntity.status(404).build();
     }
 
     @PutMapping("/{id}")

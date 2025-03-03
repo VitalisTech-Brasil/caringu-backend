@@ -33,6 +33,12 @@ public class ExercicioService {
         return ResponseEntity.status(200).body(exercicios);
     }
 
+    public Optional<Exercicio> buscarExercicioPorId(Long id) {
+        Optional<Exercicio> exercicio = exercicioRepository.findById(id);
+
+        return exercicio;
+    }
+
     public ResponseEntity<Exercicio> atualizarExercicio(Long id, Exercicio exercicio) {
         if (!exercicioRepository.existsById(id)) {
             return ResponseEntity.status(404).build();
