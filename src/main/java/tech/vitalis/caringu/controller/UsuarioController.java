@@ -12,7 +12,7 @@ import tech.vitalis.caringu.dtos.CriacaoUsuarioDTO;
 import tech.vitalis.caringu.dtos.RespostaUsuarioDTO;
 
 @RestController
-@RequestMapping("/crud")
+@RequestMapping("/usuarios")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
