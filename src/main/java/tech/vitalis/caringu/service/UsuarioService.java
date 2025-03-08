@@ -1,87 +1,111 @@
 package tech.vitalis.caringu.service;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tech.vitalis.caringu.exception.ResourceNotFoundException;
-import tech.vitalis.caringu.dtos.CriacaoUsuarioDTO;
-import tech.vitalis.caringu.dtos.RespostaUsuarioDTO;
+import tech.vitalis.caringu.dtos.Usuario.CriacaoUsuarioDTO;
+import tech.vitalis.caringu.dtos.Usuario.RespostaUsuarioDTO;
+import tech.vitalis.caringu.exception.ApiExceptions;
+import tech.vitalis.caringu.mapper.UsuarioMapper;
 import tech.vitalis.caringu.model.Usuario;
 import tech.vitalis.caringu.repository.UsuarioRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioMapper usuarioMapper;
 
     @Autowired
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper) {
         this.usuarioRepository = usuarioRepository;
+        this.usuarioMapper = usuarioMapper;
     }
 
-    public Usuario cadastrar(CriacaoUsuarioDTO usuarioDto) {
+    public RespostaUsuarioDTO cadastrar(CriacaoUsuarioDTO usuarioDto) {
+        if (usuarioRepository.existsByEmail(usuarioDto.getEmail())) {
+            throw new ApiExceptions.ConflictException("O e-mail já está cadastrado.");
+        }
+
         validarSenha(usuarioDto.getSenha());
 
-        return usuarioRepository.save(new Usuario(usuarioDto));
+        Usuario novoUsuario = usuarioMapper.toEntity(usuarioDto);
+        Usuario usuarioSalvo = usuarioRepository.save(novoUsuario);
+        return usuarioMapper.toDTO(usuarioSalvo);
     }
 
-    public void validarSenha(String senha){
+    public List<RespostaUsuarioDTO> listarTodos() {
+        List<Usuario> usuarios = usuarioRepository.findAll();
 
-        List<String> erros = new ArrayList<>();
-        String regex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+=\\-{};:'\",.<>?/|\\\\]).{1,16}$";
-
-        if(senha.length() > 16){
-            erros.add("A senha não pode ter mais que 16 caracteres.");
-        } else if (senha.length() < 6) {
-            erros.add("A senha deve ter mais que 6 caracteres.");
-        }else if(!Pattern.matches(regex, senha)){
-            erros.add("A senha deve conter ao menos um caracter especial, uma letra maíscula e um número");
+        if (usuarios.isEmpty()) {
+            throw new ApiExceptions.ResourceNotFoundException("Nenhum usuário encontrado.");
         }
 
-        if(!erros.isEmpty()){
-            throw new IllegalArgumentException(String.join("", erros));
-        }
+        return usuarios.stream()
+                .map(usuarioMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-    public RespostaUsuarioDTO buscarPorId(Integer id) {
+    public RespostaUsuarioDTO buscarPorId(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário com ID " + id + " não encontrado"));
-
-        return new RespostaUsuarioDTO(usuario);
+                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Usuário com ID " + id + " não encontrado"));
+        return usuarioMapper.toDTO(usuario);
     }
 
-    public Usuario editarUsuario(Integer id, Usuario informacoesDoUsuario) {
+    public RespostaUsuarioDTO atualizar(Long id, CriacaoUsuarioDTO usuarioDto) {
+        Usuario usuarioExistente = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Usuário com ID " + id + " não encontrado"));
+
+        usuarioMapper.updateUsuarioFromDto(usuarioDto, usuarioExistente);
+        Usuario usuarioAtualizado = usuarioRepository.save(usuarioExistente);
+        return usuarioMapper.toDTO(usuarioAtualizado);
+    }
+
+    public RespostaUsuarioDTO editarInfoUsuario(Long id, CriacaoUsuarioDTO usuarioDto) {
+        Usuario usuarioExistente = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Usuário com ID " + id + " não encontrado"));
+
+        boolean atualizado = false;
+
+        if (usuarioDto.getNome() != null && !usuarioDto.getNome().isEmpty()) {
+            usuarioExistente.setNome(usuarioDto.getNome());
+            atualizado = true;
+        }
+        if (usuarioDto.getEmail() != null && !usuarioDto.getEmail().isEmpty()) {
+            usuarioExistente.setEmail(usuarioDto.getEmail());
+            atualizado = true;
+        }
+        if (usuarioDto.getSenha() != null && !usuarioDto.getSenha().isEmpty()) {
+            validarSenha(usuarioDto.getSenha());
+            usuarioExistente.setSenha(usuarioDto.getSenha());
+            atualizado = true;
+        }
+
+        if (!atualizado) {
+            throw new ApiExceptions.BadRequestException("Nenhuma informação válida foi fornecida para atualização.");
+        }
+
+        Usuario usuarioAtualizado = usuarioRepository.save(usuarioExistente);
+        return usuarioMapper.toDTO(usuarioAtualizado);
+    }
+
+    public void removerUsuario(Long id) {
         if (!usuarioRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Usuário com ID " + id + " não encontrado");
-        }
-        informacoesDoUsuario.setId(id);
-        return usuarioRepository.save(informacoesDoUsuario);
-    }
-
-    public Usuario editarInfoUsuario(Integer id, Usuario informacaoDoUsuario) {
-        Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário com ID " + id + " não encontrado"));
-
-        if (informacaoDoUsuario.getNome() != null) {
-            usuario.setNome(informacaoDoUsuario.getNome());
-        }
-        if (informacaoDoUsuario.getEmail() != null) {
-            usuario.setEmail(informacaoDoUsuario.getEmail());
-        }
-        if (informacaoDoUsuario.getSenha() != null) {
-            usuario.setSenha(informacaoDoUsuario.getSenha());
-        }
-
-        return usuarioRepository.save(usuario);
-    }
-
-    public void removerUsuario(Integer id) {
-        if (!usuarioRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Usuário com ID " + id + " não encontrado");
+            throw new ApiExceptions.ResourceNotFoundException("Usuário com ID " + id + " não encontrado");
         }
         usuarioRepository.deleteById(id);
+    }
+
+    private void validarSenha(String senha) {
+        String regex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+=\\-{};:'\",.<>?/|\\\\]).{6,16}$";
+
+        if (!Pattern.matches(regex, senha)) {
+            throw new ApiExceptions.BadRequestException("A senha deve conter entre 6 e 16 caracteres, incluindo pelo menos uma letra maiúscula, um número e um caractere especial.");
+        }
     }
 }

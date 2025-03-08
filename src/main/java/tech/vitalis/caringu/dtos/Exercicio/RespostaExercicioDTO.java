@@ -1,30 +1,21 @@
-package tech.vitalis.caringu.model;
+package tech.vitalis.caringu.dtos.Exercicio;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-@Entity
-@Table(name = "exercicios")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Exercicio {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
+@Data
+public class RespostaExercicioDTO {
     private Long id;
 
-    @NotBlank(message = "O nome do exercício não pode estar vazio")
-    @Column(nullable = false)
+    @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
-    @NotBlank(message = "O grupo muscular não pode estar vazio")
-    @Column(nullable = false)
+    @NotBlank(message = "O grupo muscular é obrigatório")
     private String grupoMuscular;
 
     public Long getId() {
