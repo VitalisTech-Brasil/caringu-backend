@@ -1,62 +1,59 @@
 package tech.vitalis.caringu.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.vitalis.caringu.model.Exercicio;
+import tech.vitalis.caringu.dtos.Exercicio.CriacaoExercicioDTO;
+import tech.vitalis.caringu.dtos.Exercicio.RespostaExercicioDTO;
 import tech.vitalis.caringu.service.ExercicioService;
-
 import java.util.List;
-import java.util.Optional;
-
 
 @RestController
 @RequestMapping("/exercicios")
 public class ExercicioController {
 
-    @Autowired
     private final ExercicioService exercicioService;
 
     public ExercicioController(ExercicioService exercicioService) {
         this.exercicioService = exercicioService;
     }
 
-    @Operation(description = "Cadastro de exercicio")
     @PostMapping
-    public Exercicio salvarExercicio(@RequestBody Exercicio exercicio) {
-        return exercicioService.salvarExercicio(exercicio).getBody();
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Exercicio>> pegarExercicios() {
-        return exercicioService.pegarExercicios();
+    @Operation(summary = "Cadastrar novo exercício")
+    public ResponseEntity<RespostaExercicioDTO> cadastrar(@RequestBody @Valid CriacaoExercicioDTO exercicioDto) {
+        RespostaExercicioDTO exercicioCriado = exercicioService.cadastrar(exercicioDto);
+        return ResponseEntity.status(201).body(exercicioCriado);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Exercicio> pegarExercicioPorId(@PathVariable Long id) {
-        Optional<Exercicio> exercicio = exercicioService.buscarExercicioPorId(id);
+    @Operation(summary = "Buscar exercício por ID")
+    public ResponseEntity<RespostaExercicioDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(exercicioService.buscarPorId(id));
+    }
 
-        if (exercicio.isPresent()) {
-            return ResponseEntity.status(200).body(exercicio.get());
-        }
-
-        return ResponseEntity.status(404).build();
+    @GetMapping
+    @Operation(summary = "Listar todos os exercícios")
+    public ResponseEntity<List<RespostaExercicioDTO>> listarTodos() {
+        return ResponseEntity.ok(exercicioService.listarTodos());
     }
 
     @PutMapping("/{id}")
-    public Exercicio atualizarExercicio(@PathVariable Long id , @RequestBody Exercicio exercicio) {
-        return exercicioService.atualizarExercicio(id, exercicio).getBody();
+    @Operation(summary = "Atualizar exercício")
+    public ResponseEntity<RespostaExercicioDTO> atualizar(@PathVariable Long id, @RequestBody @Valid CriacaoExercicioDTO exercicioDto) {
+        return ResponseEntity.ok(exercicioService.atualizar(id, exercicioDto));
     }
 
     @PatchMapping("/{id}")
-    public Exercicio atualizarParteExercicio(@PathVariable Long id, @RequestBody Exercicio exercicio) {
-        return exercicioService.atualizarParteExercicio(id, exercicio).getBody();
+    @Operation(summary = "Atualizar exercício parcialmente")
+    public ResponseEntity<RespostaExercicioDTO> editarInfoExercicio(@PathVariable Long id, @RequestBody CriacaoExercicioDTO exercicioDto) {
+        return ResponseEntity.ok(exercicioService.editarInfoExercicio(id, exercicioDto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removerExercicio(@PathVariable Long id) {
-        return exercicioService.removerExercicio(id);
+    @Operation(summary = "Remover exercício")
+    public ResponseEntity<Void> remover(@PathVariable Long id) {
+        exercicioService.remover(id);
+        return ResponseEntity.noContent().build();
     }
-
 }
