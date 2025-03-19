@@ -10,9 +10,14 @@ import tech.vitalis.caringu.model.Exercicio;
 @Mapper(componentModel = "spring")
 public interface ExercicioMapper {
 
+
+    @Mapping(target = "id", ignore = true) // Garante que o ID não cause problemas
+    @Mapping(target = "nome", source = "nome")
+    @Mapping(target = "grupoMuscular", source = "grupoMuscular")
+    @Mapping(target = "favorito", source = "favorito")
+    @Mapping(target = "origem", source = "origem")
     Exercicio toEntity(CriacaoExercicioDTO dto);
 
-    @Mapping(target = "id", source = "id")
     RespostaExercicioDTO toDTO(Exercicio exercicio);
 
     void updateExercicioFromDto(CriacaoExercicioDTO exercicioDto, @MappingTarget Exercicio exercicioExistente);

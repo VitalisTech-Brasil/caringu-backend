@@ -6,8 +6,6 @@ import lombok.*;
 
 @Entity
 @Table(name = "exercicios")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -26,6 +24,26 @@ public class Exercicio {
     @NotBlank(message = "O grupo muscular não pode estar vazio")
     @Column(nullable = false)
     private String grupoMuscular;
+
+    private Boolean favorito;
+
+    private String origem;
+
+    public Boolean getFavorito() {
+        return favorito;
+    }
+
+    public void setFavorito(Boolean favorito) {
+        this.favorito = favorito;
+    }
+
+    public String getOrigem() {
+        return origem;
+    }
+
+    public void setOrigem(String origem) {
+        this.origem = origem;
+    }
 
     public Long getId() {
         return id;
@@ -49,5 +67,16 @@ public class Exercicio {
 
     public void setGrupoMuscular(String grupoMuscular) {
         this.grupoMuscular = grupoMuscular;
+    }
+
+    @Override
+    public String toString() {
+        return "Exercicio{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", grupoMuscular='" + grupoMuscular + '\'' +
+                ", favorito=" + favorito +
+                ", origem='" + origem + '\'' +
+                '}';
     }
 }

@@ -28,9 +28,13 @@ public class ExercicioService {
         if (exercicioDto.getNome() == null || exercicioDto.getNome().trim().isEmpty()) {
             throw new ApiExceptions.BadRequestException("O nome do exercício não pode estar vazio.");
         }
-
+        System.out.println("DTO recebido no Service: " + exercicioDto);
         Exercicio novoExercicio = exercicioMapper.toEntity(exercicioDto);
+        System.out.println("Entidade convertida antes de salvar: " + novoExercicio);
+
         Exercicio exercicioSalvo = exercicioRepository.save(novoExercicio);
+        System.out.println("Entidade salva no banco: " + exercicioSalvo);
+
         return exercicioMapper.toDTO(exercicioSalvo);
     }
 
@@ -57,6 +61,8 @@ public class ExercicioService {
 
         exercicioExistente.setNome(exercicioDto.getNome());
         exercicioExistente.setGrupoMuscular(exercicioDto.getGrupoMuscular());
+        exercicioExistente.setFavorito(exercicioDto.getFavorito());
+        exercicioExistente.setOrigem(exercicioDto.getOrigem());
 
         Exercicio exercicioAtualizado = exercicioRepository.save(exercicioExistente);
         return exercicioMapper.toDTO(exercicioAtualizado);

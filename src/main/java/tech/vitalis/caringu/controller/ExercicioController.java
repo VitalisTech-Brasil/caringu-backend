@@ -22,6 +22,7 @@ public class ExercicioController {
     @PostMapping
     @Operation(summary = "Cadastrar novo exercício")
     public ResponseEntity<RespostaExercicioDTO> cadastrar(@RequestBody @Valid CriacaoExercicioDTO exercicioDto) {
+
         RespostaExercicioDTO exercicioCriado = exercicioService.cadastrar(exercicioDto);
         return ResponseEntity.status(201).body(exercicioCriado);
     }
