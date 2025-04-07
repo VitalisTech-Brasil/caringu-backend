@@ -1,8 +1,10 @@
 package tech.vitalis.caringu.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import tech.vitalis.caringu.model.Exercicio;
+import org.springframework.stereotype.Repository;
+import tech.vitalis.caringu.entity.Exercicio;
 
-public interface ExercicioRepository  extends JpaRepository<Exercicio, Long> {
+@Repository
+public interface ExercicioRepository  extends JpaRepository<Exercicio, Integer> {
 
 }

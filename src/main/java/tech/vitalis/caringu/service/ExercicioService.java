@@ -6,7 +6,7 @@ import tech.vitalis.caringu.dtos.Exercicio.CriacaoExercicioDTO;
 import tech.vitalis.caringu.dtos.Exercicio.RespostaExercicioDTO;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.mapper.ExercicioMapper;
-import tech.vitalis.caringu.model.Exercicio;
+import tech.vitalis.caringu.entity.Exercicio;
 import tech.vitalis.caringu.repository.ExercicioRepository;
 
 import java.util.List;
@@ -34,7 +34,7 @@ public class ExercicioService {
         return exercicioMapper.toDTO(exercicioSalvo);
     }
 
-    public RespostaExercicioDTO buscarPorId(Long id) {
+    public RespostaExercicioDTO buscarPorId(Integer id) {
         Exercicio exercicio = exercicioRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Exercício com ID " + id + " não encontrado"));
         return exercicioMapper.toDTO(exercicio);
@@ -47,7 +47,7 @@ public class ExercicioService {
                 .collect(Collectors.toList());
     }
 
-    public RespostaExercicioDTO atualizar(Long id, CriacaoExercicioDTO exercicioDto) {
+    public RespostaExercicioDTO atualizar(Integer id, CriacaoExercicioDTO exercicioDto) {
         Exercicio exercicioExistente = exercicioRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Exercício com ID " + id + " não encontrado"));
 
@@ -62,7 +62,7 @@ public class ExercicioService {
         return exercicioMapper.toDTO(exercicioAtualizado);
     }
 
-    public RespostaExercicioDTO editarInfoExercicio(Long id, CriacaoExercicioDTO exercicioDto) {
+    public RespostaExercicioDTO editarInfoExercicio(Integer id, CriacaoExercicioDTO exercicioDto) {
         Exercicio exercicioExistente = exercicioRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Exercício com ID " + id + " não encontrado"));
 
@@ -85,7 +85,7 @@ public class ExercicioService {
         return exercicioMapper.toDTO(exercicioAtualizado);
     }
 
-    public void remover(Long id) {
+    public void remover(Integer id) {
         if (!exercicioRepository.existsById(id)) {
             throw new ApiExceptions.ResourceNotFoundException("Exercício com ID " + id + " não encontrado");
         }

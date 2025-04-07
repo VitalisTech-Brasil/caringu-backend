@@ -22,7 +22,7 @@ public class UsuarioController {
 
     @PostMapping
     @Operation(summary = "Cadastrar novo usuário")
-    public ResponseEntity<RespostaUsuarioDTO> cadastrar(@RequestBody @Valid CriacaoUsuarioDTO usuarioDto) {
+    public ResponseEntity<RespostaUsuarioDTO> cadastrar(@Valid @RequestBody CriacaoUsuarioDTO usuarioDto) {
         RespostaUsuarioDTO usuarioCriado = usuarioService.cadastrar(usuarioDto);
         return ResponseEntity.status(201).body(usuarioCriado);
     }
@@ -35,25 +35,25 @@ public class UsuarioController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar usuário por ID")
-    public ResponseEntity<RespostaUsuarioDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<RespostaUsuarioDTO> buscarPorId(@PathVariable Integer id) {
         return ResponseEntity.ok(usuarioService.buscarPorId(id));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar usuário")
-    public ResponseEntity<RespostaUsuarioDTO> atualizar(@PathVariable Long id, @RequestBody @Valid CriacaoUsuarioDTO usuarioDto) {
+    public ResponseEntity<RespostaUsuarioDTO> atualizar(@PathVariable Integer id, @RequestBody @Valid CriacaoUsuarioDTO usuarioDto) {
         return ResponseEntity.ok(usuarioService.atualizar(id, usuarioDto));
     }
 
     @PatchMapping("/{id}")
     @Operation(summary = "Atualizar usuário parcialmente")
-    public ResponseEntity<RespostaUsuarioDTO> editarInfoUsuario(@PathVariable Long id, @RequestBody CriacaoUsuarioDTO usuarioDto) {
+    public ResponseEntity<RespostaUsuarioDTO> editarInfoUsuario(@PathVariable Integer id, @RequestBody CriacaoUsuarioDTO usuarioDto) {
         return ResponseEntity.ok(usuarioService.editarInfoUsuario(id, usuarioDto));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Remover usuário")
-    public ResponseEntity<Void> removerUsuario(@PathVariable Long id) {
+    public ResponseEntity<Void> removerUsuario(@PathVariable Integer id) {
         usuarioService.removerUsuario(id);
         return ResponseEntity.noContent().build();
     }

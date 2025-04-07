@@ -1,10 +1,12 @@
-package tech.vitalis.caringu.model;
+package tech.vitalis.caringu.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
+import tech.vitalis.caringu.enums.GeneroPessoaEnum;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "usuarios")
@@ -14,12 +16,13 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private Long id;
+    private Integer id;
 
     @NotBlank(message = "O nome não pode estar em branco")
     @Column(nullable = false)
@@ -35,35 +38,16 @@ public class Usuario {
     @Column(nullable = false)
     private String senha;
 
-    public Long getId() {
-        return id;
-    }
+    private String celular;
+    private String urlFotoPerfil;
+    @Past
+    @NotNull
+    private Date dataNascimento;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private GeneroPessoaEnum genero;
+    @NotNull
+    private LocalDateTime dataCadastro;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
 }
