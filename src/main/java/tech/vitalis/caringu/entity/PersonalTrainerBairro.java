@@ -1,9 +1,11 @@
 package tech.vitalis.caringu.entity;
 
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
+import tech.vitalis.caringu.id.PersonalTrainerBairroId;
 
 @Entity
 @Table(name = "personal_trainers_bairros")
@@ -15,11 +17,7 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class PersonalTrainerBairro {
 
-    @Id
-    private Integer id;
-    @Id
-    private Integer personalTrainersId;
-    @Id
-    private Integer estadosId;
+    @EmbeddedId
+    private PersonalTrainerBairroId id;
 
 }

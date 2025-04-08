@@ -17,6 +17,11 @@ import tech.vitalis.caringu.enums.NivelExpericenciaEnum;
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Aluno extends Usuario{
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
     @Positive
     private Double peso;
     @Positive

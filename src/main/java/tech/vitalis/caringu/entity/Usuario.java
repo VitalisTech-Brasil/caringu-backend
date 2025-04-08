@@ -3,6 +3,7 @@ package tech.vitalis.caringu.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import tech.vitalis.caringu.enums.GeneroPessoaEnum;
 
 import java.time.LocalDateTime;
@@ -14,7 +15,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Usuario {
