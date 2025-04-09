@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import tech.vitalis.caringu.dtos.Exercicio.CriacaoExercicioDTO;
 import tech.vitalis.caringu.dtos.Exercicio.RespostaExercicioDTO;
-import tech.vitalis.caringu.model.Exercicio;
+import tech.vitalis.caringu.entity.Exercicio;
 
 @Mapper(componentModel = "spring")
 public interface ExercicioMapper {

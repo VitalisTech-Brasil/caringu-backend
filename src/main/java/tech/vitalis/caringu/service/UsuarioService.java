@@ -1,16 +1,14 @@
 package tech.vitalis.caringu.service;
 
-import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Usuario.CriacaoUsuarioDTO;
 import tech.vitalis.caringu.dtos.Usuario.RespostaUsuarioDTO;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.mapper.UsuarioMapper;
-import tech.vitalis.caringu.model.Usuario;
+import tech.vitalis.caringu.entity.Usuario;
 import tech.vitalis.caringu.repository.UsuarioRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -51,13 +49,13 @@ public class UsuarioService {
                 .collect(Collectors.toList());
     }
 
-    public RespostaUsuarioDTO buscarPorId(Long id) {
+    public RespostaUsuarioDTO buscarPorId(Integer id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Usuário com ID " + id + " não encontrado"));
         return usuarioMapper.toDTO(usuario);
     }
 
-    public RespostaUsuarioDTO atualizar(Long id, CriacaoUsuarioDTO usuarioDto) {
+    public RespostaUsuarioDTO atualizar(Integer id, CriacaoUsuarioDTO usuarioDto) {
         Usuario usuarioExistente = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Usuário com ID " + id + " não encontrado"));
 
@@ -66,7 +64,7 @@ public class UsuarioService {
         return usuarioMapper.toDTO(usuarioAtualizado);
     }
 
-    public RespostaUsuarioDTO editarInfoUsuario(Long id, CriacaoUsuarioDTO usuarioDto) {
+    public RespostaUsuarioDTO editarInfoUsuario(Integer id, CriacaoUsuarioDTO usuarioDto) {
         Usuario usuarioExistente = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Usuário com ID " + id + " não encontrado"));
 
@@ -94,7 +92,7 @@ public class UsuarioService {
         return usuarioMapper.toDTO(usuarioAtualizado);
     }
 
-    public void removerUsuario(Long id) {
+    public void removerUsuario(Integer id) {
         if (!usuarioRepository.existsById(id)) {
             throw new ApiExceptions.ResourceNotFoundException("Usuário com ID " + id + " não encontrado");
         }

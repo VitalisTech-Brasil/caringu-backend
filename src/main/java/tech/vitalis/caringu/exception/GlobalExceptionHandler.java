@@ -1,6 +1,10 @@
 package tech.vitalis.caringu.exception;
 
-import org.apache.coyote.BadRequestException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import tech.vitalis.caringu.exception.ApiExceptions.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -41,6 +45,31 @@ public class GlobalExceptionHandler {
         response.put("message", message);
         response.put("path", request.getDescription(false).replace("uri=", ""));
         logger.warn("Erro {} - {}: {}", status.value(), error, message);
+
         return ResponseEntity.status(status).body(response);
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException ex, WebRequest request) {
+        String errorMessage = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .findFirst()
+                .orElse("Dados inválidos");
+
+        return createErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", errorMessage, request);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleConstraintViolation(ConstraintViolationException ex, WebRequest request) {
+        String errorMessage = ex.getConstraintViolations()
+                .stream()
+                .map(ConstraintViolation::getMessage)
+                .findFirst()
+                .orElse("Dados inválidos");
+
+        return createErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", errorMessage, request);
+    }
+
 }

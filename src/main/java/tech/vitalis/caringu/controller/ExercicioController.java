@@ -28,7 +28,7 @@ public class ExercicioController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar exercício por ID")
-    public ResponseEntity<RespostaExercicioDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<RespostaExercicioDTO> buscarPorId(@PathVariable Integer id) {
         return ResponseEntity.ok(exercicioService.buscarPorId(id));
     }
 
@@ -40,19 +40,19 @@ public class ExercicioController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar exercício")
-    public ResponseEntity<RespostaExercicioDTO> atualizar(@PathVariable Long id, @RequestBody @Valid CriacaoExercicioDTO exercicioDto) {
+    public ResponseEntity<RespostaExercicioDTO> atualizar(@PathVariable Integer id, @RequestBody @Valid CriacaoExercicioDTO exercicioDto) {
         return ResponseEntity.ok(exercicioService.atualizar(id, exercicioDto));
     }
 
     @PatchMapping("/{id}")
     @Operation(summary = "Atualizar exercício parcialmente")
-    public ResponseEntity<RespostaExercicioDTO> editarInfoExercicio(@PathVariable Long id, @RequestBody CriacaoExercicioDTO exercicioDto) {
+    public ResponseEntity<RespostaExercicioDTO> editarInfoExercicio(@PathVariable Integer id, @RequestBody CriacaoExercicioDTO exercicioDto) {
         return ResponseEntity.ok(exercicioService.editarInfoExercicio(id, exercicioDto));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Remover exercício")
-    public ResponseEntity<Void> remover(@PathVariable Long id) {
+    public ResponseEntity<Void> remover(@PathVariable Integer id) {
         exercicioService.remover(id);
         return ResponseEntity.noContent().build();
     }

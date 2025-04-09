@@ -5,10 +5,12 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import tech.vitalis.caringu.dtos.Usuario.CriacaoUsuarioDTO;
 import tech.vitalis.caringu.dtos.Usuario.RespostaUsuarioDTO;
-import tech.vitalis.caringu.model.Usuario;
+import tech.vitalis.caringu.entity.Usuario;
 
 @Mapper(componentModel = "spring")
 public interface UsuarioMapper {
+
+    //Usuario toEntity(UsuarioRecord dto);
 
     Usuario toEntity(CriacaoUsuarioDTO dto);
 

@@ -1,8 +1,10 @@
 package tech.vitalis.caringu.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import tech.vitalis.caringu.model.Usuario;
+import org.springframework.stereotype.Repository;
+import tech.vitalis.caringu.entity.Usuario;
 
-public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+@Repository
+public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     public Boolean existsByEmail(String email);
 }
