@@ -32,5 +32,5 @@ public class EvolucaoCorporal {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "alunos_id")
-    private Aluno alunosId;
+    private Aluno alunos;
 }

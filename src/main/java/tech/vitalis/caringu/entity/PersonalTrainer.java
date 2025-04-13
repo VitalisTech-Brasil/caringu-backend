@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Positive;
 
 @Entity
 @Table(name = "personal_trainers")
+
 @PrimaryKeyJoinColumn(name = "id")
 public class PersonalTrainer extends Pessoa {
 
