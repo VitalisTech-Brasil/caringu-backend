@@ -4,13 +4,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import tech.vitalis.caringu.enums.GeneroPessoaEnum;
+import tech.vitalis.caringu.enums.GeneroEnum;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "pessoas")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,11 +18,10 @@ import java.util.Date;
 @SuperBuilder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Usuario {
+public class Pessoa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
     private Integer id;
 
     @NotBlank(message = "O nome não pode estar em branco")
@@ -46,7 +45,7 @@ public class Usuario {
     private Date dataNascimento;
     @NotNull
     @Enumerated(EnumType.STRING)
-    private GeneroPessoaEnum genero;
+    private GeneroEnum genero;
     @NotNull
     private LocalDateTime dataCadastro;
 

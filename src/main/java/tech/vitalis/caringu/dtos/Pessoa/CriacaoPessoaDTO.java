@@ -1,19 +1,16 @@
-package tech.vitalis.caringu.dtos.Usuario;
+package tech.vitalis.caringu.dtos.Pessoa;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
-import tech.vitalis.caringu.entity.Usuario;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RespostaUsuarioDTO {
-
-    private Integer id;
-
+public class CriacaoPessoaDTO {
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
@@ -21,4 +18,7 @@ public class RespostaUsuarioDTO {
     @Email(message = "E-mail inválido")
     private String email;
 
+    @NotBlank(message = "A senha é obrigatória")
+    @Size(min = 6, message = "A senha deve ter pelo menos 6 caracteres")
+    private String senha;
 }

@@ -1,6 +1,5 @@
 package tech.vitalis.caringu.entity;
 
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -15,8 +14,7 @@ import tech.vitalis.caringu.enums.NivelExpericenciaEnum;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Aluno extends Usuario{
+public class Aluno extends Pessoas {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

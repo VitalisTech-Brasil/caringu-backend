@@ -15,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class PersonalTrainer extends Usuario{
+public class PersonalTrainer extends Pessoas{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
