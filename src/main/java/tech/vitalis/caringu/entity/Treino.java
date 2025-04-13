@@ -27,8 +27,7 @@ public class Treino {
     private GrupoMuscularEnum grupoMuscular;
     @NotBlank
     private String descricao;
-    @Positive
-    @NotNull
-    private Integer personalId;
+    @ManyToOne
+    private PersonalTrainer personal;
 
 }

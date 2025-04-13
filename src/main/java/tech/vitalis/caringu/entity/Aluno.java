@@ -16,7 +16,7 @@ import tech.vitalis.caringu.enums.NivelExpericenciaEnum;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Aluno extends Usuario{
+public class Aluno extends Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -21,12 +21,10 @@ public class TreinoExercicio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Positive
-    @NotNull
-    private Integer treinosId;
-    @Positive
-    @NotNull
-    private Integer exercicioId;
+    @ManyToOne
+    private Treino treinos;
+    @ManyToOne
+    private Exercicio exercicio;
     @Positive
     @NotNull
     private Double carga;

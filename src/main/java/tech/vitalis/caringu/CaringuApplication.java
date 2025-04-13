@@ -11,7 +11,5 @@ public class CaringuApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CaringuApplication.class, args);
-
-
 	}
 }
