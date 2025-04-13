@@ -27,7 +27,7 @@ public class Comentario {
     private Feedback feedback;
     @ManyToOne
     @JoinColumn(name = "pessoas_id", nullable = false)
-    private Usuario pessoas;
+    private Pessoa pessoas;
     @NotBlank
     private String descricao;
     @NotNull

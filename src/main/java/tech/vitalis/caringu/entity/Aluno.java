@@ -1,40 +1,64 @@
 package tech.vitalis.caringu.entity;
 
-
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import lombok.*;
-import tech.vitalis.caringu.enums.FrequenciaTreinoEnum;
-import tech.vitalis.caringu.enums.NivelAtividadeEnum;
-import tech.vitalis.caringu.enums.NivelExpericenciaEnum;
+import tech.vitalis.caringu.enums.Aluno.NivelAtividadeEnum;
+import tech.vitalis.caringu.enums.Aluno.NivelExperienciaEnum;
 
 @Entity
-@Table(name = "alunos")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Aluno extends Usuario {
+@Table(name = "alunos", schema = "vitalis")
+@PrimaryKeyJoinColumn(name = "id")
+public class Aluno extends Pessoa {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @Positive
     private Double peso;
-    @Positive
-    private Double altura;
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private NivelAtividadeEnum nivelAtividade;
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private FrequenciaTreinoEnum frequenciaTreino;
-    private Boolean fumante;
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private NivelExpericenciaEnum nivelExpericencia;
 
+    private Double altura;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "nivel_atividade", nullable = false)
+    private NivelAtividadeEnum nivelAtividade;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "nivel_experiencia", nullable = false)
+    private NivelExperienciaEnum nivelExperiencia;
+
+    public Aluno() {}
+
+    public Aluno(Double peso, Double altura, NivelAtividadeEnum nivelAtividade, NivelExperienciaEnum nivelExperiencia) {
+        this.peso = peso;
+        this.altura = altura;
+        this.nivelAtividade = nivelAtividade;
+        this.nivelExperiencia = nivelExperiencia;
+    }
+
+    public Double getPeso() {
+        return peso;
+    }
+
+    public void setPeso(Double peso) {
+        this.peso = peso;
+    }
+
+    public Double getAltura() {
+        return altura;
+    }
+
+    public void setAltura(Double altura) {
+        this.altura = altura;
+    }
+
+    public NivelAtividadeEnum getNivelAtividade() {
+        return nivelAtividade;
+    }
+
+    public void setNivelAtividade(NivelAtividadeEnum nivelAtividade) {
+        this.nivelAtividade = nivelAtividade;
+    }
+
+    public NivelExperienciaEnum getNivelExperiencia() {
+        return nivelExperiencia;
+    }
+
+    public void setNivelExperiencia(NivelExperienciaEnum nivelExperiencia) {
+        this.nivelExperiencia = nivelExperiencia;
+    }
 }
