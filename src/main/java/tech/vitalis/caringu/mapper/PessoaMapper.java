@@ -7,7 +7,6 @@ import tech.vitalis.caringu.dtos.Pessoa.CriacaoPessoaDTO;
 import tech.vitalis.caringu.dtos.Pessoa.RespostaPessoaDTO;
 import tech.vitalis.caringu.entity.Pessoa;
 
-@Mapper(componentModel = "spring")
 public interface PessoaMapper {
 
     //Usuario toEntity(UsuarioRecord dto);

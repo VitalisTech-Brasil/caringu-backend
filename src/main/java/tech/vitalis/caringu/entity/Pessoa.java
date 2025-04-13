@@ -1,22 +1,13 @@
 package tech.vitalis.caringu.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-import tech.vitalis.caringu.enums.GeneroEnum;
+import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@Table(name = "pessoas")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Table(name = "pessoas", schema = "vitalis")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Pessoa {
 
@@ -24,30 +15,113 @@ public class Pessoa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotBlank(message = "O nome não pode estar em branco")
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String nome;
 
-    @NotBlank(message = "O email não pode estar em branco")
-    @Email(message = "O email deve ser válido")
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, length = 100, unique = true)
     private String email;
 
-    @NotBlank(message = "A senha não pode estar em branco")
-    @Size(min = 6, max = 16, message = "A senha deve ter entre 6 e 16 caracteres")
     @Column(nullable = false)
     private String senha;
 
+    @Column(length = 11)
     private String celular;
+
+    @Column(name = "url_foto_perfil", columnDefinition = "TEXT")
     private String urlFotoPerfil;
-    @Past
-    @NotNull
+
+    @Column(name = "data_nascimento")
     private Date dataNascimento;
-    @NotNull
+
     @Enumerated(EnumType.STRING)
     private GeneroEnum genero;
-    @NotNull
+
+    @Column(name = "data_cadastro", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime dataCadastro;
 
+    public Pessoa() {}
 
+    public Pessoa(Integer id, String nome, String email, String senha, String celular, String urlFotoPerfil, Date dataNascimento, GeneroEnum genero, LocalDateTime dataCadastro) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.celular = celular;
+        this.urlFotoPerfil = urlFotoPerfil;
+        this.dataNascimento = dataNascimento;
+        this.genero = genero;
+        this.dataCadastro = dataCadastro;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public String getCelular() {
+        return celular;
+    }
+
+    public void setCelular(String celular) {
+        this.celular = celular;
+    }
+
+    public String getUrlFotoPerfil() {
+        return urlFotoPerfil;
+    }
+
+    public void setUrlFotoPerfil(String urlFotoPerfil) {
+        this.urlFotoPerfil = urlFotoPerfil;
+    }
+
+    public Date getDataNascimento() {
+        return dataNascimento;
+    }
+
+    public void setDataNascimento(Date dataNascimento) {
+        this.dataNascimento = dataNascimento;
+    }
+
+    public GeneroEnum getGenero() {
+        return genero;
+    }
+
+    public void setGenero(GeneroEnum genero) {
+        this.genero = genero;
+    }
+
+    public LocalDateTime getDataCadastro() {
+        return dataCadastro;
+    }
+
+    public void setDataCadastro(LocalDateTime dataCadastro) {
+        this.dataCadastro = dataCadastro;
+    }
 }

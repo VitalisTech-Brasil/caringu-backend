@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Pessoa.RespostaPessoaDTO;
 import tech.vitalis.caringu.dtos.Pessoa.CriacaoPessoaDTO;
-import tech.vitalis.caringu.dtos.Pessoa.RespostaPessoaDTO;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.mapper.PessoaMapper;
 import tech.vitalis.caringu.entity.Pessoa;
@@ -20,7 +19,6 @@ public class PessoaService {
     private final PessoaRepository pessoaRepository;
     private final PessoaMapper pessoaMapper;
 
-    @Autowired
     public PessoaService(PessoaRepository pessoaRepository, PessoaMapper pessoaMapper) {
         this.pessoaRepository = pessoaRepository;
         this.pessoaMapper = pessoaMapper;
