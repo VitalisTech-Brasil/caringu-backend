@@ -99,10 +99,10 @@ public class PessoaService {
     }
 
     private void validarSenha(String senha) {
-        String regex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+=\\-{};:'\",.<>?/|\\\\]).{6,16}$";
+        String regex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+=\\-{};:'\",.<>?/|\\\\])$";
 
         if (!Pattern.matches(regex, senha)) {
-            throw new ApiExceptions.BadRequestException("A senha deve conter entre 6 e 16 caracteres, incluindo pelo menos uma letra maiúscula, um número e um caractere especial.");
+            throw new ApiExceptions.BadRequestException("A senha incluir pelo menos uma letra maiúscula, um número e um caractere especial.");
         }
     }
 }

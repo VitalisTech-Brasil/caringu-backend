@@ -1,13 +1,14 @@
 package tech.vitalis.caringu.mapper;
 
 
-import tech.vitalis.caringu.dtos.Aluno.AlunoCadastroDTO;
+import tech.vitalis.caringu.dtos.Aluno.AlunoRequestPatchDTO;
+import tech.vitalis.caringu.dtos.Aluno.AlunoRequestPostDTO;
 import tech.vitalis.caringu.dtos.Aluno.AlunoRespostaDTO;
 import tech.vitalis.caringu.entity.Aluno;
 
 public class AlunoMapper {
 
-    public static Aluno toEntity(AlunoCadastroDTO cadastroDTO) {
+    public static Aluno toEntity(AlunoRequestPostDTO cadastroDTO) {
         Aluno aluno = new Aluno();
 
         aluno.setNome(cadastroDTO.nome());
@@ -40,5 +41,18 @@ public class AlunoMapper {
                 aluno.getNivelExperiencia(),
                 aluno.getDataCadastro()
         );
+    }
+
+    public static void atualizarAlunoComDTOParcial(Aluno aluno, AlunoRequestPatchDTO dto) {
+        if (dto.nome() != null) aluno.setNome(dto.nome());
+        if (dto.email() != null) aluno.setEmail(dto.email());
+        if (dto.senha() != null) aluno.setSenha(dto.senha());
+        if (dto.celular() != null) aluno.setCelular(dto.celular());
+        if (dto.dataNascimento() != null) aluno.setDataNascimento(dto.dataNascimento());
+        if (dto.genero() != null) aluno.setGenero(dto.genero());
+        if (dto.peso() != null) aluno.setPeso(dto.peso());
+        if (dto.altura() != null) aluno.setAltura(dto.altura());
+        if (dto.nivelAtividade() != null) aluno.setNivelAtividade(dto.nivelAtividade());
+        if (dto.nivelExperiencia() != null) aluno.setNivelExperiencia(dto.nivelExperiencia());
     }
 }
