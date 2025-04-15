@@ -6,4 +6,5 @@ import tech.vitalis.caringu.entity.Aluno;
 
 @Repository
 public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
+    boolean existsByEmail(String email);
 }

@@ -1,31 +1,27 @@
 package tech.vitalis.caringu.entity;
 
+import tech.vitalis.caringu.converter.StringListConverter;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+
+import java.util.List;
 
 @Entity
-@Table(name = "personal_trainers")
-
+@Table(name = "personal_trainers", schema = "vitalis")
 @PrimaryKeyJoinColumn(name = "id")
 public class PersonalTrainer extends Pessoa {
 
-    @NotBlank
     @Column(nullable = false, length = 20)
     private String cref;
 
-    @NotBlank
-    @Column(length = 100)
-    private String especialidade;
+    @Convert(converter = StringListConverter.class)
+    @Column(columnDefinition = "json", nullable = false)
+    private List<String> especialidade;
 
-    @Positive
-    @NotNull
     private Integer experiencia;
 
     public PersonalTrainer() {}
 
-    public PersonalTrainer(String cref, String especialidade, Integer experiencia) {
+    public PersonalTrainer(String cref, List<String> especialidade, Integer experiencia) {
         this.cref = cref;
         this.especialidade = especialidade;
         this.experiencia = experiencia;
@@ -39,11 +35,11 @@ public class PersonalTrainer extends Pessoa {
         this.cref = cref;
     }
 
-    public String getEspecialidade() {
+    public List<String> getEspecialidade() {
         return especialidade;
     }
 
-    public void setEspecialidade(String especialidade) {
+    public void setEspecialidade(List<String> especialidade) {
         this.especialidade = especialidade;
     }
 

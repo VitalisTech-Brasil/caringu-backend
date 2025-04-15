@@ -1,10 +1,11 @@
 package tech.vitalis.caringu.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "pessoas", schema = "vitalis")
@@ -31,17 +32,18 @@ public class Pessoa {
     private String urlFotoPerfil;
 
     @Column(name = "data_nascimento")
-    private Date dataNascimento;
+    private LocalDate dataNascimento;
 
     @Enumerated(EnumType.STRING)
     private GeneroEnum genero;
 
     @Column(name = "data_cadastro", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @CreationTimestamp
     private LocalDateTime dataCadastro;
 
     public Pessoa() {}
 
-    public Pessoa(Integer id, String nome, String email, String senha, String celular, String urlFotoPerfil, Date dataNascimento, GeneroEnum genero, LocalDateTime dataCadastro) {
+    public Pessoa(Integer id, String nome, String email, String senha, String celular, String urlFotoPerfil, LocalDate dataNascimento, GeneroEnum genero, LocalDateTime dataCadastro) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -101,11 +103,11 @@ public class Pessoa {
         this.urlFotoPerfil = urlFotoPerfil;
     }
 
-    public Date getDataNascimento() {
+    public LocalDate getDataNascimento() {
         return dataNascimento;
     }
 
-    public void setDataNascimento(Date dataNascimento) {
+    public void setDataNascimento(LocalDate dataNascimento) {
         this.dataNascimento = dataNascimento;
     }
 

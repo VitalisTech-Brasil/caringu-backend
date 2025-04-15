@@ -1,9 +1,8 @@
 package tech.vitalis.caringu.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tech.vitalis.caringu.dtos.Pessoa.RespostaPessoaDTO;
-import tech.vitalis.caringu.dtos.Pessoa.CriacaoPessoaDTO;
+import tech.vitalis.caringu.dtos.Pessoa.PessoaResponseGetDTO;
+import tech.vitalis.caringu.dtos.Pessoa.PessoaRequestPostDTO;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.mapper.PessoaMapper;
 import tech.vitalis.caringu.entity.Pessoa;
@@ -24,19 +23,19 @@ public class PessoaService {
         this.pessoaMapper = pessoaMapper;
     }
 
-    public RespostaPessoaDTO cadastrar(CriacaoPessoaDTO pessoaDto) {
-        if (pessoaRepository.existsByEmail(pessoaDto.getEmail())) {
+    public PessoaResponseGetDTO cadastrar(PessoaRequestPostDTO pessoaDto) {
+        if (pessoaRepository.existsByEmail(pessoaDto.email())) {
             throw new ApiExceptions.ConflictException("O e-mail já está cadastrado.");
         }
 
-        validarSenha(pessoaDto.getSenha());
+        validarSenha(pessoaDto.senha());
 
         Pessoa novoPessoa = pessoaMapper.toEntity(pessoaDto);
         Pessoa pessoaSalvo = pessoaRepository.save(novoPessoa);
         return pessoaMapper.toDTO(pessoaSalvo);
     }
 
-    public List<RespostaPessoaDTO> listarTodos() {
+    public List<PessoaResponseGetDTO> listarTodos() {
         List<Pessoa> pessoas = pessoaRepository.findAll();
 
         if (pessoas.isEmpty()) {
@@ -48,13 +47,13 @@ public class PessoaService {
                 .collect(Collectors.toList());
     }
 
-    public RespostaPessoaDTO buscarPorId(Integer id) {
+    public PessoaResponseGetDTO buscarPorId(Integer id) {
         Pessoa pessoa = pessoaRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Usuário com ID " + id + " não encontrado"));
         return pessoaMapper.toDTO(pessoa);
     }
 
-    public RespostaPessoaDTO atualizar(Integer id, CriacaoPessoaDTO pessoaDto) {
+    public PessoaResponseGetDTO atualizar(Integer id, PessoaRequestPostDTO pessoaDto) {
         Pessoa pessoaExistente = pessoaRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Usuário com ID " + id + " não encontrado"));
 
@@ -63,23 +62,23 @@ public class PessoaService {
         return pessoaMapper.toDTO(pessoaAtualizado);
     }
 
-    public RespostaPessoaDTO editarInfoPessoa(Integer id, CriacaoPessoaDTO pessoaDto) {
+    public PessoaResponseGetDTO editarInfoPessoa(Integer id, PessoaRequestPostDTO pessoaDto) {
         Pessoa pessoaExistente = pessoaRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Usuário com ID " + id + " não encontrado"));
 
         boolean atualizado = false;
 
-        if (pessoaDto.getNome() != null && !pessoaDto.getNome().isEmpty()) {
-            pessoaExistente.setNome(pessoaDto.getNome());
+        if (pessoaDto.nome() != null && !pessoaDto.nome().isEmpty()) {
+            pessoaExistente.setNome(pessoaDto.nome());
             atualizado = true;
         }
-        if (pessoaDto.getEmail() != null && !pessoaDto.getEmail().isEmpty()) {
-            pessoaExistente.setEmail(pessoaDto.getEmail());
+        if (pessoaDto.email() != null && !pessoaDto.email().isEmpty()) {
+            pessoaExistente.setEmail(pessoaDto.email());
             atualizado = true;
         }
-        if (pessoaDto.getSenha() != null && !pessoaDto.getSenha().isEmpty()) {
-            validarSenha(pessoaDto.getSenha());
-            pessoaExistente.setSenha(pessoaDto.getSenha());
+        if (pessoaDto.senha() != null && !pessoaDto.senha().isEmpty()) {
+            validarSenha(pessoaDto.senha());
+            pessoaExistente.setSenha(pessoaDto.senha());
             atualizado = true;
         }
 
@@ -99,10 +98,10 @@ public class PessoaService {
     }
 
     private void validarSenha(String senha) {
-        String regex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+=\\-{};:'\",.<>?/|\\\\]).{6,16}$";
+        String regex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+=\\-{};:'\",.<>?/|\\\\])$";
 
         if (!Pattern.matches(regex, senha)) {
-            throw new ApiExceptions.BadRequestException("A senha deve conter entre 6 e 16 caracteres, incluindo pelo menos uma letra maiúscula, um número e um caractere especial.");
+            throw new ApiExceptions.BadRequestException("A senha incluir pelo menos uma letra maiúscula, um número e um caractere especial.");
         }
     }
 }
