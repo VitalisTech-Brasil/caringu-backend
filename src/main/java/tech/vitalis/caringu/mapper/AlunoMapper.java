@@ -3,7 +3,7 @@ package tech.vitalis.caringu.mapper;
 
 import tech.vitalis.caringu.dtos.Aluno.AlunoRequestPatchDTO;
 import tech.vitalis.caringu.dtos.Aluno.AlunoRequestPostDTO;
-import tech.vitalis.caringu.dtos.Aluno.AlunoRespostaDTO;
+import tech.vitalis.caringu.dtos.Aluno.AlunoResponseGetDTO;
 import tech.vitalis.caringu.entity.Aluno;
 
 public class AlunoMapper {
@@ -26,9 +26,9 @@ public class AlunoMapper {
         return aluno;
     }
 
-    public static AlunoRespostaDTO toRespostaDTO(Aluno aluno) {
+    public static AlunoResponseGetDTO toRespostaDTO(Aluno aluno) {
 
-        return new AlunoRespostaDTO(
+        return new AlunoResponseGetDTO(
                 aluno.getId(),
                 aluno.getNome(),
                 aluno.getEmail(),

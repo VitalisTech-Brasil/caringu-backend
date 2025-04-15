@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Aluno.AlunoRequestPatchDTO;
 import tech.vitalis.caringu.dtos.Aluno.AlunoRequestPostDTO;
 import tech.vitalis.caringu.dtos.Aluno.AlunoResponsePatchDTO;
-import tech.vitalis.caringu.dtos.Aluno.AlunoRespostaDTO;
+import tech.vitalis.caringu.dtos.Aluno.AlunoResponseGetDTO;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.mapper.AlunoMapper;
 import tech.vitalis.caringu.service.AlunoService;
@@ -24,33 +24,33 @@ public class AlunoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AlunoRespostaDTO>> listar() {
-        List<AlunoRespostaDTO> listaAlunos = service.listar();
+    public ResponseEntity<List<AlunoResponseGetDTO>> listar() {
+        List<AlunoResponseGetDTO> listaAlunos = service.listar();
 
         return ResponseEntity.status(200).body(listaAlunos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AlunoRespostaDTO> buscarPorId(@PathVariable Integer id) {
-        AlunoRespostaDTO aluno = service.buscarPorId(id);
+    public ResponseEntity<AlunoResponseGetDTO> buscarPorId(@PathVariable Integer id) {
+        AlunoResponseGetDTO aluno = service.buscarPorId(id);
         return ResponseEntity.ok(aluno);
     }
 
     @PostMapping
-    public ResponseEntity<AlunoRespostaDTO> cadastrar(@Valid @RequestBody AlunoRequestPostDTO cadastroDTO) {
+    public ResponseEntity<AlunoResponseGetDTO> cadastrar(@Valid @RequestBody AlunoRequestPostDTO cadastroDTO) {
         Aluno aluno = AlunoMapper.toEntity(cadastroDTO);
-        AlunoRespostaDTO respostaDTO = service.cadastrar(aluno);
+        AlunoResponseGetDTO respostaDTO = service.cadastrar(aluno);
 
         return ResponseEntity.status(201).body(respostaDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AlunoRespostaDTO> atualizar(
+    public ResponseEntity<AlunoResponseGetDTO> atualizar(
             @PathVariable Integer id,
             @Valid @RequestBody AlunoRequestPostDTO dto) {
 
         Aluno novoAluno = AlunoMapper.toEntity(dto);
-        AlunoRespostaDTO atualizado = service.atualizar(id, novoAluno);
+        AlunoResponseGetDTO atualizado = service.atualizar(id, novoAluno);
         return ResponseEntity.ok(atualizado);
     }
 

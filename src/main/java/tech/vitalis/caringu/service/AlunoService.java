@@ -3,7 +3,7 @@ package tech.vitalis.caringu.service;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Aluno.AlunoRequestPatchDTO;
 import tech.vitalis.caringu.dtos.Aluno.AlunoResponsePatchDTO;
-import tech.vitalis.caringu.dtos.Aluno.AlunoRespostaDTO;
+import tech.vitalis.caringu.dtos.Aluno.AlunoResponseGetDTO;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.enums.Aluno.NivelAtividadeEnum;
 import tech.vitalis.caringu.enums.Aluno.NivelExperienciaEnum;
@@ -30,25 +30,25 @@ public class AlunoService {
         this.repository = repository;
     }
 
-    public List<AlunoRespostaDTO> listar() {
+    public List<AlunoResponseGetDTO> listar() {
         List<Aluno> listaAlunos = repository.findAll();
-        List<AlunoRespostaDTO> listaRespostaAlunos = new ArrayList<>();
+        List<AlunoResponseGetDTO> listaRespostaAlunos = new ArrayList<>();
 
         for (Aluno aluno : listaAlunos) {
-            AlunoRespostaDTO respostaDTO = AlunoMapper.toRespostaDTO(aluno);
+            AlunoResponseGetDTO respostaDTO = AlunoMapper.toRespostaDTO(aluno);
             listaRespostaAlunos.add(respostaDTO);
         }
 
         return listaRespostaAlunos;
     }
 
-    public AlunoRespostaDTO buscarPorId(Integer id) {
+    public AlunoResponseGetDTO buscarPorId(Integer id) {
         Aluno aluno = repository.findById(id)
                 .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno não encontrado com ID: " + id));
         return AlunoMapper.toRespostaDTO(aluno);
     }
 
-    public AlunoRespostaDTO cadastrar(Aluno aluno) {
+    public AlunoResponseGetDTO cadastrar(Aluno aluno) {
 
         validarEnums(Map.of(
             new GeneroEnumValidationStrategy(), aluno.getGenero(),
@@ -70,7 +70,7 @@ public class AlunoService {
         return AlunoMapper.toRespostaDTO(aluno);
     }
 
-    public AlunoRespostaDTO atualizar(Integer id, Aluno novoAluno) {
+    public AlunoResponseGetDTO atualizar(Integer id, Aluno novoAluno) {
         Aluno alunoExistente = repository.findById(id)
                 .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno não encontrado com ID: " + id));
 
