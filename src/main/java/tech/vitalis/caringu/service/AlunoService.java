@@ -35,7 +35,7 @@ public class AlunoService {
         List<AlunoResponseGetDTO> listaRespostaAlunos = new ArrayList<>();
 
         for (Aluno aluno : listaAlunos) {
-            AlunoResponseGetDTO respostaDTO = AlunoMapper.toRespostaDTO(aluno);
+            AlunoResponseGetDTO respostaDTO = AlunoMapper.toResponseDTO(aluno);
             listaRespostaAlunos.add(respostaDTO);
         }
 
@@ -45,7 +45,7 @@ public class AlunoService {
     public AlunoResponseGetDTO buscarPorId(Integer id) {
         Aluno aluno = repository.findById(id)
                 .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno não encontrado com ID: " + id));
-        return AlunoMapper.toRespostaDTO(aluno);
+        return AlunoMapper.toResponseDTO(aluno);
     }
 
     public AlunoResponseGetDTO cadastrar(Aluno aluno) {
@@ -67,7 +67,7 @@ public class AlunoService {
         }
 
         repository.save(aluno);
-        return AlunoMapper.toRespostaDTO(aluno);
+        return AlunoMapper.toResponseDTO(aluno);
     }
 
     public AlunoResponseGetDTO atualizar(Integer id, Aluno novoAluno) {
@@ -95,7 +95,7 @@ public class AlunoService {
         alunoExistente.setNivelExperiencia(novoAluno.getNivelExperiencia());
 
         repository.save(alunoExistente);
-        return AlunoMapper.toRespostaDTO(alunoExistente);
+        return AlunoMapper.toResponseDTO(alunoExistente);
     }
 
     public AlunoResponsePatchDTO atualizarParcial(Integer id, AlunoRequestPatchDTO dto) {
@@ -105,27 +105,22 @@ public class AlunoService {
         Optional<String> nome = Optional.ofNullable(dto.nome());
         Optional<String> email = Optional.ofNullable(dto.email());
         Optional<String> celular = Optional.ofNullable(dto.celular());
-        Optional<String> senha = Optional.ofNullable(dto.senha());
+        Optional<String> urlFotoPerfil = Optional.ofNullable(dto.urlFotoPerfil());
         Optional<LocalDate> dataNascimento = Optional.ofNullable(dto.dataNascimento());
         Optional<GeneroEnum> genero = Optional.ofNullable(dto.genero());
+
         Optional<Double> peso = Optional.ofNullable(dto.peso());
         Optional<Double> altura = Optional.ofNullable(dto.altura());
         Optional<NivelAtividadeEnum> nivelAtividade = Optional.ofNullable(dto.nivelAtividade());
         Optional<NivelExperienciaEnum> nivelExperiencia = Optional.ofNullable(dto.nivelExperiencia());
 
-        senha.ifPresent(s -> {
-            String regex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+=\\-{};:'\",.<>?/|\\\\]).{6,16}$";
-            if (!Pattern.matches(regex, s)) {
-                throw new SenhaInvalidaException("A senha deve conter pelo menos uma letra maiúscula, um número e um caractere especial.");
-            }
-            aluno.setSenha(s);
-        });
-
         nome.ifPresent(aluno::setNome);
         email.ifPresent(aluno::setEmail);
         celular.ifPresent(aluno::setCelular);
+        urlFotoPerfil.ifPresent(aluno::setUrlFotoPerfil);
         dataNascimento.ifPresent(aluno::setDataNascimento);
         genero.ifPresent(aluno::setGenero);
+
         peso.ifPresent(aluno::setPeso);
         altura.ifPresent(aluno::setAltura);
         nivelAtividade.ifPresent(aluno::setNivelAtividade);
@@ -137,7 +132,7 @@ public class AlunoService {
                 nome,
                 email,
                 celular,
-                senha.map(s -> "********"), // opcional: mascara
+                urlFotoPerfil,
                 dataNascimento,
                 genero,
                 peso,

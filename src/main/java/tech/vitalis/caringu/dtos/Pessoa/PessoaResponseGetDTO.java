@@ -1,13 +1,11 @@
-package tech.vitalis.caringu.dtos.Aluno;
+package tech.vitalis.caringu.dtos.Pessoa;
 
-import tech.vitalis.caringu.enums.Aluno.NivelAtividadeEnum;
-import tech.vitalis.caringu.enums.Aluno.NivelExperienciaEnum;
 import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public record AlunoResponseGetDTO(
+public record PessoaResponseGetDTO(
         Integer id,
         String nome,
         String email,
@@ -15,10 +13,8 @@ public record AlunoResponseGetDTO(
         String urlFotoPerfil,
         LocalDate dataNascimento,
         GeneroEnum genero,
-        Double peso,
-        Double altura,
-        NivelAtividadeEnum nivelAtividade,
-        NivelExperienciaEnum nivelExperiencia,
         LocalDateTime dataCadastro
 ) {
+
+
 }

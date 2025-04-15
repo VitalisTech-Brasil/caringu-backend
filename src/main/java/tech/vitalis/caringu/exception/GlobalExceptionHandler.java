@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(PessoaNaoEncontradaException.class)
-    public ResponseEntity<Map<String, Object>> handlePersonalNaoEncontrado(PessoaNaoEncontradaException ex, WebRequest request) {
+    public ResponseEntity<Map<String, Object>> handlePessoaNaoEncontrado(PessoaNaoEncontradaException ex, WebRequest request) {
         return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
     }
 
