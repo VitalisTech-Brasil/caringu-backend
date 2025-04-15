@@ -22,6 +22,7 @@ public record PessoaRequestPostDTO(
     @Size(max = 11, message = "O celular deve conter 11 digitos")
     String celular,
 
+    @Schema(description = "Endereço URL que aponta para a imagem de perfil hospedada em nuvem")
     String urlFotoPerfil,
 
     @Past(message = "A data de nascimento deve ser no passado.")

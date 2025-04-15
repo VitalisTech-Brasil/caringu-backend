@@ -14,6 +14,7 @@ public record PersonalTrainerResponseGetDTO(
         String urlFotoPerfil,
         LocalDate dataNascimento,
         GeneroEnum genero,
+
         String cref,
         List<String> especialidade,
         Integer experiencia,

@@ -35,9 +35,11 @@ public record PersonalTrainerRequestPostDTO(
         String cref,
 
         @NotEmpty(message = "É necessário informar ao menos uma especialidade")
+        @Schema(description = "Lista de especialidades")
         List<@NotBlank(message = "Especialidade não pode ser vazia") String> especialidade,
 
         @NotNull
+        @Schema(description = "Anos de experiência do profissional")
         @Positive(message = "Os anos de experiência devem ser positivos.")
         Integer experiencia
 ) {
