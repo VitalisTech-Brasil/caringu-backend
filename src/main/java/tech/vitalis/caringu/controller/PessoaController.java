@@ -4,8 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.vitalis.caringu.dtos.Pessoa.CriacaoPessoaDTO;
-import tech.vitalis.caringu.dtos.Pessoa.RespostaPessoaDTO;
+import tech.vitalis.caringu.dtos.Pessoa.PessoaRequestPostDTO;
+import tech.vitalis.caringu.dtos.Pessoa.PessoaResponseGetDTO;
 import tech.vitalis.caringu.service.PessoaService;
 
 import java.util.List;
@@ -22,32 +22,32 @@ public class PessoaController {
 
     @PostMapping
     @Operation(summary = "Cadastrar novo usuário")
-    public ResponseEntity<RespostaPessoaDTO> cadastrar(@Valid @RequestBody CriacaoPessoaDTO pessoaDto) {
-        RespostaPessoaDTO pessoaCriada = pessoaService.cadastrar(pessoaDto);
+    public ResponseEntity<PessoaResponseGetDTO> cadastrar(@Valid @RequestBody PessoaRequestPostDTO pessoaDto) {
+        PessoaResponseGetDTO pessoaCriada = pessoaService.cadastrar(pessoaDto);
         return ResponseEntity.status(201).body(pessoaCriada);
     }
 
     @GetMapping
     @Operation(summary = "Buscar lista de pessoa")
-    public ResponseEntity<List<RespostaPessoaDTO>> listarTodos(){
+    public ResponseEntity<List<PessoaResponseGetDTO>> listarTodos(){
         return ResponseEntity.ok(pessoaService.listarTodos());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar pessoa por ID")
-    public ResponseEntity<RespostaPessoaDTO> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<PessoaResponseGetDTO> buscarPorId(@PathVariable Integer id) {
         return ResponseEntity.ok(pessoaService.buscarPorId(id));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar pessoa")
-    public ResponseEntity<RespostaPessoaDTO> atualizar(@PathVariable Integer id, @RequestBody @Valid CriacaoPessoaDTO pessoaDto) {
+    public ResponseEntity<PessoaResponseGetDTO> atualizar(@PathVariable Integer id, @RequestBody @Valid PessoaRequestPostDTO pessoaDto) {
         return ResponseEntity.ok(pessoaService.atualizar(id, pessoaDto));
     }
 
     @PatchMapping("/{id}")
     @Operation(summary = "Atualizar pessoa parcialmente")
-    public ResponseEntity<RespostaPessoaDTO> editarInfoPessoa(@PathVariable Integer id, @RequestBody CriacaoPessoaDTO pessoaDto) {
+    public ResponseEntity<PessoaResponseGetDTO> editarInfoPessoa(@PathVariable Integer id, @RequestBody PessoaRequestPostDTO pessoaDto) {
         return ResponseEntity.ok(pessoaService.editarInfoPessoa(id, pessoaDto));
     }
 
