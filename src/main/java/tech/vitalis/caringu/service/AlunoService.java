@@ -5,6 +5,7 @@ import tech.vitalis.caringu.dtos.Aluno.AlunoRequestPatchDTO;
 import tech.vitalis.caringu.dtos.Aluno.AlunoResponsePatchDTO;
 import tech.vitalis.caringu.dtos.Aluno.AlunoResponseGetDTO;
 import tech.vitalis.caringu.entity.Aluno;
+import tech.vitalis.caringu.entity.Pessoa;
 import tech.vitalis.caringu.enums.Aluno.NivelAtividadeEnum;
 import tech.vitalis.caringu.enums.Aluno.NivelExperienciaEnum;
 import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
@@ -13,6 +14,7 @@ import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
 import tech.vitalis.caringu.mapper.AlunoMapper;
 import tech.vitalis.caringu.repository.AlunoRepository;
+import tech.vitalis.caringu.repository.PessoaRepository;
 import tech.vitalis.caringu.strategy.Aluno.*;
 import tech.vitalis.caringu.strategy.Pessoa.GeneroEnumValidationStrategy;
 import static tech.vitalis.caringu.strategy.EnumValidador.validarEnums;
@@ -24,14 +26,16 @@ import java.util.regex.Pattern;
 @Service
 public class AlunoService {
 
-    private final AlunoRepository repository;
+    private final AlunoRepository alunoRepository;
+    private final PessoaRepository pessoaRepository;
 
-    public AlunoService(AlunoRepository repository) {
-        this.repository = repository;
+    public AlunoService(AlunoRepository alunoRepository, PessoaRepository pessoaRepository) {
+        this.alunoRepository = alunoRepository;
+        this.pessoaRepository = pessoaRepository;
     }
 
     public List<AlunoResponseGetDTO> listar() {
-        List<Aluno> listaAlunos = repository.findAll();
+        List<Aluno> listaAlunos = alunoRepository.findAll();
         List<AlunoResponseGetDTO> listaRespostaAlunos = new ArrayList<>();
 
         for (Aluno aluno : listaAlunos) {
@@ -43,7 +47,7 @@ public class AlunoService {
     }
 
     public AlunoResponseGetDTO buscarPorId(Integer id) {
-        Aluno aluno = repository.findById(id)
+        Aluno aluno = alunoRepository.findById(id)
                 .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno não encontrado com ID: " + id));
         return AlunoMapper.toResponseDTO(aluno);
     }
@@ -62,16 +66,16 @@ public class AlunoService {
             throw new SenhaInvalidaException("A senha incluir pelo menos uma letra maiúscula, um número e um caractere especial.");
         }
 
-        if (repository.existsByEmail(aluno.getEmail())) {
+        if (pessoaRepository.existsByEmail(aluno.getEmail())) {
             throw new EmailJaCadastradoException("Este e-mail já existe!");
         }
 
-        repository.save(aluno);
+        alunoRepository.save(aluno);
         return AlunoMapper.toResponseDTO(aluno);
     }
 
     public AlunoResponseGetDTO atualizar(Integer id, Aluno novoAluno) {
-        Aluno alunoExistente = repository.findById(id)
+        Aluno alunoExistente = alunoRepository.findById(id)
                 .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno não encontrado com ID: " + id));
 
         if (novoAluno.getSenha() != null) {
@@ -94,12 +98,12 @@ public class AlunoService {
         alunoExistente.setNivelAtividade(novoAluno.getNivelAtividade());
         alunoExistente.setNivelExperiencia(novoAluno.getNivelExperiencia());
 
-        repository.save(alunoExistente);
+        alunoRepository.save(alunoExistente);
         return AlunoMapper.toResponseDTO(alunoExistente);
     }
 
     public AlunoResponsePatchDTO atualizarParcial(Integer id, AlunoRequestPatchDTO dto) {
-        Aluno aluno = repository.findById(id)
+        Aluno aluno = alunoRepository.findById(id)
                 .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno não encontrado com ID: " + id));
 
         Optional<String> nome = Optional.ofNullable(dto.nome());
@@ -126,7 +130,7 @@ public class AlunoService {
         nivelAtividade.ifPresent(aluno::setNivelAtividade);
         nivelExperiencia.ifPresent(aluno::setNivelExperiencia);
 
-        repository.save(aluno);
+        alunoRepository.save(aluno);
 
         return new AlunoResponsePatchDTO(
                 nome,
@@ -143,9 +147,9 @@ public class AlunoService {
     }
 
     public void deletar(Integer id) {
-        Aluno aluno = repository.findById(id)
+        Aluno aluno = alunoRepository.findById(id)
                 .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno não encontrado com ID: " + id));
 
-        repository.delete(aluno);
+        alunoRepository.delete(aluno);
     }
 }

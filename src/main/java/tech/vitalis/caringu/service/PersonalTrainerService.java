@@ -10,7 +10,9 @@ import tech.vitalis.caringu.exception.PersonalTrainer.PersonalNaoEncontradoExcep
 import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
 import tech.vitalis.caringu.mapper.PersonalTrainerMapper;
+import tech.vitalis.caringu.repository.AlunoRepository;
 import tech.vitalis.caringu.repository.PersonalTrainerRepository;
+import tech.vitalis.caringu.repository.PessoaRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -22,9 +24,11 @@ import java.util.regex.Pattern;
 public class PersonalTrainerService {
 
     private final PersonalTrainerRepository repository;
+    private final PessoaRepository pessoaRepository;
 
-    public PersonalTrainerService(PersonalTrainerRepository repository) {
+    public PersonalTrainerService(PersonalTrainerRepository repository, PessoaRepository pessoaRepository) {
         this.repository = repository;
+        this.pessoaRepository = pessoaRepository;
     }
 
     public List<PersonalTrainerResponseGetDTO> listar() {
@@ -53,7 +57,7 @@ public class PersonalTrainerService {
             throw new SenhaInvalidaException("A senha incluir pelo menos uma letra maiúscula, um número e um caractere especial.");
         }
 
-        if (repository.existsByEmail(personalTrainer.getEmail())) {
+        if (pessoaRepository.existsByEmail(personalTrainer.getEmail())) {
             throw new EmailJaCadastradoException("Este e-mail já existe!");
         }
 
