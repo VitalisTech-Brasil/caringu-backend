@@ -38,6 +38,7 @@ public record PersonalTrainerRequestPatchDTO(
         @NotNull
         @Schema(description = "Anos de experiência do profissional")
         @Positive(message = "Os anos de experiência devem ser positivos.")
+        @Max(value = 100, message = "A experiência não pode ser maior que 100 anos")
         Integer experiencia
 ) {
 }
