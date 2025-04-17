@@ -20,13 +20,7 @@ import org.springframework.context.annotation.Configuration;
                 ),
                 license = @License(name = "UNLICENSED"),
                 version = "1.0.0"
-        ),
-        tags = {
-                @io.swagger.v3.oas.annotations.tags.Tag(name = "Usuários", description = "Endpoints de usuários"),
-                @io.swagger.v3.oas.annotations.tags.Tag(name = "Autenticação", description = "Login, registro e JWT"),
-                @io.swagger.v3.oas.annotations.tags.Tag(name = "Alunos", description = "Operações com alunos"),
-                @io.swagger.v3.oas.annotations.tags.Tag(name = "Personais", description = "Operações com personal trainers")
-        }
+        )
 )
 @SecurityScheme(
         name = "Bearer", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT"
