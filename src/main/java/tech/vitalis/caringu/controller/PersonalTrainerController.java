@@ -1,5 +1,6 @@
 package tech.vitalis.caringu.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class PersonalTrainerController {
     }
 
     @GetMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<PersonalTrainerResponseGetDTO>> listar() {
         List<PersonalTrainerResponseGetDTO> listaPersonalTrainers = service.listar();
 
@@ -31,6 +33,7 @@ public class PersonalTrainerController {
     }
 
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<PersonalTrainerResponseGetDTO> buscarPorId(@PathVariable Integer id) {
         PersonalTrainerResponseGetDTO personalTrainer = service.buscarPorId(id);
         return ResponseEntity.ok(personalTrainer);
@@ -45,6 +48,7 @@ public class PersonalTrainerController {
     }
 
     @PutMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<PersonalTrainerResponseGetDTO> atualizar(
             @PathVariable Integer id,
             @Valid @RequestBody PersonalTrainerRequestPostDTO dto) {
@@ -55,6 +59,7 @@ public class PersonalTrainerController {
     }
 
     @PatchMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<PersonalTrainerResponsePatchDTO> atualizarParcial(
             @PathVariable Integer id,
             @Valid @RequestBody PersonalTrainerRequestPatchDTO atualizacoes) {
@@ -64,6 +69,7 @@ public class PersonalTrainerController {
     }
 
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         service.deletar(id);
         return ResponseEntity.noContent().build();

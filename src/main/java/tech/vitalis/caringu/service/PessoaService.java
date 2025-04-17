@@ -1,9 +1,20 @@
 package tech.vitalis.caringu.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import tech.vitalis.caringu.config.GerenciadorTokenJwt;
 import tech.vitalis.caringu.dtos.Pessoa.PessoaResponseGetDTO;
 import tech.vitalis.caringu.dtos.Pessoa.PessoaRequestPostDTO;
+import tech.vitalis.caringu.dtos.Pessoa.security.PessoaTokenDTO;
 import tech.vitalis.caringu.exception.ApiExceptions;
+import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
+import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
 import tech.vitalis.caringu.mapper.PessoaMapper;
 import tech.vitalis.caringu.entity.Pessoa;
 import tech.vitalis.caringu.repository.PessoaRepository;
@@ -15,6 +26,15 @@ import java.util.stream.Collectors;
 @Service
 public class PessoaService {
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private GerenciadorTokenJwt gerenciadorTokenJwt;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     private final PessoaRepository pessoaRepository;
     private final PessoaMapper pessoaMapper;
 
@@ -24,8 +44,10 @@ public class PessoaService {
     }
 
     public PessoaResponseGetDTO cadastrar(PessoaRequestPostDTO pessoaDto) {
+
+
         if (pessoaRepository.existsByEmail(pessoaDto.email())) {
-            throw new ApiExceptions.ConflictException("O e-mail já está cadastrado.");
+            throw new EmailJaCadastradoException("O e-mail já está cadastrado.");
         }
 
         validarSenha(pessoaDto.senha());
@@ -33,6 +55,26 @@ public class PessoaService {
         Pessoa novoPessoa = pessoaMapper.toEntity(pessoaDto);
         Pessoa pessoaSalvo = pessoaRepository.save(novoPessoa);
         return pessoaMapper.toDTO(pessoaSalvo);
+    }
+
+    public PessoaTokenDTO autenticar(Pessoa pessoa) {
+
+        final UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(
+                pessoa.getEmail(), pessoa.getSenha());
+
+        final Authentication authentication = this.authenticationManager.authenticate(credentials);
+
+        Pessoa pessoaAutenticado =
+                pessoaRepository.findByEmail(pessoa.getEmail())
+                        .orElseThrow(
+                                () -> new ResponseStatusException(404, "E-mail do usuário não cadastrado", null)
+                        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        final String token = gerenciadorTokenJwt.generateToken(authentication);
+
+        return PessoaMapper.of(pessoaAutenticado, token);
     }
 
     public List<PessoaResponseGetDTO> listarTodos() {
