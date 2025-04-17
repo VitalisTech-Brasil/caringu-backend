@@ -9,14 +9,17 @@ import java.time.LocalDate;
 public record PessoaRequestPostDTO(
 
     @NotBlank(message = "O nome é obrigatório.")
+    @Schema(description = "Nome da pessoa", example = "Roger A. Jones")
     String nome,
 
     @NotBlank(message = "O email é obrigatório.")
     @Email(message = "O email fornecido não é válido.")
+    @Schema(description = "E-mail da pessoa", example = "roger.jones@gmail.com")
     String email,
 
     @NotBlank(message = "A senha é obrigatória.")
     @Size(min = 6, max = 16, message = "Senha deve conter entre 6 a 16 caracteres")
+    @Schema(description = "Senha da pessoa", example = "123456")
     String senha,
 
     @Size(max = 11, message = "O celular deve conter 11 digitos")
