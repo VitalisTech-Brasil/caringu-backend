@@ -1,11 +1,11 @@
 package tech.vitalis.caringu.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Aluno.AlunoRequestPatchDTO;
 import tech.vitalis.caringu.dtos.Aluno.AlunoResponsePatchDTO;
 import tech.vitalis.caringu.dtos.Aluno.AlunoResponseGetDTO;
 import tech.vitalis.caringu.entity.Aluno;
-import tech.vitalis.caringu.entity.Pessoa;
 import tech.vitalis.caringu.enums.Aluno.NivelAtividadeEnum;
 import tech.vitalis.caringu.enums.Aluno.NivelExperienciaEnum;
 import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
@@ -28,10 +28,12 @@ public class AlunoService {
 
     private final AlunoRepository alunoRepository;
     private final PessoaRepository pessoaRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AlunoService(AlunoRepository alunoRepository, PessoaRepository pessoaRepository) {
+    public AlunoService(AlunoRepository alunoRepository, PessoaRepository pessoaRepository, PasswordEncoder passwordEncoder) {
         this.alunoRepository = alunoRepository;
         this.pessoaRepository = pessoaRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<AlunoResponseGetDTO> listar() {
@@ -69,6 +71,9 @@ public class AlunoService {
         if (pessoaRepository.existsByEmail(aluno.getEmail())) {
             throw new EmailJaCadastradoException("Este e-mail já existe!");
         }
+
+        String senhaCriptografada = passwordEncoder.encode(aluno.getSenha());
+        aluno.setSenha(senhaCriptografada);
 
         alunoRepository.save(aluno);
         return AlunoMapper.toResponseDTO(aluno);

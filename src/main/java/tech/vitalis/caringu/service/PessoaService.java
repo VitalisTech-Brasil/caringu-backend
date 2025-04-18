@@ -36,25 +36,29 @@ public class PessoaService {
     private AuthenticationManager authenticationManager;
 
     private final PessoaRepository pessoaRepository;
-    private final PessoaMapper pessoaMapper;
 
-    public PessoaService(PessoaRepository pessoaRepository, PessoaMapper pessoaMapper) {
+    public PessoaService(PessoaRepository pessoaRepository) {
         this.pessoaRepository = pessoaRepository;
-        this.pessoaMapper = pessoaMapper;
     }
 
-    public PessoaResponseGetDTO cadastrar(PessoaRequestPostDTO pessoaDto) {
+    public PessoaResponseGetDTO cadastrar(Pessoa pessoa) {
 
+        String regex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+=\\-{};:'\",.<>?/|\\\\]).{6,16}$";
 
-        if (pessoaRepository.existsByEmail(pessoaDto.email())) {
+        if (!Pattern.matches(regex, pessoa.getSenha())) {
+            throw new SenhaInvalidaException("A senha incluir pelo menos uma letra maiúscula, um número e um caractere especial.");
+        }
+
+        if (pessoaRepository.existsByEmail(pessoa.getEmail())) {
             throw new EmailJaCadastradoException("O e-mail já está cadastrado.");
         }
 
-        validarSenha(pessoaDto.senha());
+        String senhaCriptografada = passwordEncoder.encode(pessoa.getSenha());
 
-        Pessoa novoPessoa = pessoaMapper.toEntity(pessoaDto);
-        Pessoa pessoaSalvo = pessoaRepository.save(novoPessoa);
-        return pessoaMapper.toDTO(pessoaSalvo);
+        pessoa.setSenha(senhaCriptografada);
+        Pessoa pessoaSalva = pessoaRepository.save(pessoa);
+
+        return PessoaMapper.toDTO(pessoaSalva);
     }
 
     public PessoaTokenDTO autenticar(Pessoa pessoa) {
@@ -67,7 +71,7 @@ public class PessoaService {
         Pessoa pessoaAutenticado =
                 pessoaRepository.findByEmail(pessoa.getEmail())
                         .orElseThrow(
-                                () -> new ResponseStatusException(404, "E-mail do usuário não cadastrado", null)
+                                () -> new ResponseStatusException(404, "Pessoa não encontrada", null)
                         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -85,23 +89,23 @@ public class PessoaService {
         }
 
         return pessoas.stream()
-                .map(pessoaMapper::toDTO)
+                .map(PessoaMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     public PessoaResponseGetDTO buscarPorId(Integer id) {
         Pessoa pessoa = pessoaRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Usuário com ID " + id + " não encontrado"));
-        return pessoaMapper.toDTO(pessoa);
+        return PessoaMapper.toDTO(pessoa);
     }
 
     public PessoaResponseGetDTO atualizar(Integer id, PessoaRequestPostDTO pessoaDto) {
         Pessoa pessoaExistente = pessoaRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Usuário com ID " + id + " não encontrado"));
 
-        pessoaMapper.updatePessoaFromDto(pessoaDto, pessoaExistente);
+        PessoaMapper.updatePessoaFromDto(pessoaDto, pessoaExistente);
         Pessoa pessoaAtualizado = pessoaRepository.save(pessoaExistente);
-        return pessoaMapper.toDTO(pessoaAtualizado);
+        return PessoaMapper.toDTO(pessoaAtualizado);
     }
 
     public PessoaResponseGetDTO editarInfoPessoa(Integer id, PessoaRequestPostDTO pessoaDto) {
@@ -129,7 +133,7 @@ public class PessoaService {
         }
 
         Pessoa pessoaAtualizado = pessoaRepository.save(pessoaExistente);
-        return pessoaMapper.toDTO(pessoaAtualizado);
+        return PessoaMapper.toDTO(pessoaAtualizado);
     }
 
     public void removerPessoa(Integer id) {

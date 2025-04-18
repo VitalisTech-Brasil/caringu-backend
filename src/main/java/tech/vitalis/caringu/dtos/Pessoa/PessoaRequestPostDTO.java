@@ -30,6 +30,7 @@ public record PessoaRequestPostDTO(
     String urlFotoPerfil,
 
     @Past(message = "A data de nascimento deve ser no passado.")
+    @Schema(description = "Data de nascimento da pessoa", example = "2024-04-18")
     LocalDate dataNascimento,
 
     @NotNull(message = "O gênero é obrigatório.")

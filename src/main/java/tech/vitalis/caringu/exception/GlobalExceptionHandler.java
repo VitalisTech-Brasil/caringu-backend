@@ -15,11 +15,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import tech.vitalis.caringu.exception.PersonalTrainer.CrefJaExisteException;
 import tech.vitalis.caringu.exception.PersonalTrainer.PersonalNaoEncontradoException;
 import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
 import tech.vitalis.caringu.exception.Pessoa.PessoaNaoEncontradaException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -55,6 +57,11 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
     }
 
+    @ExceptionHandler(CrefJaExisteException.class)
+    public ResponseEntity<Map<String, Object>> handleCrefJaExistente(CrefJaExisteException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), request);
+    }
+
     @ExceptionHandler(EmailJaCadastradoException.class)
     public ResponseEntity<Map<String, Object>> handleEmailDuplicado(EmailJaCadastradoException ex, WebRequest request) {
         return createErrorResponse(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), request);
@@ -70,9 +77,13 @@ public class GlobalExceptionHandler {
         Throwable causa = exception.getCause();
         String mensagemErro = "Requisição malformada.";
 
-        if (causa instanceof InvalidFormatException ife && ife.getTargetType().isEnum()) {
-            mensagemErro = "Valor inválido fornecido para o campo do tipo enum. Valores possíveis: " +
-                    Arrays.toString(ife.getTargetType().getEnumConstants());
+        if (causa instanceof InvalidFormatException ife) {
+            if (ife.getTargetType().equals(LocalDate.class)) {
+                mensagemErro = "O formato da data está incorreto. Use o formato 'yyyy-MM-dd'.";
+            } else if (ife.getTargetType().isEnum()) {
+                mensagemErro = "Valor inválido fornecido para o campo do tipo enum. Valores possíveis: " +
+                        Arrays.toString(ife.getTargetType().getEnumConstants());
+            }
         }
 
         return createErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", mensagemErro, request);

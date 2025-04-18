@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Pessoa.PessoaRequestPostDTO;
 import tech.vitalis.caringu.dtos.Pessoa.PessoaResponseGetDTO;
+import tech.vitalis.caringu.entity.Pessoa;
+import tech.vitalis.caringu.mapper.PessoaMapper;
 import tech.vitalis.caringu.service.PessoaService;
 
 import java.util.List;
@@ -21,16 +23,9 @@ public class PessoaController {
         this.pessoaService = pessoaService;
     }
 
-    @PostMapping
-    @Operation(summary = "Cadastrar novo usuário")
-    public ResponseEntity<PessoaResponseGetDTO> cadastrar(@Valid @RequestBody PessoaRequestPostDTO pessoaDto) {
-        PessoaResponseGetDTO pessoaCriada = pessoaService.cadastrar(pessoaDto);
-        return ResponseEntity.status(201).body(pessoaCriada);
-    }
-
     @GetMapping
     @SecurityRequirement(name = "Bearer")
-    @Operation(summary = "Buscar lista de pessoa")
+    @Operation(summary = "Listar pessoas")
     public ResponseEntity<List<PessoaResponseGetDTO>> listarTodos(){
         return ResponseEntity.ok(pessoaService.listarTodos());
     }
@@ -40,6 +35,15 @@ public class PessoaController {
     @Operation(summary = "Buscar pessoa por ID")
     public ResponseEntity<PessoaResponseGetDTO> buscarPorId(@PathVariable Integer id) {
         return ResponseEntity.ok(pessoaService.buscarPorId(id));
+    }
+
+    @PostMapping
+    @Operation(summary = "Cadastrar pessoa")
+    public ResponseEntity<PessoaResponseGetDTO> cadastrar(@Valid @RequestBody PessoaRequestPostDTO pessoaDto) {
+        Pessoa pessoa = PessoaMapper.toEntity(pessoaDto);
+
+        PessoaResponseGetDTO pessoaCriada = pessoaService.cadastrar(pessoa);
+        return ResponseEntity.status(201).body(pessoaCriada);
     }
 
     @PutMapping("/{id}")

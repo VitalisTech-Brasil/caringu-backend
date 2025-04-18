@@ -11,15 +11,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         info = @Info(
-                title = "Projeto CaringU",
-                description = "Documentação Swagger - API CaringU ",
+                title = "API RESTful CaringU",
+                description = "Documentação da API do projeto CaringU, desenvolvida pela Vitalis Tech para gestão de treinos e acompanhamento de alunos.",
+                version = "1.0.0",
                 contact = @Contact(
                         name = "Vitalis Tech",
                         url = "https://github.com/VitalisTech-Brasil/caringu-backend",
                         email = "vitalistech06@gmail.com"
                 ),
-                license = @License(name = "UNLICENSED"),
-                version = "1.0.0"
+                license = @License(name = "Proprietary - All rights reserved")
         )
 )
 @SecurityScheme(

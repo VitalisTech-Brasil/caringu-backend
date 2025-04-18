@@ -6,5 +6,5 @@ import tech.vitalis.caringu.entity.PersonalTrainer;
 
 @Repository
 public interface PersonalTrainerRepository extends JpaRepository<PersonalTrainer, Integer> {
-    boolean existsByEmail(String email);
+    Boolean existsByCref(String cref);
 }

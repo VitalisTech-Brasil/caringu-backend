@@ -1,5 +1,6 @@
 package tech.vitalis.caringu.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,7 @@ public class AutenticacaoController {
     private PessoaService pessoaService;
 
     @PostMapping("/login")
+    @Operation(summary = "Autentica a pessoa e retorna informações básicas e o token JWT")
     public ResponseEntity<PessoaTokenDTO> login(@RequestBody PessoaLoginDTO pessoaLoginDto) {
 
         final Pessoa pessoa = PessoaMapper.of(pessoaLoginDto);

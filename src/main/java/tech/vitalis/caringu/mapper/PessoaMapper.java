@@ -12,7 +12,7 @@ import tech.vitalis.caringu.entity.Pessoa;
 @Component
 public class PessoaMapper {
 
-    public Pessoa toEntity(PessoaRequestPostDTO dto) {
+    public static  Pessoa toEntity(PessoaRequestPostDTO dto) {
         Pessoa pessoa = new Pessoa();
 
         pessoa.setNome(dto.nome());
@@ -25,7 +25,7 @@ public class PessoaMapper {
         return pessoa;
     }
 
-    public PessoaResponseGetDTO toDTO(Pessoa entity) {
+    public static PessoaResponseGetDTO toDTO(Pessoa entity) {
         return new PessoaResponseGetDTO(
                 entity.getId(),
                 entity.getNome(),
@@ -38,7 +38,7 @@ public class PessoaMapper {
         );
     }
 
-    public void updatePessoaFromDto(PessoaRequestPostDTO dto, Pessoa pessoa) {
+    public static void updatePessoaFromDto(PessoaRequestPostDTO dto, Pessoa pessoa) {
         if (dto.nome() != null) {
             pessoa.setNome(dto.nome());
         }
