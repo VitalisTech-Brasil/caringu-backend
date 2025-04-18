@@ -29,6 +29,27 @@ git clone https://github.com/VitalisTech-Brasil/caringu-backend.git
 cd caringu-backend
 ```
 
+# 🔑 Configuração da variável de ambiente
+O projeto utiliza uma variável de ambiente chamada SENHA que é usada para permitir que o Spring Boot utilize as configurações do application-dev.properties.
+Você precisa defini-la no IntelliJ da seguinte forma:
+
+Vá até o menu: Run > Edit Configurations
+
+Em Environment variables, adicione:
+
+# Passo adicional para configurar a variável de ambiente SENHA no IntelliJ:
+Para rodar o projeto em ambiente de desenvolvimento, você precisa configurar a variável de ambiente SENHA no IntelliJ (ou sua IDE preferida) para que o application-dev.properties seja utilizado corretamente.
+
+1. No IntelliJ, vá até `Run > Edit Configurations`.
+
+2. Selecione a configuração de execução que você usa para rodar o Spring Boot.
+
+3. No campo Environment variables, clique no ícone de mais (+) e adicione a variável:
+
+- Name: SENHA
+
+- Value: ``sua-senha-aqui``
+
 ### A aplicação estará disponível em:
 
 ```http://localhost:8080```
