@@ -4,8 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.vitalis.caringu.dtos.Exercicio.CriacaoExercicioDTO;
-import tech.vitalis.caringu.dtos.Exercicio.RespostaExercicioDTO;
+import tech.vitalis.caringu.dtos.Exercicio.ExercicioRequestPostDTO;
+import tech.vitalis.caringu.dtos.Exercicio.ExercicioResponseGetDTO;
 import tech.vitalis.caringu.service.ExercicioService;
 import java.util.List;
 
@@ -21,32 +21,32 @@ public class ExercicioController {
 
     @PostMapping
     @Operation(summary = "Cadastrar novo exercício")
-    public ResponseEntity<RespostaExercicioDTO> cadastrar(@RequestBody @Valid CriacaoExercicioDTO exercicioDto) {
-        RespostaExercicioDTO exercicioCriado = exercicioService.cadastrar(exercicioDto);
+    public ResponseEntity<ExercicioResponseGetDTO> cadastrar(@RequestBody @Valid ExercicioRequestPostDTO exercicioDto) {
+        ExercicioResponseGetDTO exercicioCriado = exercicioService.cadastrar(exercicioDto);
         return ResponseEntity.status(201).body(exercicioCriado);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar exercício por ID")
-    public ResponseEntity<RespostaExercicioDTO> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<ExercicioResponseGetDTO> buscarPorId(@PathVariable Integer id) {
         return ResponseEntity.ok(exercicioService.buscarPorId(id));
     }
 
     @GetMapping
     @Operation(summary = "Listar todos os exercícios")
-    public ResponseEntity<List<RespostaExercicioDTO>> listarTodos() {
+    public ResponseEntity<List<ExercicioResponseGetDTO>> listarTodos() {
         return ResponseEntity.ok(exercicioService.listarTodos());
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar exercício")
-    public ResponseEntity<RespostaExercicioDTO> atualizar(@PathVariable Integer id, @RequestBody @Valid CriacaoExercicioDTO exercicioDto) {
+    public ResponseEntity<ExercicioResponseGetDTO> atualizar(@PathVariable Integer id, @RequestBody @Valid ExercicioRequestPostDTO exercicioDto) {
         return ResponseEntity.ok(exercicioService.atualizar(id, exercicioDto));
     }
 
     @PatchMapping("/{id}")
     @Operation(summary = "Atualizar exercício parcialmente")
-    public ResponseEntity<RespostaExercicioDTO> editarInfoExercicio(@PathVariable Integer id, @RequestBody CriacaoExercicioDTO exercicioDto) {
+    public ResponseEntity<ExercicioResponseGetDTO> editarInfoExercicio(@PathVariable Integer id, @RequestBody ExercicioRequestPostDTO exercicioDto) {
         return ResponseEntity.ok(exercicioService.editarInfoExercicio(id, exercicioDto));
     }
 

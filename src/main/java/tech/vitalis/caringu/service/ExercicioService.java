@@ -2,8 +2,10 @@ package tech.vitalis.caringu.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tech.vitalis.caringu.dtos.Exercicio.CriacaoExercicioDTO;
-import tech.vitalis.caringu.dtos.Exercicio.RespostaExercicioDTO;
+import tech.vitalis.caringu.dtos.Exercicio.ExercicioRequestPostDTO;
+import tech.vitalis.caringu.dtos.Exercicio.ExercicioResponseGetDTO;
+import tech.vitalis.caringu.enums.Exercicio.GrupoMuscularValidatorEnum;
+import tech.vitalis.caringu.enums.Exercicio.OrigemValidatorEnum;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.mapper.ExercicioMapper;
 import tech.vitalis.caringu.entity.Exercicio;
@@ -17,63 +19,68 @@ public class ExercicioService {
 
     private final ExercicioRepository exercicioRepository;
     private final ExercicioMapper exercicioMapper;
+    private final GrupoMuscularValidatorEnum grupoMuscularValidatorEnum;
+    private final OrigemValidatorEnum origemValidatorEnum;
 
     @Autowired
-    public ExercicioService(ExercicioRepository exercicioRepository, ExercicioMapper exercicioMapper) {
+    public ExercicioService(ExercicioRepository exercicioRepository, ExercicioMapper exercicioMapper, GrupoMuscularValidatorEnum grupoMuscularValidatorEnum, OrigemValidatorEnum origemValidatorEnum) {
         this.exercicioRepository = exercicioRepository;
         this.exercicioMapper = exercicioMapper;
+        this.grupoMuscularValidatorEnum = grupoMuscularValidatorEnum;
+        this.origemValidatorEnum = origemValidatorEnum;
     }
 
-    public RespostaExercicioDTO cadastrar(CriacaoExercicioDTO exercicioDto) {
-        if (exercicioDto.getNome() == null || exercicioDto.getNome().trim().isEmpty()) {
-            throw new ApiExceptions.BadRequestException("O nome do exercício não pode estar vazio.");
-        }
-
+    public ExercicioResponseGetDTO cadastrar(ExercicioRequestPostDTO exercicioDto) {
+        grupoMuscularValidatorEnum.validar(exercicioDto.grupoMuscular());
+        origemValidatorEnum.validar(exercicioDto.origem());
         Exercicio novoExercicio = exercicioMapper.toEntity(exercicioDto);
+
         Exercicio exercicioSalvo = exercicioRepository.save(novoExercicio);
-        return exercicioMapper.toDTO(exercicioSalvo);
+
+        return exercicioMapper.toResponseDTO(exercicioSalvo);
     }
 
-    public RespostaExercicioDTO buscarPorId(Integer id) {
+    public ExercicioResponseGetDTO buscarPorId(Integer id) {
         Exercicio exercicio = exercicioRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Exercício com ID " + id + " não encontrado"));
-        return exercicioMapper.toDTO(exercicio);
+        return exercicioMapper.toResponseDTO(exercicio);
     }
 
-    public List<RespostaExercicioDTO> listarTodos() {
+    public List<ExercicioResponseGetDTO> listarTodos() {
         return exercicioRepository.findAll()
                 .stream()
-                .map(exercicioMapper::toDTO)
+                .map(exercicioMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
-    public RespostaExercicioDTO atualizar(Integer id, CriacaoExercicioDTO exercicioDto) {
+    public ExercicioResponseGetDTO atualizar(Integer id, ExercicioRequestPostDTO exercicioDto) {
         Exercicio exercicioExistente = exercicioRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Exercício com ID " + id + " não encontrado"));
 
-        if (exercicioDto.getNome() == null || exercicioDto.getNome().trim().isEmpty()) {
-            throw new ApiExceptions.BadRequestException("O nome do exercício não pode estar vazio.");
-        }
 
-        exercicioExistente.setNome(exercicioDto.getNome());
-        exercicioExistente.setGrupoMuscular(exercicioDto.getGrupoMuscular());
+        exercicioExistente.setNome(exercicioDto.nome());
+        exercicioExistente.setGrupoMuscular(exercicioDto.grupoMuscular());
+        exercicioExistente.setUrlVideo(exercicioDto.urlVideo());
+        exercicioExistente.setObservacoes(exercicioDto.observacoes());
+        exercicioExistente.setFavorito(exercicioDto.favorito());
+        exercicioExistente.setOrigem(exercicioDto.origem());
 
         Exercicio exercicioAtualizado = exercicioRepository.save(exercicioExistente);
-        return exercicioMapper.toDTO(exercicioAtualizado);
+        return exercicioMapper.toResponseDTO(exercicioAtualizado);
     }
 
-    public RespostaExercicioDTO editarInfoExercicio(Integer id, CriacaoExercicioDTO exercicioDto) {
+    public ExercicioResponseGetDTO editarInfoExercicio(Integer id, ExercicioRequestPostDTO exercicioDto) {
         Exercicio exercicioExistente = exercicioRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Exercício com ID " + id + " não encontrado"));
 
         boolean atualizado = false;
 
-        if (exercicioDto.getNome() != null && !exercicioDto.getNome().trim().isEmpty()) {
-            exercicioExistente.setNome(exercicioDto.getNome());
+        if (exercicioDto.nome() != null && !exercicioDto.nome().trim().isEmpty()) {
+            exercicioExistente.setNome(exercicioDto.nome());
             atualizado = true;
         }
-        if (exercicioDto.getGrupoMuscular() != null && !exercicioDto.getGrupoMuscular().trim().isEmpty()) {
-            exercicioExistente.setGrupoMuscular(exercicioDto.getGrupoMuscular());
+        if (exercicioDto.grupoMuscular() != null && !exercicioDto.grupoMuscular().trim().isEmpty()) {
+            exercicioExistente.setGrupoMuscular(exercicioDto.grupoMuscular());
             atualizado = true;
         }
 
@@ -82,7 +89,7 @@ public class ExercicioService {
         }
 
         Exercicio exercicioAtualizado = exercicioRepository.save(exercicioExistente);
-        return exercicioMapper.toDTO(exercicioAtualizado);
+        return exercicioMapper.toResponseDTO(exercicioAtualizado);
     }
 
     public void remover(Integer id) {
