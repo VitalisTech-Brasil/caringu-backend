@@ -39,8 +39,8 @@ public class FaleConoscoService {
 
         // 1. Envia email de confirmação para o usuário
         enviarEmailAsync(dto.email(), "CaringU | Fale Conosco",
-                "Olá " + dto.nome() + ",\n\nRecebemos sua mensagem com o assunto: \n\"" + dto.mensagem() +
-                        "\".\n\nEm breve responderemos. Obrigado!" +
+                "Olá " + dto.nome() + ",\n\nRecebemos sua mensagem com o assunto: \n" + dto.mensagem() +
+                        ".\n\nEm breve responderemos. Obrigado!" +
                         "\n\nHorário de envio: " + horarioEnvio);
 
         // 2. Envia mensagem do usuário para o Gmail da equipe/vitalis
