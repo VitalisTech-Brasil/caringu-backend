@@ -50,6 +50,7 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/auth/login/**"),
             new AntPathRequestMatcher("/personal-trainers", "POST"),
             new AntPathRequestMatcher("/alunos", "POST"),
+            new AntPathRequestMatcher("/fale-conosco", "POST"),
             new AntPathRequestMatcher("/h2-console/**"),
             new AntPathRequestMatcher("/h2-console/**/**"),
             new AntPathRequestMatcher("/error/**")

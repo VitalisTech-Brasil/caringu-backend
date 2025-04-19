@@ -9,7 +9,7 @@ public class PessoaLoginDTO {
     @Schema(description = "E-mail da pessoa", example = "roger.jones@gmail.com")
     private String email;
 
-    @Schema(description = "Senha da pessoa", example = "123456")
+    @Schema(description = "Senha da pessoa", example = "123Ab@")
     private String senha;
 
     public String getEmail() {
