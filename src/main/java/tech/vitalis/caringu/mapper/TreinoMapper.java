@@ -8,7 +8,13 @@ import tech.vitalis.caringu.entity.Treino;
 @Component
 public class TreinoMapper {
 
-    public static Treino toEntity(TreinoRequestPostDTO dto){
+    private final PersonalTrainerMapper personalTrainerMapper;
+
+    public TreinoMapper(PersonalTrainerMapper personalTrainerMapper) {
+        this.personalTrainerMapper = personalTrainerMapper;
+    }
+
+    public Treino toEntity(TreinoRequestPostDTO dto){
         if (dto == null) return null;
 
         Treino treino = new Treino();
@@ -24,7 +30,7 @@ public class TreinoMapper {
                 treino.getId(),
                 treino.getNome(),
                 treino.getDescricao(),
-                PersonalTrainerMapper.toResponseDTO(treino.getPersonal())
+                personalTrainerMapper.toResponseDTO(treino.getPersonal())
         );
     }
 

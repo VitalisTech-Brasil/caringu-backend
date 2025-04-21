@@ -2,7 +2,6 @@ package tech.vitalis.caringu.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import tech.vitalis.caringu.enums.TreinoExercicio.GrauDificuldadeEnum;
 
 import java.time.LocalDateTime;
 
@@ -27,9 +26,9 @@ public class TreinoExercicio {
     private LocalDateTime dataHoraCriacao;
     private LocalDateTime dataHoraModificacao;
     private Boolean favorito;
-    private GrauDificuldadeEnum grauDificuldadeEnum;
+    private String grauDificuldade;
 
-    public TreinoExercicio(Integer id, Treino treinos, Exercicio exercicio, Double carga, Integer repeticoes, Integer series, Integer descanso, LocalDateTime dataHoraCriacao, LocalDateTime dataHoraModificacao, boolean favorito, GrauDificuldadeEnum grauDificuldadeEnum) {
+    public TreinoExercicio(Integer id, Treino treinos, Exercicio exercicio, Double carga, Integer repeticoes, Integer series, Integer descanso, LocalDateTime dataHoraCriacao, LocalDateTime dataHoraModificacao, Boolean favorito, String grauDificuldade) {
         this.id = id;
         this.treinos = treinos;
         this.exercicio = exercicio;
@@ -40,7 +39,7 @@ public class TreinoExercicio {
         this.dataHoraCriacao = dataHoraCriacao;
         this.dataHoraModificacao = dataHoraModificacao;
         this.favorito = favorito;
-        this.grauDificuldadeEnum = grauDificuldadeEnum;
+        this.grauDificuldade = grauDificuldade;
     }
 
     public TreinoExercicio() {}
@@ -117,19 +116,19 @@ public class TreinoExercicio {
         this.dataHoraModificacao = dataHoraModificacao;
     }
 
-    public boolean isFavorito() {
+    public Boolean getFavorito() {
         return favorito;
     }
 
-    public void setFavorito(boolean favorito) {
+    public void setFavorito(Boolean favorito) {
         this.favorito = favorito;
     }
 
-    public GrauDificuldadeEnum getGrauDificuldadeEnum() {
-        return grauDificuldadeEnum;
+    public String getGrauDificuldade() {
+        return grauDificuldade;
     }
 
-    public void setGrauDificuldadeEnum(GrauDificuldadeEnum grauDificuldadeEnum) {
-        this.grauDificuldadeEnum = grauDificuldadeEnum;
+    public void setGrauDificuldade(String grauDificuldade) {
+        this.grauDificuldade = grauDificuldade;
     }
 }

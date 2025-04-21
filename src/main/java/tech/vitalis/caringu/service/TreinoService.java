@@ -68,7 +68,6 @@ public class TreinoService {
 
         Treino treinoAtualizado = treinoRepository.save(treinoExistente);
         return treinoMapper.toResponseDTO(treinoAtualizado);
-
     }
 
     public void remover(Integer id){
@@ -95,4 +94,5 @@ public class TreinoService {
         treinoRepository.save(treino); // desassocia
         treinoRepository.deleteById(id); // deleta
     }
+
 }

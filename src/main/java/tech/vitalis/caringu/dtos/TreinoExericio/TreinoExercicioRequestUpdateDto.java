@@ -1,17 +1,11 @@
 package tech.vitalis.caringu.dtos.TreinoExericio;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import tech.vitalis.caringu.entity.Exercicio;
-import tech.vitalis.caringu.entity.Treino;
-import tech.vitalis.caringu.enums.NivelTreinoExercicioEnum;
 
 import java.time.LocalDateTime;
 
-public record TreinoExercicioRequestPostDto(
-        Integer treinosId,
-        Integer exercicioId,
+public record TreinoExercicioRequestUpdateDto(
         @Positive
         @NotNull(message = "Carga é obrigatória e não pode ser zero")
         Double carga,
@@ -31,5 +25,4 @@ public record TreinoExercicioRequestPostDto(
         @NotNull(message = "Grau de Dificuldade é obrigatório ")
         String grauDificuldade
 ) {
-
 }

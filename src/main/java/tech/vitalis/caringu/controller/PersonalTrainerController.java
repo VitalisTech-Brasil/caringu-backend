@@ -18,9 +18,11 @@ import java.util.List;
 public class PersonalTrainerController {
 
     private final PersonalTrainerService service;
+    private final PersonalTrainerMapper mapper;
 
-    public PersonalTrainerController(PersonalTrainerService service) {
+    public PersonalTrainerController(PersonalTrainerService service, PersonalTrainerMapper mapper) {
         this.service = service;
+        this.mapper = mapper;
     }
 
     @GetMapping
@@ -38,7 +40,7 @@ public class PersonalTrainerController {
 
     @PostMapping
     public ResponseEntity<PersonalTrainerResponseGetDTO> cadastrar(@Valid @RequestBody PersonalTrainerRequestPostDTO requestDTO) {
-        PersonalTrainer personalTrainer = PersonalTrainerMapper.toEntity(requestDTO);
+        PersonalTrainer personalTrainer = mapper.toEntity(requestDTO);
         PersonalTrainerResponseGetDTO responseDTO = service.cadastrar(personalTrainer);
 
         return ResponseEntity.status(201).body(responseDTO);
@@ -49,7 +51,7 @@ public class PersonalTrainerController {
             @PathVariable Integer id,
             @Valid @RequestBody PersonalTrainerRequestPostDTO dto) {
 
-        PersonalTrainer novoPersonalTrainer = PersonalTrainerMapper.toEntity(dto);
+        PersonalTrainer novoPersonalTrainer = mapper.toEntity(dto);
         PersonalTrainerResponseGetDTO atualizado = service.atualizar(id, novoPersonalTrainer);
         return ResponseEntity.ok(atualizado);
     }
