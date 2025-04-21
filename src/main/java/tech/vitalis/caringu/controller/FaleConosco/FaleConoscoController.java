@@ -1,4 +1,4 @@
-package tech.vitalis.caringu.controller;
+package tech.vitalis.caringu.controller.FaleConosco;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tech.vitalis.caringu.dtos.FaleConosco.FaleConoscoDTO;
-import tech.vitalis.caringu.service.FaleConoscoService;
+import tech.vitalis.caringu.service.FaleConosco.FaleConoscoService;
 
 @RestController
 @RequestMapping("/fale-conosco")

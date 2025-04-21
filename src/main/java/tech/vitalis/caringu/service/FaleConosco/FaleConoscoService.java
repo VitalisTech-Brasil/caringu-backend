@@ -1,4 +1,4 @@
-package tech.vitalis.caringu.service;
+package tech.vitalis.caringu.service.FaleConosco;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
