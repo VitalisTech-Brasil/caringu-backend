@@ -1,5 +1,7 @@
 package tech.vitalis.caringu.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,8 @@ public class PersonalTrainerController {
     }
 
     @GetMapping
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "Listar personal trainers")
     public ResponseEntity<List<PersonalTrainerResponseGetDTO>> listar() {
         List<PersonalTrainerResponseGetDTO> listaPersonalTrainers = service.listar();
 
@@ -31,12 +35,15 @@ public class PersonalTrainerController {
     }
 
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "Buscar personal trainer por ID")
     public ResponseEntity<PersonalTrainerResponseGetDTO> buscarPorId(@PathVariable Integer id) {
         PersonalTrainerResponseGetDTO personalTrainer = service.buscarPorId(id);
         return ResponseEntity.ok(personalTrainer);
     }
 
     @PostMapping
+    @Operation(summary = "Cadastrar personal trainer")
     public ResponseEntity<PersonalTrainerResponseGetDTO> cadastrar(@Valid @RequestBody PersonalTrainerRequestPostDTO requestDTO) {
         PersonalTrainer personalTrainer = PersonalTrainerMapper.toEntity(requestDTO);
         PersonalTrainerResponseGetDTO responseDTO = service.cadastrar(personalTrainer);
@@ -45,6 +52,8 @@ public class PersonalTrainerController {
     }
 
     @PutMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "Atualizar personal trainer")
     public ResponseEntity<PersonalTrainerResponseGetDTO> atualizar(
             @PathVariable Integer id,
             @Valid @RequestBody PersonalTrainerRequestPostDTO dto) {
@@ -55,6 +64,8 @@ public class PersonalTrainerController {
     }
 
     @PatchMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "Atualizar personal trainer parcialmente")
     public ResponseEntity<PersonalTrainerResponsePatchDTO> atualizarParcial(
             @PathVariable Integer id,
             @Valid @RequestBody PersonalTrainerRequestPatchDTO atualizacoes) {
@@ -64,6 +75,8 @@ public class PersonalTrainerController {
     }
 
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "Remover personal trainer")
     public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         service.deletar(id);
         return ResponseEntity.noContent().build();
