@@ -26,14 +26,16 @@ public class PersonalTrainerService {
 
     private final PersonalTrainerRepository repository;
     private final PessoaRepository pessoaRepository;
+    private final PersonalTrainerMapper personalTrainerMapper;
     private final PasswordEncoder passwordEncoder;
     private final PersonalTrainerRepository personalTrainerRepository;
 
-    public PersonalTrainerService(PersonalTrainerRepository repository, PessoaRepository pessoaRepository, PasswordEncoder passwordEncoder, PersonalTrainerRepository personalTrainerRepository) {
+    public PersonalTrainerService(PersonalTrainerRepository repository, PessoaRepository pessoaRepository, PasswordEncoder passwordEncoder, PersonalTrainerRepository personalTrainerRepository, PersonalTrainerMapper personalTrainerMapper) {
         this.repository = repository;
         this.pessoaRepository = pessoaRepository;
         this.passwordEncoder = passwordEncoder;
         this.personalTrainerRepository = personalTrainerRepository;
+        this.personalTrainerMapper = personalTrainerMapper;
     }
 
     public List<PersonalTrainerResponseGetDTO> listar() {
@@ -41,7 +43,7 @@ public class PersonalTrainerService {
         List<PersonalTrainerResponseGetDTO> listaRespostaPersonalTrainer = new ArrayList<>();
 
         for (PersonalTrainer personalTrainer : listaPersonalTrainers) {
-            PersonalTrainerResponseGetDTO respostaDTO = PersonalTrainerMapper.toResponseDTO(personalTrainer);
+            PersonalTrainerResponseGetDTO respostaDTO = personalTrainerMapper.toResponseDTO(personalTrainer);
             listaRespostaPersonalTrainer.add(respostaDTO);
         }
 
@@ -51,7 +53,7 @@ public class PersonalTrainerService {
     public PersonalTrainerResponseGetDTO buscarPorId(Integer id) {
         PersonalTrainer personalTrainer = repository.findById(id)
                 .orElseThrow(() -> new PersonalNaoEncontradoException("Personal Trainer não encontrado com ID: " + id));
-        return PersonalTrainerMapper.toResponseDTO(personalTrainer);
+        return personalTrainerMapper.toResponseDTO(personalTrainer);
     }
 
     public PersonalTrainerResponseGetDTO cadastrar(PersonalTrainer personalTrainer) {
@@ -74,7 +76,7 @@ public class PersonalTrainerService {
         personalTrainer.setSenha(senhaCriptografada);
 
         repository.save(personalTrainer);
-        return PersonalTrainerMapper.toResponseDTO(personalTrainer);
+        return personalTrainerMapper.toResponseDTO(personalTrainer);
     }
 
     public PersonalTrainerResponseGetDTO atualizar(Integer id, PersonalTrainer novoPersonalTrainer) {
@@ -101,7 +103,7 @@ public class PersonalTrainerService {
         personalTrainerExistente.setExperiencia(novoPersonalTrainer.getExperiencia());
 
         repository.save(personalTrainerExistente);
-        return PersonalTrainerMapper.toResponseDTO(personalTrainerExistente);
+        return personalTrainerMapper.toResponseDTO(personalTrainerExistente);
     }
 
     public PersonalTrainerResponsePatchDTO atualizarParcial(Integer id, PersonalTrainerRequestPatchDTO dto) {

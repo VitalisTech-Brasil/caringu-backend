@@ -1,12 +1,14 @@
 package tech.vitalis.caringu.mapper;
 
+import org.springframework.stereotype.Component;
 import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerRequestPostDTO;
 import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerResponseGetDTO;
 import tech.vitalis.caringu.entity.PersonalTrainer;
 
+@Component
 public class PersonalTrainerMapper {
 
-    public static PersonalTrainer toEntity(PersonalTrainerRequestPostDTO requestDTO) {
+    public PersonalTrainer toEntity(PersonalTrainerRequestPostDTO requestDTO) {
         PersonalTrainer personalTrainer = new PersonalTrainer();
 
         personalTrainer.setNome(requestDTO.nome());
@@ -24,7 +26,7 @@ public class PersonalTrainerMapper {
         return personalTrainer;
     }
 
-    public static PersonalTrainerResponseGetDTO toResponseDTO(PersonalTrainer personalTrainer) {
+    public PersonalTrainerResponseGetDTO toResponseDTO(PersonalTrainer personalTrainer) {
 
         return new PersonalTrainerResponseGetDTO(
                 personalTrainer.getId(),
@@ -40,6 +42,5 @@ public class PersonalTrainerMapper {
                 personalTrainer.getDataCadastro()
         );
     }
-
 
 }

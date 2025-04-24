@@ -50,4 +50,8 @@ public class PersonalTrainer extends Pessoa {
     public void setExperiencia(Integer experiencia) {
         this.experiencia = experiencia;
     }
+
+    public PersonalTrainer(Integer id) {
+        this.setId(id);
+    }
 }
