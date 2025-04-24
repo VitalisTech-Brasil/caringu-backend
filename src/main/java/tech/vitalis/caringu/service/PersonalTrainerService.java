@@ -1,16 +1,17 @@
 package tech.vitalis.caringu.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerRequestPatchDTO;
 import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerResponseGetDTO;
 import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerResponsePatchDTO;
 import tech.vitalis.caringu.entity.PersonalTrainer;
 import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
+import tech.vitalis.caringu.exception.PersonalTrainer.CrefJaExisteException;
 import tech.vitalis.caringu.exception.PersonalTrainer.PersonalNaoEncontradoException;
 import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
 import tech.vitalis.caringu.mapper.PersonalTrainerMapper;
-import tech.vitalis.caringu.repository.AlunoRepository;
 import tech.vitalis.caringu.repository.PersonalTrainerRepository;
 import tech.vitalis.caringu.repository.PessoaRepository;
 
@@ -26,10 +27,14 @@ public class PersonalTrainerService {
     private final PersonalTrainerRepository repository;
     private final PessoaRepository pessoaRepository;
     private final PersonalTrainerMapper personalTrainerMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final PersonalTrainerRepository personalTrainerRepository;
 
-    public PersonalTrainerService(PersonalTrainerRepository repository, PessoaRepository pessoaRepository, PersonalTrainerMapper personalTrainerMapper) {
+    public PersonalTrainerService(PersonalTrainerRepository repository, PessoaRepository pessoaRepository, PasswordEncoder passwordEncoder, PersonalTrainerRepository personalTrainerRepository, PersonalTrainerMapper personalTrainerMapper) {
         this.repository = repository;
         this.pessoaRepository = pessoaRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.personalTrainerRepository = personalTrainerRepository;
         this.personalTrainerMapper = personalTrainerMapper;
     }
 
@@ -56,12 +61,19 @@ public class PersonalTrainerService {
         String regex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+=\\-{};:'\",.<>?/|\\\\]).{6,16}$";
 
         if (!Pattern.matches(regex, personalTrainer.getSenha())) {
-            throw new SenhaInvalidaException("A senha incluir pelo menos uma letra maiúscula, um número e um caractere especial.");
+            throw new SenhaInvalidaException("A senha deve incluir pelo menos uma letra maiúscula, um número e um caractere especial.");
         }
 
         if (pessoaRepository.existsByEmail(personalTrainer.getEmail())) {
             throw new EmailJaCadastradoException("Este e-mail já existe!");
         }
+
+        if (personalTrainerRepository.existsByCref(personalTrainer.getCref())) {
+            throw new CrefJaExisteException("Este CREF já está cadastrado!");
+        }
+
+        String senhaCriptografada = passwordEncoder.encode(personalTrainer.getSenha());
+        personalTrainer.setSenha(senhaCriptografada);
 
         repository.save(personalTrainer);
         return personalTrainerMapper.toResponseDTO(personalTrainer);
