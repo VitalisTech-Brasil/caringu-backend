@@ -11,7 +11,7 @@ public class GeneroEnumValidationStrategy implements EnumValidationStrategy {
         try {
             GeneroEnum.valueOf(valorEnum);
         } catch (IllegalArgumentException e) {
-            throw new ApiExceptions.BadRequestException("Valor inválido para 'Genero'. Valores válidos: MASCULINO, FEMININO, NAO_BINARIO, OUTRO, PREFIRO_NAO_INFORMAR");
+            throw new ApiExceptions.BadRequestException("Valor inválido para 'Genero'. Valores válidos: HOMEM_CISGENERO, HOMEM_TRANSGENERO, MULHER_CISGENERO, MULHER_TRANSGENERO, NAO_BINARIO");
         }
 
     }
