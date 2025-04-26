@@ -38,7 +38,7 @@ public record AlunoRequestPatchDTO(
         LocalDate dataNascimento,
 
         @NotNull(message = "O gênero é obrigatório.")
-        @Schema(description = "Gênero do aluno", allowableValues = {"MASCULINO", "FEMININO", "NAO_BINARIO", "OUTRO", "PREFIRO_NAO_INFORMAR"})
+        @Schema(description = "Gênero do aluno", allowableValues = {"HOMEM_CISGENERO", "HOMEM_TRANSGENERO", "MULHER_CISGENERO", "MULHER_TRANSGENERO", "NAO_BINARIO"})
         GeneroEnum genero,
 
         @Positive(message = "O peso deve ser um número positivo.")

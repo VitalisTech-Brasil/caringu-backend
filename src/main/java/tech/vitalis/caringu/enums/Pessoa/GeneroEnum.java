@@ -1,11 +1,11 @@
 package tech.vitalis.caringu.enums.Pessoa;
 
 public enum GeneroEnum {
-    MASCULINO,
-    FEMININO,
-    NAO_BINARIO,
-    OUTRO,
-    PREFIRO_NAO_INFORMAR;
+    HOMEM_CISGENERO,
+    HOMEM_TRANSGENERO,
+    MULHER_CISGENERO,
+    MULHER_TRANSGENERO,
+    NAO_BINARIO;
 
     GeneroEnum() {
     }

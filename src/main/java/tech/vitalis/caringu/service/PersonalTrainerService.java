@@ -79,6 +79,10 @@ public class PersonalTrainerService {
         return personalTrainerMapper.toResponseDTO(personalTrainer);
     }
 
+    public Boolean crefExiste(String cref) {
+        return personalTrainerRepository.existsByCref(cref);
+    }
+
     public PersonalTrainerResponseGetDTO atualizar(Integer id, PersonalTrainer novoPersonalTrainer) {
         PersonalTrainer personalTrainerExistente = repository.findById(id)
                 .orElseThrow(() -> new PersonalNaoEncontradoException("Aluno não encontrado com ID: " + id));

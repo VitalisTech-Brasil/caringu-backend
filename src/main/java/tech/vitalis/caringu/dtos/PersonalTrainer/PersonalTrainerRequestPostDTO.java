@@ -37,7 +37,7 @@ public record PersonalTrainerRequestPostDTO(
         LocalDate dataNascimento,
 
         @NotNull(message = "O gênero é obrigatório.")
-        @Schema(description = "Gênero do personal trainer", allowableValues = {"MASCULINO", "FEMININO", "NAO_BINARIO", "OUTRO", "PREFIRO_NAO_INFORMAR"})
+        @Schema(description = "Gênero do personal trainer", allowableValues = {"HOMEM_CISGENERO", "HOMEM_TRANSGENERO", "MULHER_CISGENERO", "MULHER_TRANSGENERO", "NAO_BINARIO"})
         GeneroEnum genero,
 
         @NotBlank(message = "O CREF é obrigatório")
