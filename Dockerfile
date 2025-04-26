@@ -1,5 +1,5 @@
-# Usa imagem base Java 21 leve
-FROM maven:3.8.6-openjdk-21-slim AS builder
+# Etapa de build
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
 
 # Define o diretório de trabalho
 WORKDIR /app
@@ -12,7 +12,7 @@ COPY src ./src
 RUN mvn clean package
 
 # Segunda etapa: imagem final, mais leve
-FROM openjdk:21-slim
+FROM eclipse-temurin:21-jdk-jammy
 
 # Define o diretório de trabalho
 WORKDIR /app
