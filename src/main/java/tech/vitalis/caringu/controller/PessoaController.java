@@ -37,6 +37,12 @@ public class PessoaController {
         return ResponseEntity.ok(pessoaService.buscarPorId(id));
     }
 
+    @GetMapping("/verificacao-email")
+    public ResponseEntity<Boolean> verificarEmail(@RequestParam String email) {
+        boolean existe = pessoaService.emailExiste(email);
+        return ResponseEntity.status(200).body(existe);
+    }
+
     @PostMapping
     @Operation(summary = "Cadastrar pessoa")
     public ResponseEntity<PessoaResponseGetDTO> cadastrar(@Valid @RequestBody PessoaRequestPostDTO pessoaDto) {

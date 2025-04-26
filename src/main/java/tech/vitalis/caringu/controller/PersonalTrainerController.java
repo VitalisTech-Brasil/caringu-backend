@@ -53,6 +53,12 @@ public class PersonalTrainerController {
         return ResponseEntity.status(201).body(responseDTO);
     }
 
+    @GetMapping("/verificacao-cref")
+    public ResponseEntity<Boolean> verificarCref(@RequestParam String cref) {
+        boolean existe = service.crefExiste(cref);
+        return ResponseEntity.status(200).body(existe);
+    }
+
     @PutMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     @Operation(summary = "Atualizar personal trainer")

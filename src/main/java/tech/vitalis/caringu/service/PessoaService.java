@@ -81,6 +81,10 @@ public class PessoaService {
         return PessoaMapper.of(pessoaAutenticado, token);
     }
 
+    public Boolean emailExiste(String email) {
+        return pessoaRepository.existsByEmail(email);
+    }
+
     public List<PessoaResponseGetDTO> listarTodos() {
         List<Pessoa> pessoas = pessoaRepository.findAll();
 
