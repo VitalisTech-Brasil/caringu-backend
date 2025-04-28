@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface EsqueciSenhaRepository extends JpaRepository<EsqueciSenha, Long> {
     Optional<EsqueciSenha> findByEmail(String email);
+    Optional<EsqueciSenha> findByEmailAndToken(String email, String token);
 }
