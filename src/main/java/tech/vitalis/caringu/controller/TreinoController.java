@@ -1,6 +1,7 @@
 package tech.vitalis.caringu.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import tech.vitalis.caringu.service.TreinoService;
 import java.util.List;
 
 @RestController
+@SecurityRequirement(name = "Bearer")
 @RequestMapping("/treino")
 public class TreinoController {
 

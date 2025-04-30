@@ -38,18 +38,10 @@ public class PessoaController {
     }
 
     @GetMapping("/verificacao-email")
+    @Operation(summary = "Verificar e-mail da pessoa")
     public ResponseEntity<Boolean> verificarEmail(@RequestParam String email) {
         boolean existe = pessoaService.emailExiste(email);
         return ResponseEntity.status(200).body(existe);
-    }
-
-    @PostMapping
-    @Operation(summary = "Cadastrar pessoa")
-    public ResponseEntity<PessoaResponseGetDTO> cadastrar(@Valid @RequestBody PessoaRequestPostDTO pessoaDto) {
-        Pessoa pessoa = PessoaMapper.toEntity(pessoaDto);
-
-        PessoaResponseGetDTO pessoaCriada = pessoaService.cadastrar(pessoa);
-        return ResponseEntity.status(201).body(pessoaCriada);
     }
 
     @PutMapping("/{id}")

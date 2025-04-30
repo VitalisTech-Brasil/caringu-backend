@@ -16,7 +16,6 @@ import tech.vitalis.caringu.service.AlunoService;
 import java.util.List;
 
 @RestController
-@SecurityRequirement(name = "Bearer")
 @RequestMapping("/alunos")
 public class AlunoController {
 
@@ -27,6 +26,7 @@ public class AlunoController {
     }
 
     @GetMapping
+    @SecurityRequirement(name = "Bearer")
     @Operation(summary = "Listar alunos")
     public ResponseEntity<List<AlunoResponseGetDTO>> listar() {
         List<AlunoResponseGetDTO> listaAlunos = service.listar();
@@ -35,6 +35,7 @@ public class AlunoController {
     }
 
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     @Operation(summary = "Buscar aluno por ID")
     public ResponseEntity<AlunoResponseGetDTO> buscarPorId(@PathVariable Integer id) {
         AlunoResponseGetDTO aluno = service.buscarPorId(id);
@@ -51,6 +52,7 @@ public class AlunoController {
     }
 
     @PutMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     @Operation(summary = "Atualizar aluno")
     public ResponseEntity<AlunoResponseGetDTO> atualizar(
             @PathVariable Integer id,
@@ -62,6 +64,7 @@ public class AlunoController {
     }
 
     @PatchMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     @Operation(summary = "Atualizar aluno parcialmente")
     public ResponseEntity<AlunoResponsePatchDTO> atualizarParcial(
             @PathVariable Integer id,
@@ -72,6 +75,7 @@ public class AlunoController {
     }
 
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     @Operation(summary = "Remover aluno")
     public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         service.deletar(id);
