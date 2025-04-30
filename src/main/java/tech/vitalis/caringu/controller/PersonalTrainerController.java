@@ -169,7 +169,7 @@ public class PersonalTrainerController {
     )
     public ResponseEntity<PersonalTrainerResponseGetDTO> atualizar(
             @PathVariable Integer id,
-            @Valid @RequestBody PersonalTrainerRequestPostDTO dto) {
+            @Valid @RequestBody PersonalTrainerRequestPatchDTO dto) {
 
         PersonalTrainer novoPersonalTrainer = mapper.toEntity(dto);
         PersonalTrainerResponseGetDTO atualizado = service.atualizar(id, novoPersonalTrainer);
@@ -231,5 +231,15 @@ public class PersonalTrainerController {
     public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         service.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/especialidades/{especialidade}")
+    public ResponseEntity<Void> removerEspecialidade(@PathVariable Integer id, @PathVariable String especialidade) {
+        try {
+            service.removerEspecialidade(id, especialidade);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
     }
 }

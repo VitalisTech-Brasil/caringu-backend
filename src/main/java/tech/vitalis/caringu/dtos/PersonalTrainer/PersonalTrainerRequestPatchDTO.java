@@ -18,11 +18,6 @@ public record PersonalTrainerRequestPatchDTO(
         @Schema(description = "E-mail do personal trainer", example = "roger.jones@gmail.com")
         String email,
 
-        @NotBlank(message = "A senha é obrigatória.")
-        @Size(min = 6, max = 16, message = "Senha deve conter entre 6 a 16 caracteres")
-        @Schema(description = "Senha do personal trainer", example = "123Ab@")
-        String senha,
-
         @Pattern(regexp = "\\d{11}", message = "O celular deve conter exatamente 11 dígitos numéricos")
         @Size(min = 11, max = 11, message = "O celular deve conter exatamente 11 dígitos")
         @Schema(description = "Celular do personal trainer", example = "11947139850")
