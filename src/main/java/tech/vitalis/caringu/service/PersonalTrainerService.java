@@ -157,4 +157,22 @@ public class PersonalTrainerService {
 
         repository.delete(personalTrainer);
     }
+
+    public void removerEspecialidade(Integer id, String especialidade) throws Exception {
+
+        PersonalTrainer personalTrainer = personalTrainerRepository.findById(id)
+                .orElseThrow(() -> new Exception("Personal Trainer não encontrado"));
+
+        List<String> especialidades = personalTrainer.getEspecialidade();
+
+        if (especialidades.contains(especialidade)) {
+
+            especialidades.remove(especialidade);
+
+            personalTrainer.setEspecialidade(especialidades);
+            personalTrainerRepository.save(personalTrainer);
+        } else {
+            throw new Exception("Especialidade não encontrada");
+        }
+    }
 }
