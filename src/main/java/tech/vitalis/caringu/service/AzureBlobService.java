@@ -13,10 +13,10 @@ import java.util.UUID;
 @Service
 public class AzureBlobService {
 
-    @Value("${azure.storage.connection-string}")
+//    @Value("${azure.storage.connection-string}")
     private String connectionString;
 
-    @Value("${azure.storage.container-name}")
+//    @Value("${azure.storage.container-name}")
     private String containerName;
 
     public String uploadArquivo(MultipartFile arquivo) {
