@@ -1,7 +1,7 @@
 package tech.vitalis.caringu.entity;
 
-import tech.vitalis.caringu.converter.StringListConverter;
 import jakarta.persistence.*;
+import tech.vitalis.caringu.entity.Converter.StringListConverter;
 
 import java.util.List;
 

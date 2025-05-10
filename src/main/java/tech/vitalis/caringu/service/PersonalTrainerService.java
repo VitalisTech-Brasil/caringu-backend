@@ -14,32 +14,34 @@ import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
 import tech.vitalis.caringu.mapper.PersonalTrainerMapper;
 import tech.vitalis.caringu.repository.PersonalTrainerRepository;
 import tech.vitalis.caringu.repository.PessoaRepository;
+import tech.vitalis.caringu.strategy.Pessoa.GeneroEnumValidationStrategy;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
+
+import static tech.vitalis.caringu.strategy.EnumValidador.validarEnums;
 
 @Service
 public class PersonalTrainerService {
 
-    private final PersonalTrainerRepository repository;
+    private final PasswordEncoder passwordEncoder;
     private final PessoaRepository pessoaRepository;
     private final PersonalTrainerMapper personalTrainerMapper;
-    private final PasswordEncoder passwordEncoder;
     private final PersonalTrainerRepository personalTrainerRepository;
 
-    public PersonalTrainerService(PersonalTrainerRepository repository, PessoaRepository pessoaRepository, PasswordEncoder passwordEncoder, PersonalTrainerRepository personalTrainerRepository, PersonalTrainerMapper personalTrainerMapper) {
-        this.repository = repository;
-        this.pessoaRepository = pessoaRepository;
+    public PersonalTrainerService(PasswordEncoder passwordEncoder, PessoaRepository pessoaRepository, PersonalTrainerMapper personalTrainerMapper, PersonalTrainerRepository personalTrainerRepository) {
         this.passwordEncoder = passwordEncoder;
-        this.personalTrainerRepository = personalTrainerRepository;
+        this.pessoaRepository = pessoaRepository;
         this.personalTrainerMapper = personalTrainerMapper;
+        this.personalTrainerRepository = personalTrainerRepository;
     }
 
     public List<PersonalTrainerResponseGetDTO> listar() {
-        List<PersonalTrainer> listaPersonalTrainers = repository.findAll();
+        List<PersonalTrainer> listaPersonalTrainers = personalTrainerRepository.findAll();
         List<PersonalTrainerResponseGetDTO> listaRespostaPersonalTrainer = new ArrayList<>();
 
         for (PersonalTrainer personalTrainer : listaPersonalTrainers) {
@@ -51,12 +53,16 @@ public class PersonalTrainerService {
     }
 
     public PersonalTrainerResponseGetDTO buscarPorId(Integer id) {
-        PersonalTrainer personalTrainer = repository.findById(id)
+        PersonalTrainer personalTrainer = personalTrainerRepository.findById(id)
                 .orElseThrow(() -> new PersonalNaoEncontradoException("Personal Trainer não encontrado com ID: " + id));
         return personalTrainerMapper.toResponseDTO(personalTrainer);
     }
 
     public PersonalTrainerResponseGetDTO cadastrar(PersonalTrainer personalTrainer) {
+
+        validarEnums(Map.of(
+                new GeneroEnumValidationStrategy(), personalTrainer.getGenero()
+        ));
 
         String regex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+=\\-{};:'\",.<>?/|\\\\]).{6,16}$";
 
@@ -75,7 +81,7 @@ public class PersonalTrainerService {
         String senhaCriptografada = passwordEncoder.encode(personalTrainer.getSenha());
         personalTrainer.setSenha(senhaCriptografada);
 
-        repository.save(personalTrainer);
+        personalTrainerRepository.save(personalTrainer);
         return personalTrainerMapper.toResponseDTO(personalTrainer);
     }
 
@@ -84,7 +90,7 @@ public class PersonalTrainerService {
     }
 
     public PersonalTrainerResponseGetDTO atualizar(Integer id, PersonalTrainer novoPersonalTrainer) {
-        PersonalTrainer personalTrainerExistente = repository.findById(id)
+        PersonalTrainer personalTrainerExistente = personalTrainerRepository.findById(id)
                 .orElseThrow(() -> new PersonalNaoEncontradoException("Aluno não encontrado com ID: " + id));
 
         if (novoPersonalTrainer.getSenha() != null) {
@@ -106,12 +112,12 @@ public class PersonalTrainerService {
         personalTrainerExistente.setEspecialidade(novoPersonalTrainer.getEspecialidade());
         personalTrainerExistente.setExperiencia(novoPersonalTrainer.getExperiencia());
 
-        repository.save(personalTrainerExistente);
+        personalTrainerRepository.save(personalTrainerExistente);
         return personalTrainerMapper.toResponseDTO(personalTrainerExistente);
     }
 
     public PersonalTrainerResponsePatchDTO atualizarParcial(Integer id, PersonalTrainerRequestPatchDTO dto) {
-        PersonalTrainer personalTrainer = repository.findById(id)
+        PersonalTrainer personalTrainer = personalTrainerRepository.findById(id)
                 .orElseThrow(() -> new PersonalNaoEncontradoException("Aluno não encontrado com ID: " + id));
 
         Optional<String> nome = Optional.ofNullable(dto.nome());
@@ -136,7 +142,7 @@ public class PersonalTrainerService {
         especialidade.ifPresent(personalTrainer::setEspecialidade);
         experiencia.ifPresent(personalTrainer::setExperiencia);
 
-        repository.save(personalTrainer);
+        personalTrainerRepository.save(personalTrainer);
 
         return new PersonalTrainerResponsePatchDTO(
                 nome,
@@ -152,10 +158,10 @@ public class PersonalTrainerService {
     }
 
     public void deletar(Integer id) {
-        PersonalTrainer personalTrainer = repository.findById(id)
+        PersonalTrainer personalTrainer = personalTrainerRepository.findById(id)
                 .orElseThrow(() -> new PersonalNaoEncontradoException("Aluno não encontrado com ID: " + id));
 
-        repository.delete(personalTrainer);
+        personalTrainerRepository.delete(personalTrainer);
     }
 
     public void removerEspecialidade(Integer id, String especialidade) throws Exception {
