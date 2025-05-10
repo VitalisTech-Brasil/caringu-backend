@@ -26,6 +26,7 @@ public class TreinoExercicioMapper {
         treinoExercicio.setDescanso(dto.descanso());
         treinoExercicio.setDataHoraCriacao(dto.dataHoraCriacao());
         treinoExercicio.setDataHoraModificacao(dto.dataHoraModificacao());
+        treinoExercicio.setOrigemTreinoExercicio(dto.origemTreinoExercicio());
         treinoExercicio.setFavorito(dto.favorito());
         treinoExercicio.setGrauDificuldade(dto.grauDificuldade());
 
@@ -45,6 +46,7 @@ public class TreinoExercicioMapper {
                 treinoExercicio.getDescanso(),
                 treinoExercicio.getDataHoraCriacao(),
                 treinoExercicio.getDataHoraModificacao(),
+                treinoExercicio.getOrigemTreinoExercicio(),
                 treinoExercicio.getFavorito(),
                 treinoExercicio.getGrauDificuldade()
         );

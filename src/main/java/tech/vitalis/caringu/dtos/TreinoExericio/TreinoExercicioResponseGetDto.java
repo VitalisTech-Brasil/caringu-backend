@@ -1,8 +1,11 @@
 package tech.vitalis.caringu.dtos.TreinoExericio;
 
+import jakarta.validation.constraints.NotBlank;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioResponseGetDTO;
 import tech.vitalis.caringu.dtos.Treino.TreinoResponseGetDTO;
 import tech.vitalis.caringu.entity.Exercicio;
+import tech.vitalis.caringu.enums.TreinoExercicio.GrauDificuldadeEnum;
+import tech.vitalis.caringu.enums.TreinoExercicio.OrigemTreinoExercicioEnum;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +19,7 @@ public record TreinoExercicioResponseGetDto(
         Integer descanso,
         LocalDateTime dataHoraCriacao,
         LocalDateTime dataHoraModificacao,
+        OrigemTreinoExercicioEnum origemTreinoExercicio,
         Boolean favorito,
-        String grauDificuldade
+        GrauDificuldadeEnum grauDificuldade
 ){}

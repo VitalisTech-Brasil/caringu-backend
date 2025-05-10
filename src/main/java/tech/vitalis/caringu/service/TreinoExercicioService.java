@@ -13,9 +13,17 @@ import tech.vitalis.caringu.mapper.TreinoExercicioMapper;
 import tech.vitalis.caringu.repository.ExercicioRepository;
 import tech.vitalis.caringu.repository.TreinoExercicioRepository;
 import tech.vitalis.caringu.repository.TreinoRepository;
+import tech.vitalis.caringu.strategy.Aluno.NivelAtividadeEnumValidationStrategy;
+import tech.vitalis.caringu.strategy.Aluno.NivelExperienciaEnumValidationStrategy;
+import tech.vitalis.caringu.strategy.Pessoa.GeneroEnumValidationStrategy;
+import tech.vitalis.caringu.strategy.TreinoExercio.GrauDificuldadeEnumValidator;
+import tech.vitalis.caringu.strategy.TreinoExercio.OrigemTreinoExercicioEnumValidator;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static tech.vitalis.caringu.strategy.EnumValidador.validarEnums;
 
 @Service
 public class TreinoExercicioService {
@@ -24,24 +32,26 @@ public class TreinoExercicioService {
     private final TreinoExercicioMapper treinoExercicioMapper;
     private final TreinoRepository treinoRepository;
     private final ExercicioRepository exercicioRepository;
-    private final GrauDificuldadeValidatorEnum grauDificuldadeValidatorEnum;
 
-    public TreinoExercicioService(TreinoExercicioRepository treinoExercicioRepository, TreinoExercicioMapper treinoExercicioMapper, TreinoRepository treinoRepository, ExercicioRepository exercicioRepository, GrauDificuldadeValidatorEnum grauDificuldadeValidatorEnum) {
+    public TreinoExercicioService(TreinoExercicioRepository treinoExercicioRepository, TreinoExercicioMapper treinoExercicioMapper, TreinoRepository treinoRepository, ExercicioRepository exercicioRepository) {
         this.treinoExercicioRepository = treinoExercicioRepository;
         this.treinoExercicioMapper = treinoExercicioMapper;
         this.treinoRepository = treinoRepository;
         this.exercicioRepository = exercicioRepository;
-        this.grauDificuldadeValidatorEnum = grauDificuldadeValidatorEnum;
     }
 
     public TreinoExercicioResponseGetDto cadastrar(TreinoExercicioRequestPostDto treinoDTO){
+        validarEnums(Map.of(
+                new OrigemTreinoExercicioEnumValidator(), treinoDTO.origemTreinoExercicio(),
+                new GrauDificuldadeEnumValidator(), treinoDTO.grauDificuldade()
+        ));
+
         Treino treino = treinoRepository.findById(treinoDTO.treinosId()).
                 orElseThrow(() -> new ApiExceptions.BadRequestException("Treino com o ID " + treinoDTO.treinosId() + " não encontrado."));
 
         Exercicio exercicio = exercicioRepository.findById(treinoDTO.exercicioId()).
                 orElseThrow(() -> new ApiExceptions.BadRequestException("Exercício com o ID " + treinoDTO.exercicioId() + " não encontrado."));
 
-        grauDificuldadeValidatorEnum.validar(treinoDTO.grauDificuldade());
         TreinoExercicio novoTreino = treinoExercicioMapper.toEntity(treinoDTO);
         novoTreino.setTreinos(treino);
         novoTreino.setExercicio(exercicio);
@@ -66,6 +76,11 @@ public class TreinoExercicioService {
     }
 
     public TreinoExercicioResponseGetDto atualizar(Integer id, TreinoExercicioRequestUpdateDto treinoDTO, Integer exercicioId, Integer treinoId){
+        validarEnums(Map.of(
+                new OrigemTreinoExercicioEnumValidator(), treinoDTO.origemTreinoExercicio(),
+                new GrauDificuldadeEnumValidator(), treinoDTO.grauDificuldade()
+        ));
+
         Treino treinoExistente = treinoRepository.findById(treinoId).
                 orElseThrow(() -> new ApiExceptions.BadRequestException("Treino com o ID " + treinoId + " não encontrado."));
 
@@ -75,7 +90,6 @@ public class TreinoExercicioService {
         TreinoExercicio treinoExercicioExistente = treinoExercicioRepository.findById(id).
                 orElseThrow(() -> new ApiExceptions.BadRequestException("Exercício com o ID " + id + " não encontrado."));
 
-        grauDificuldadeValidatorEnum.validar(treinoDTO.grauDificuldade());
 
         treinoExercicioExistente.setExercicio(exercicioExistente);
         treinoExercicioExistente.setTreinos(treinoExistente);
