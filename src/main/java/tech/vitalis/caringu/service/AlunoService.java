@@ -2,20 +2,30 @@ package tech.vitalis.caringu.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import tech.vitalis.caringu.dtos.Aluno.AlunoRequestPatchDTO;
-import tech.vitalis.caringu.dtos.Aluno.AlunoResponsePatchDTO;
-import tech.vitalis.caringu.dtos.Aluno.AlunoResponseGetDTO;
+import tech.vitalis.caringu.dtos.Aluno.*;
+import tech.vitalis.caringu.dtos.PerfilAluno.AlunoGetPerfilDetalhesDTO;
+import tech.vitalis.caringu.dtos.PerfilAluno.AlunoResponseGetPerfilDetalhesDTO;
+import tech.vitalis.caringu.dtos.PerfilAluno.AnamneseGetPerfilDetalhesDTO;
+import tech.vitalis.caringu.dtos.PerfilAluno.PessoaGetPerfilDetalhesDTO;
 import tech.vitalis.caringu.entity.Aluno;
+import tech.vitalis.caringu.entity.Anamnese;
+import tech.vitalis.caringu.entity.Pessoa;
 import tech.vitalis.caringu.enums.Aluno.NivelAtividadeEnum;
 import tech.vitalis.caringu.enums.Aluno.NivelExperienciaEnum;
 import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
 import tech.vitalis.caringu.exception.Aluno.AlunoNaoEncontradoException;
+import tech.vitalis.caringu.exception.Anamnese.AnamneseNaoEncontradaException;
 import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
+import tech.vitalis.caringu.exception.Pessoa.PessoaNaoEncontradaException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
 import tech.vitalis.caringu.mapper.AlunoMapper;
+import tech.vitalis.caringu.mapper.AnamneseMapper;
+import tech.vitalis.caringu.mapper.PessoaMapper;
 import tech.vitalis.caringu.repository.AlunoRepository;
+import tech.vitalis.caringu.repository.AnamneseRepository;
 import tech.vitalis.caringu.repository.PessoaRepository;
 import tech.vitalis.caringu.strategy.Aluno.*;
+import tech.vitalis.caringu.strategy.EnumValidationStrategy;
 import tech.vitalis.caringu.strategy.Pessoa.GeneroEnumValidationStrategy;
 import static tech.vitalis.caringu.strategy.EnumValidador.validarEnums;
 
@@ -26,14 +36,31 @@ import java.util.regex.Pattern;
 @Service
 public class AlunoService {
 
+    private static final String REGEX_SENHA_FORTE = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+=\\-{};:'\",.<>?/|\\\\]).{6,16}$";
+
+    private final PasswordEncoder passwordEncoder;
+    private final AlunoMapper alunoMapper;
+    private final PessoaMapper pessoaMapper;
+    private final AnamneseMapper anamneseMapper;
     private final AlunoRepository alunoRepository;
     private final PessoaRepository pessoaRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final AnamneseRepository anamneseRepository;
 
-    public AlunoService(AlunoRepository alunoRepository, PessoaRepository pessoaRepository, PasswordEncoder passwordEncoder) {
+    public AlunoService(PasswordEncoder passwordEncoder,
+                        AlunoMapper alunoMapper,
+                        PessoaMapper pessoaMapper,
+                        AnamneseMapper anamneseMapper,
+
+                        AlunoRepository alunoRepository,
+                        PessoaRepository pessoaRepository,
+                        AnamneseRepository anamneseRepository) {
+        this.passwordEncoder = passwordEncoder;
+        this.alunoMapper = alunoMapper;
+        this.pessoaMapper = pessoaMapper;
+        this.anamneseMapper = anamneseMapper;
         this.alunoRepository = alunoRepository;
         this.pessoaRepository = pessoaRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.anamneseRepository = anamneseRepository;
     }
 
     public List<AlunoResponseGetDTO> listar() {
@@ -41,32 +68,30 @@ public class AlunoService {
         List<AlunoResponseGetDTO> listaRespostaAlunos = new ArrayList<>();
 
         for (Aluno aluno : listaAlunos) {
-            AlunoResponseGetDTO respostaDTO = AlunoMapper.toResponseDTO(aluno);
+            AlunoResponseGetDTO respostaDTO = alunoMapper.toResponseDTO(aluno);
             listaRespostaAlunos.add(respostaDTO);
         }
 
         return listaRespostaAlunos;
     }
 
+    public List<AlunoResponseGetDTO> buscarAlunosSemAnamnese() {
+        List<Aluno> alunosSemAnamnese = alunoRepository.findAlunosSemAnamnese();
+
+        return alunosSemAnamnese.stream()
+                .map(alunoMapper::toResponseDTO)
+                .toList();
+    }
+
     public AlunoResponseGetDTO buscarPorId(Integer id) {
-        Aluno aluno = alunoRepository.findById(id)
-                .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno não encontrado com ID: " + id));
-        return AlunoMapper.toResponseDTO(aluno);
+        Aluno aluno = buscarAlunoOuLancarExcecao(id);
+        return alunoMapper.toResponseDTO(aluno);
     }
 
     public AlunoResponseGetDTO cadastrar(Aluno aluno) {
 
-        validarEnums(Map.of(
-            new GeneroEnumValidationStrategy(), aluno.getGenero(),
-            new NivelAtividadeEnumValidationStrategy(), aluno.getNivelAtividade(),
-            new NivelExperienciaEnumValidationStrategy(), aluno.getNivelExperiencia()
-        ));
-
-        String regex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+=\\-{};:'\",.<>?/|\\\\]).{6,16}$";
-
-        if (!Pattern.matches(regex, aluno.getSenha())) {
-            throw new SenhaInvalidaException("A senha incluir pelo menos uma letra maiúscula, um número e um caractere especial.");
-        }
+        validarSenha(aluno.getSenha());
+        validarEnumsAluno(aluno);
 
         if (pessoaRepository.existsByEmail(aluno.getEmail())) {
             throw new EmailJaCadastradoException("Este e-mail já existe!");
@@ -76,21 +101,13 @@ public class AlunoService {
         aluno.setSenha(senhaCriptografada);
 
         alunoRepository.save(aluno);
-        return AlunoMapper.toResponseDTO(aluno);
+        return alunoMapper.toResponseDTO(aluno);
     }
 
     public AlunoResponseGetDTO atualizar(Integer id, Aluno novoAluno) {
-        Aluno alunoExistente = alunoRepository.findById(id)
-                .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno não encontrado com ID: " + id));
+        Aluno alunoExistente = buscarAlunoOuLancarExcecao(id);
 
-        if (novoAluno.getSenha() != null) {
-            String regex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+=\\-{};:'\",.<>?/|\\\\]).{6,16}$";
-            if (!Pattern.matches(regex, novoAluno.getSenha())) {
-                throw new SenhaInvalidaException("A senha deve conter pelo menos uma letra maiúscula, um número e um caractere especial.");
-            }
-        }
-
-        // Fazer um mapper para isso depois:
+        validarSenha(novoAluno.getSenha());
 
         alunoExistente.setNome(novoAluno.getNome());
         alunoExistente.setEmail(novoAluno.getEmail());
@@ -104,12 +121,31 @@ public class AlunoService {
         alunoExistente.setNivelExperiencia(novoAluno.getNivelExperiencia());
 
         alunoRepository.save(alunoExistente);
-        return AlunoMapper.toResponseDTO(alunoExistente);
+        return alunoMapper.toResponseDTO(alunoExistente);
+    }
+
+    public AlunoResponsePatchDadosFisicosDTO atualizarDadosFisicos(Integer id, AlunoRequestPatchDadosFisicosDTO dto) {
+        Aluno aluno = buscarAlunoOuLancarExcecao(id);
+
+        if (dto.peso() != null) {
+            aluno.setPeso(dto.peso());
+        }
+        if (dto.altura() != null) {
+            aluno.setAltura(dto.altura());
+        }
+        if (dto.nivelAtividade() != null) {
+            aluno.setNivelAtividade(dto.nivelAtividade());
+        }
+        if (dto.nivelExperiencia() != null) {
+            aluno.setNivelExperiencia(dto.nivelExperiencia());
+        }
+
+        alunoRepository.save(aluno);
+        return alunoMapper.toResponseDadosFisicosDTO(aluno);
     }
 
     public AlunoResponsePatchDTO atualizarParcial(Integer id, AlunoRequestPatchDTO dto) {
-        Aluno aluno = alunoRepository.findById(id)
-                .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno não encontrado com ID: " + id));
+        Aluno aluno = buscarAlunoOuLancarExcecao(id);
 
         Optional<String> nome = Optional.ofNullable(dto.nome());
         Optional<String> email = Optional.ofNullable(dto.email());
@@ -152,9 +188,33 @@ public class AlunoService {
     }
 
     public void deletar(Integer id) {
-        Aluno aluno = alunoRepository.findById(id)
-                .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno não encontrado com ID: " + id));
+        Aluno aluno = buscarAlunoOuLancarExcecao(id);
 
         alunoRepository.delete(aluno);
+    }
+
+    private void validarSenha(String senha) {
+        if (!Pattern.matches(REGEX_SENHA_FORTE, senha)) {
+            throw new SenhaInvalidaException("A senha deve conter pelo menos uma letra maiúscula, um número e um caractere especial.");
+        }
+    }
+
+    private void validarEnumsAluno(Aluno aluno) {
+        Map<EnumValidationStrategy, Enum<?>> enums = new HashMap<>();
+        enums.put(new GeneroEnumValidationStrategy(), aluno.getGenero());
+
+        if (aluno.getNivelAtividade() != null) {
+            enums.put(new NivelAtividadeEnumValidationStrategy(), aluno.getNivelAtividade());
+        }
+        if (aluno.getNivelExperiencia() != null) {
+            enums.put(new NivelExperienciaEnumValidationStrategy(), aluno.getNivelExperiencia());
+        }
+
+        validarEnums(enums);
+    }
+
+    public Aluno buscarAlunoOuLancarExcecao(Integer id) {
+        return alunoRepository.findById(id)
+                .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno não encontrado com ID: " + id));
     }
 }
