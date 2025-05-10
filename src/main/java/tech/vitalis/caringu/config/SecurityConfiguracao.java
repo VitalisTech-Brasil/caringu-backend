@@ -59,12 +59,12 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/h2-console/**/**"),
             new AntPathRequestMatcher("/error/**"),
 
-            new AntPathRequestMatcher("/planos/buscarPorPersonal/**", "GET"),
-            new AntPathRequestMatcher("/planos/cadastrarPlano/**", "POST"),
-            new AntPathRequestMatcher("/planos/atualizarPlano/**/**", "PUT"),
-            new AntPathRequestMatcher("/planos/deletarPlano/**/**", "DELETE"),
-            new AntPathRequestMatcher("/pessoas", "POST"),
-            new AntPathRequestMatcher("/pessoas/**", "GET")
+//            new AntPathRequestMatcher("/planos/buscarPorPersonal/**", "GET"),
+//            new AntPathRequestMatcher("/planos/cadastrarPlano/**", "POST"),
+//            new AntPathRequestMatcher("/planos/atualizarPlano/**/**", "PUT"),
+//            new AntPathRequestMatcher("/planos/deletarPlano/**/**", "DELETE"),
+//            new AntPathRequestMatcher("/pessoas", "POST"),
+//            new AntPathRequestMatcher("/pessoas/**", "GET")
     };
 
     @Bean
