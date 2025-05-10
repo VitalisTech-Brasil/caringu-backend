@@ -4,41 +4,86 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import tech.vitalis.caringu.enums.PeriodoEnum;
-import tech.vitalis.caringu.enums.StatusEnum;
-import tech.vitalis.caringu.id.PlanosId;
-
-import java.util.Date;
 
 @Entity
 @Table(name = "planos")
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Plano {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    @EmbeddedId
-    private PlanosId id;
-    @NotBlank
+    @ManyToOne
+    @JoinColumn(name = "personal_trainers_id")
+    private PersonalTrainer personalTrainer;
+
     private String nome;
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private StatusEnum status; // Coloca como String na DTO e valida se ta certo ou não fica melhor.
-    @NotNull
+
     @Enumerated(EnumType.STRING)
     private PeriodoEnum periodo;
-    @Positive
-    @NotNull
+
     private Integer quantidadeAulas;
-    @Positive
-    @NotNull
+
     private Double valorAulas;
-    @FutureOrPresent
-    private Date dataInicio;
-    @Future
-    private Date dataFim;
 
+    public Plano() {
+    }
 
+    public Plano(PersonalTrainer personalTrainer, String nome, PeriodoEnum periodo, Integer quantidadeAulas, Double valorAulas) {
+        this.personalTrainer = personalTrainer;
+        this.nome = nome;
+        this.periodo = periodo;
+        this.quantidadeAulas = quantidadeAulas;
+        this.valorAulas = valorAulas;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public PersonalTrainer getPersonalTrainer() {
+        return personalTrainer;
+    }
+
+    public void setPersonalTrainer(PersonalTrainer personalTrainer) {
+        this.personalTrainer = personalTrainer;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public PeriodoEnum getPeriodo() {
+        return periodo;
+    }
+
+    public void setPeriodo(PeriodoEnum periodo) {
+        this.periodo = periodo;
+    }
+
+    public Integer getQuantidadeAulas() {
+        return quantidadeAulas;
+    }
+
+    public void setQuantidadeAulas(Integer quantidadeAulas) {
+        this.quantidadeAulas = quantidadeAulas;
+    }
+
+    public Double getValorAulas() {
+        return valorAulas;
+    }
+
+    public void setValorAulas(Double valorAulas) {
+        this.valorAulas = valorAulas;
+    }
 }
+
+

@@ -5,6 +5,9 @@ import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerRequestPatchDTO;
 import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerRequestPostDTO;
 import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerResponseGetDTO;
 import tech.vitalis.caringu.entity.PersonalTrainer;
+import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
+
+import java.time.LocalDate;
 
 @Component
 public class PersonalTrainerMapper {
@@ -45,7 +48,6 @@ public class PersonalTrainerMapper {
     }
 
     public PersonalTrainerResponseGetDTO toResponseDTO(PersonalTrainer personalTrainer) {
-
         return new PersonalTrainerResponseGetDTO(
                 personalTrainer.getId(),
                 personalTrainer.getNome(),
@@ -59,6 +61,23 @@ public class PersonalTrainerMapper {
                 personalTrainer.getExperiencia(),
                 personalTrainer.getDataCadastro()
         );
+    }
+
+    public PersonalTrainer responseToEntity(PersonalTrainerResponseGetDTO responseDTO) {
+        PersonalTrainer personalTrainer = new PersonalTrainer();
+        personalTrainer.setId(responseDTO.id());
+        personalTrainer.setNome(responseDTO.nome());
+        personalTrainer.setEmail(responseDTO.email());
+        personalTrainer.setCelular(responseDTO.celular());
+        personalTrainer.setUrlFotoPerfil(responseDTO.urlFotoPerfil());
+        personalTrainer.setDataNascimento(responseDTO.dataNascimento());
+        personalTrainer.setGenero(responseDTO.genero());
+
+        personalTrainer.setCref(responseDTO.cref());
+        personalTrainer.setEspecialidade(responseDTO.especialidade());
+        personalTrainer.setExperiencia(responseDTO.experiencia());
+
+        return personalTrainer;
     }
 
 }
