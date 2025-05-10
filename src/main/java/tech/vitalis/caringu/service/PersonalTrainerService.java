@@ -50,11 +50,11 @@ public class PersonalTrainerService {
         return listaRespostaPersonalTrainer;
     }
 
-        public PersonalTrainerResponseGetDTO buscarPorId(Integer id) {
-            PersonalTrainer personalTrainer = repository.findById(id)
-                    .orElseThrow(() -> new PersonalNaoEncontradoException("Personal Trainer não encontrado com ID: " + id));
-            return personalTrainerMapper.toResponseDTO(personalTrainer);
-        }
+    public PersonalTrainerResponseGetDTO buscarPorId(Integer id) {
+        PersonalTrainer personalTrainer = repository.findById(id)
+                .orElseThrow(() -> new PersonalNaoEncontradoException("Personal Trainer não encontrado com ID: " + id));
+        return personalTrainerMapper.toResponseDTO(personalTrainer);
+    }
 
     public PersonalTrainerResponseGetDTO cadastrar(PersonalTrainer personalTrainer) {
 
