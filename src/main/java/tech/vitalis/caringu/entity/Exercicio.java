@@ -3,6 +3,8 @@ package tech.vitalis.caringu.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import tech.vitalis.caringu.enums.Exercicio.GrupoMuscularEnum;
+import tech.vitalis.caringu.enums.Exercicio.OrigemEnum;
 
 @Entity
 @Table(name = "exercicios")
@@ -17,14 +19,22 @@ public class Exercicio {
     @Column(nullable = false)
     private String nome;
 
-    @Column(nullable = false)
-    private String grupoMuscular;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "grupo_muscular", nullable = false)
+    private GrupoMuscularEnum grupoMuscular;
+
     private String urlVideo;
     private String observacoes;
     private Boolean favorito;
-    private String origem;
 
-    public Exercicio(Integer id, String nome, String grupoMuscular, String urlVideo, String observacoes, Boolean favorito, String origem) {
+    @Enumerated(EnumType.STRING)
+    @Column(name = "origem", nullable = false)
+    private OrigemEnum origem;
+
+
+    public Exercicio() {}
+
+    public Exercicio(Integer id, String nome, GrupoMuscularEnum grupoMuscular, String urlVideo, String observacoes, Boolean favorito, OrigemEnum origem) {
         this.id = id;
         this.nome = nome;
         this.grupoMuscular = grupoMuscular;
@@ -33,8 +43,6 @@ public class Exercicio {
         this.favorito = favorito;
         this.origem = origem;
     }
-
-    public Exercicio() {}
 
     public Integer getId() {
         return id;
@@ -52,11 +60,11 @@ public class Exercicio {
         this.nome = nome;
     }
 
-    public String getGrupoMuscular() {
+    public GrupoMuscularEnum getGrupoMuscular() {
         return grupoMuscular;
     }
 
-    public void setGrupoMuscular(String grupoMuscular) {
+    public void setGrupoMuscular(GrupoMuscularEnum grupoMuscular) {
         this.grupoMuscular = grupoMuscular;
     }
 
@@ -84,24 +92,11 @@ public class Exercicio {
         this.favorito = favorito;
     }
 
-    public String getOrigem() {
+    public OrigemEnum getOrigem() {
         return origem;
     }
 
-    public void setOrigem(String origem) {
+    public void setOrigem(OrigemEnum origem) {
         this.origem = origem;
-    }
-
-    @Override
-    public String toString() {
-        return "Exercicio{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", grupoMuscular='" + grupoMuscular + '\'' +
-                ", urlVideo='" + urlVideo + '\'' +
-                ", observacoes='" + observacoes + '\'' +
-                ", favorito=" + favorito +
-                ", origem='" + origem + '\'' +
-                '}';
     }
 }

@@ -10,29 +10,35 @@ import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.mapper.ExercicioMapper;
 import tech.vitalis.caringu.entity.Exercicio;
 import tech.vitalis.caringu.repository.ExercicioRepository;
+import tech.vitalis.caringu.strategy.Exercicio.GrupoMuscularEnumValidator;
+import tech.vitalis.caringu.strategy.Exercicio.OrigemEnumValidator;
+import tech.vitalis.caringu.strategy.TreinoExercio.GrauDificuldadeEnumValidator;
+import tech.vitalis.caringu.strategy.TreinoExercio.OrigemTreinoExercicioEnumValidator;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static tech.vitalis.caringu.strategy.EnumValidador.validarEnums;
 
 @Service
 public class ExercicioService {
 
     private final ExercicioRepository exercicioRepository;
     private final ExercicioMapper exercicioMapper;
-    private final GrupoMuscularValidatorEnum grupoMuscularValidatorEnum;
-    private final OrigemValidatorEnum origemValidatorEnum;
 
     @Autowired
-    public ExercicioService(ExercicioRepository exercicioRepository, ExercicioMapper exercicioMapper, GrupoMuscularValidatorEnum grupoMuscularValidatorEnum, OrigemValidatorEnum origemValidatorEnum) {
+    public ExercicioService(ExercicioRepository exercicioRepository, ExercicioMapper exercicioMapper) {
         this.exercicioRepository = exercicioRepository;
         this.exercicioMapper = exercicioMapper;
-        this.grupoMuscularValidatorEnum = grupoMuscularValidatorEnum;
-        this.origemValidatorEnum = origemValidatorEnum;
     }
 
     public ExercicioResponseGetDTO cadastrar(ExercicioRequestPostDTO exercicioDto) {
-        grupoMuscularValidatorEnum.validar(exercicioDto.grupoMuscular());
-        origemValidatorEnum.validar(exercicioDto.origem());
+        validarEnums(Map.of(
+                new GrupoMuscularEnumValidator(), exercicioDto.grupoMuscular(),
+                new OrigemEnumValidator(), exercicioDto.origem()
+        ));
+
         Exercicio novoExercicio = exercicioMapper.toEntity(exercicioDto);
 
         Exercicio exercicioSalvo = exercicioRepository.save(novoExercicio);
@@ -79,7 +85,7 @@ public class ExercicioService {
             exercicioExistente.setNome(exercicioDto.nome());
             atualizado = true;
         }
-        if (exercicioDto.grupoMuscular() != null && !exercicioDto.grupoMuscular().trim().isEmpty()) {
+        if (exercicioDto.grupoMuscular() != null) {
             exercicioExistente.setGrupoMuscular(exercicioDto.grupoMuscular());
             atualizado = true;
         }
