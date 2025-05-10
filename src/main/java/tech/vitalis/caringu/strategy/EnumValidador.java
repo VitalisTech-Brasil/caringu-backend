@@ -13,7 +13,6 @@ public class EnumValidador {
 
             contexto.setStrategy(entrada.getKey());
             contexto.validar(entrada.getValue().name());
-
         }
     }
 }

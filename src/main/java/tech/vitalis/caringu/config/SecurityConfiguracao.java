@@ -53,10 +53,18 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/fale-conosco", "POST"),
             new AntPathRequestMatcher("/pessoas/verificacao-email", "GET"),
             new AntPathRequestMatcher("/personal-trainers/verificacao-cref", "GET"),
+            new AntPathRequestMatcher("/personal-trainers/**", "GET"),
             new AntPathRequestMatcher("/docs", "GET"),
             new AntPathRequestMatcher("/h2-console/**"),
             new AntPathRequestMatcher("/h2-console/**/**"),
-            new AntPathRequestMatcher("/error/**")
+            new AntPathRequestMatcher("/error/**"),
+
+            new AntPathRequestMatcher("/planos/buscarPorPersonal/**", "GET"),
+            new AntPathRequestMatcher("/planos/cadastrarPlano/**", "POST"),
+            new AntPathRequestMatcher("/planos/atualizarPlano/**/**", "PUT"),
+            new AntPathRequestMatcher("/planos/deletarPlano/**/**", "DELETE"),
+            new AntPathRequestMatcher("/pessoas", "POST"),
+            new AntPathRequestMatcher("/pessoas/**", "GET")
     };
 
     @Bean

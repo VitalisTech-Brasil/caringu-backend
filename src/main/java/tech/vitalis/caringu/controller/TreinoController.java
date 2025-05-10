@@ -17,7 +17,6 @@ public class TreinoController {
 
     private final TreinoService treinoService;
 
-
     public TreinoController(TreinoService treinoService) {
         this.treinoService = treinoService;
     }
