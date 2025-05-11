@@ -6,4 +6,5 @@ import tech.vitalis.caringu.entity.Treino;
 
 @Repository
 public interface TreinoRepository extends JpaRepository<Treino, Integer> {
+    Integer countByPersonalId(Integer idPersonal);
 }

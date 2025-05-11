@@ -42,6 +42,12 @@ public class TreinoController {
         return ResponseEntity.ok(treinoService.buscarPorId(id));
     }
 
+    @GetMapping("/treinos-criados/{idPersonal}")
+    public ResponseEntity<Integer> buscarTreinosCriados(@PathVariable Integer idPersonal) {
+        Integer quantidadeTreinosCriados = treinoService.obterQuantidadeTreinosCriados(idPersonal);
+        return ResponseEntity.status(200).body(quantidadeTreinosCriados);
+    }
+
     @PutMapping("/{id}/personal/{personalId}")
     @Operation(summary = "Atualizar treino")
     public ResponseEntity<TreinoResponseGetDTO> atualizar(@PathVariable Integer id, @PathVariable Integer personalId, @RequestBody @Valid TreinoRequestUpdateDto treinoDto){
