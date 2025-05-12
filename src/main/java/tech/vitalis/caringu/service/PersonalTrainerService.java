@@ -5,13 +5,16 @@ import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerRequestPatchDTO;
 import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerResponseGetDTO;
 import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerResponsePatchDTO;
+import tech.vitalis.caringu.entity.Especialidade;
 import tech.vitalis.caringu.entity.PersonalTrainer;
+import tech.vitalis.caringu.entity.PersonalTrainerEspecialidade;
 import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
 import tech.vitalis.caringu.exception.PersonalTrainer.CrefJaExisteException;
 import tech.vitalis.caringu.exception.PersonalTrainer.PersonalNaoEncontradoException;
 import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
 import tech.vitalis.caringu.mapper.PersonalTrainerMapper;
+import tech.vitalis.caringu.repository.EspecialidadeRepository;
 import tech.vitalis.caringu.repository.PersonalTrainerRepository;
 import tech.vitalis.caringu.repository.PessoaRepository;
 import tech.vitalis.caringu.strategy.Pessoa.GeneroEnumValidationStrategy;
@@ -22,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static tech.vitalis.caringu.strategy.EnumValidador.validarEnums;
 
@@ -32,12 +36,14 @@ public class PersonalTrainerService {
     private final PessoaRepository pessoaRepository;
     private final PersonalTrainerMapper personalTrainerMapper;
     private final PersonalTrainerRepository personalTrainerRepository;
+    private final EspecialidadeRepository especialidadeRepository;
 
-    public PersonalTrainerService(PasswordEncoder passwordEncoder, PessoaRepository pessoaRepository, PersonalTrainerMapper personalTrainerMapper, PersonalTrainerRepository personalTrainerRepository) {
+    public PersonalTrainerService(PasswordEncoder passwordEncoder, PessoaRepository pessoaRepository, PersonalTrainerMapper personalTrainerMapper, PersonalTrainerRepository personalTrainerRepository, EspecialidadeRepository especialidadeRepository) {
         this.passwordEncoder = passwordEncoder;
         this.pessoaRepository = pessoaRepository;
         this.personalTrainerMapper = personalTrainerMapper;
         this.personalTrainerRepository = personalTrainerRepository;
+        this.especialidadeRepository = especialidadeRepository;
     }
 
     public List<PersonalTrainerResponseGetDTO> listar() {
@@ -81,6 +87,23 @@ public class PersonalTrainerService {
         String senhaCriptografada = passwordEncoder.encode(personalTrainer.getSenha());
         personalTrainer.setSenha(senhaCriptografada);
 
+        if (personalTrainer.getEspecialidades() != null && !personalTrainer.getEspecialidades().isEmpty()) {
+            List<PersonalTrainerEspecialidade> especialidadesAssociadas = new ArrayList<>();
+            for (PersonalTrainerEspecialidade especialidadePersonalTrainer : personalTrainer.getEspecialidades()) {
+
+                Especialidade especialidade = especialidadeRepository.findById(especialidadePersonalTrainer.getEspecialidade().getId())
+                        .orElseThrow(() -> new RuntimeException("Especialidade não encontrada"));
+
+                PersonalTrainerEspecialidade novaEspecialidade = new PersonalTrainerEspecialidade();
+                novaEspecialidade.setPersonalTrainer(personalTrainer);
+                novaEspecialidade.setEspecialidade(especialidade);
+
+                especialidadesAssociadas.add(novaEspecialidade);
+            }
+
+            personalTrainer.setEspecialidades(especialidadesAssociadas);
+        }
+
         personalTrainerRepository.save(personalTrainer);
         return personalTrainerMapper.toResponseDTO(personalTrainer);
     }
@@ -109,7 +132,14 @@ public class PersonalTrainerService {
         personalTrainerExistente.setDataNascimento(novoPersonalTrainer.getDataNascimento());
         personalTrainerExistente.setGenero(novoPersonalTrainer.getGenero());
         personalTrainerExistente.setCref(novoPersonalTrainer.getCref());
-        personalTrainerExistente.setEspecialidade(novoPersonalTrainer.getEspecialidade());
+
+        if (novoPersonalTrainer.getEspecialidades() != null) {
+            personalTrainerExistente.getEspecialidades().clear();
+            personalTrainerExistente.getEspecialidades().addAll(
+                    novoPersonalTrainer.getEspecialidades()
+            );
+        }
+
         personalTrainerExistente.setExperiencia(novoPersonalTrainer.getExperiencia());
 
         personalTrainerRepository.save(personalTrainerExistente);
@@ -128,7 +158,7 @@ public class PersonalTrainerService {
         Optional<GeneroEnum> genero = Optional.ofNullable(dto.genero());
 
         Optional<String> cref = Optional.ofNullable(dto.cref());
-        Optional<List<String>> especialidade = Optional.ofNullable(dto.especialidade());
+        Optional<List<Integer>> especialidadesIds = Optional.ofNullable(dto.especialidadesIds());
         Optional<Integer> experiencia = Optional.ofNullable(dto.experiencia());
 
         nome.ifPresent(personalTrainer::setNome);
@@ -139,7 +169,13 @@ public class PersonalTrainerService {
         genero.ifPresent(personalTrainer::setGenero);
 
         cref.ifPresent(personalTrainer::setCref);
-        especialidade.ifPresent(personalTrainer::setEspecialidade);
+        Optional<List<String>> especialidadesNomes = especialidadesIds.map(ids ->
+                ids.stream()
+                        .map(idEspec -> especialidadeRepository.findById(idEspec)
+                                .map(Especialidade::getNome)
+                                .orElse("Desconhecida"))
+                        .toList()
+        );
         experiencia.ifPresent(personalTrainer::setExperiencia);
 
         personalTrainerRepository.save(personalTrainer);
@@ -152,7 +188,7 @@ public class PersonalTrainerService {
                 dataNascimento,
                 genero,
                 cref,
-                especialidade,
+                especialidadesNomes,
                 experiencia
         );
     }
@@ -164,21 +200,17 @@ public class PersonalTrainerService {
         personalTrainerRepository.delete(personalTrainer);
     }
 
-    public void removerEspecialidade(Integer id, String especialidade) throws Exception {
+    public void removerEspecialidade(Integer idPersonal, Integer idEspecialidade) {
+        PersonalTrainer personalTrainer = personalTrainerRepository.findById(idPersonal)
+                .orElseThrow(() -> new PersonalNaoEncontradoException("Personal Trainer não encontrado"));
 
-        PersonalTrainer personalTrainer = personalTrainerRepository.findById(id)
-                .orElseThrow(() -> new Exception("Personal Trainer não encontrado"));
+        boolean removido = personalTrainer.getEspecialidades()
+                .removeIf(pe -> pe.getEspecialidade().getId().equals(idEspecialidade));
 
-        List<String> especialidades = personalTrainer.getEspecialidade();
-
-        if (especialidades.contains(especialidade)) {
-
-            especialidades.remove(especialidade);
-
-            personalTrainer.setEspecialidade(especialidades);
-            personalTrainerRepository.save(personalTrainer);
-        } else {
-            throw new Exception("Especialidade não encontrada");
+        if (!removido) {
+            throw new RuntimeException("Especialidade com ID " + idEspecialidade + " não encontrada para este personal.");
         }
+
+        personalTrainerRepository.save(personalTrainer);
     }
 }
