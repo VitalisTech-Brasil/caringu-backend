@@ -20,7 +20,7 @@ public class PlanoMapper {
     }
 
     public PlanoRespostaRecord toResponseRecord(Plano plano) {
-        return new PlanoRespostaRecord(plano.getNome(), plano.getPeriodo(), plano.getQuantidadeAulas(), plano.getValorAulas());
+        return new PlanoRespostaRecord(plano.getId(), plano.getNome(), plano.getPeriodo(), plano.getQuantidadeAulas(), plano.getValorAulas());
     }
 
     public Plano requestToEntity(PlanoRequisicaoRecord planoRequisicaoRecord, PersonalTrainer personalTrainer  ){
