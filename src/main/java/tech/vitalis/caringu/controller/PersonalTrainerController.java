@@ -233,10 +233,10 @@ public class PersonalTrainerController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{id}/especialidades/{especialidade}")
-    public ResponseEntity<Void> removerEspecialidade(@PathVariable Integer id, @PathVariable String especialidade) {
+    @DeleteMapping("/{id}/especialidades/{idEspecialidade}")
+    public ResponseEntity<Void> removerEspecialidade(@PathVariable Integer id, @PathVariable Integer idEspecialidade) {
         try {
-            service.removerEspecialidade(id, especialidade);
+            service.removerEspecialidade(id, idEspecialidade);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
