@@ -1,6 +1,7 @@
 package tech.vitalis.caringu.mapper;
 
 import org.springframework.stereotype.Component;
+import tech.vitalis.caringu.dtos.Especialidade.EspecialidadeResponseGetDTO;
 import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerRequestPatchDTO;
 import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerRequestPostDTO;
 import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerResponseGetDTO;
@@ -76,8 +77,12 @@ public class PersonalTrainerMapper {
     }
 
     public PersonalTrainerResponseGetDTO toResponseDTO(PersonalTrainer personalTrainer) {
-        List<String> especialidadesIds = personalTrainer.getEspecialidades().stream()
-                .map(pte -> pte.getEspecialidade().getNome())
+        List<EspecialidadeResponseGetDTO> especialidadesDTO  = personalTrainer.getEspecialidades().stream()
+                .map(pte -> new EspecialidadeResponseGetDTO(
+                        pte.getEspecialidade().getId(),
+                        pte.getEspecialidade().getNome()
+                ))
+
                 .toList();
 
         return new PersonalTrainerResponseGetDTO(
@@ -89,7 +94,7 @@ public class PersonalTrainerMapper {
                 personalTrainer.getDataNascimento(),
                 personalTrainer.getGenero(),
                 personalTrainer.getCref(),
-                especialidadesIds,
+                especialidadesDTO,
                 personalTrainer.getExperiencia(),
                 personalTrainer.getDataCadastro()
         );
@@ -110,15 +115,15 @@ public class PersonalTrainerMapper {
         pt.setExperiencia(responseDTO.experiencia());
 
         if (responseDTO.especialidades() != null) {
-            pt.setEspecialidades(
-                    responseDTO.especialidades().stream()
-                            .map(id -> {
-                                Especialidade especialidade = especialidadeRepository.findById(Integer.valueOf(id))
-                                        .orElseThrow(() -> new EspecialidadeNaoEncontrada("Especialidade ID " + id + " não encontrada"));
-                                return new PersonalTrainerEspecialidade(pt, especialidade);
-                            })
-                            .toList()
-            );
+            List<PersonalTrainerEspecialidade> especialidades = responseDTO.especialidades().stream()
+                    .map(dto -> {
+                        Especialidade especialidade = especialidadeRepository.findById(dto.id())
+                                .orElseThrow(() -> new EspecialidadeNaoEncontrada("Especialidade com ID " + dto.id() + " não encontrada"));
+                        return new PersonalTrainerEspecialidade(pt, especialidade);
+                    })
+                    .toList();
+
+            pt.setEspecialidades(especialidades);
         }
 
         return pt;
