@@ -20,14 +20,16 @@ import java.util.List;
 public class AlunoController {
 
     private final AlunoService service;
+    private final AlunoMapper mapper;
 
-    public AlunoController(AlunoService service) {
+    public AlunoController(AlunoService service, AlunoMapper mapper) {
         this.service = service;
+        this.mapper = mapper;
     }
 
     @GetMapping
     @SecurityRequirement(name = "Bearer")
-    @Operation(summary = "Listar alunos")
+    @Operation(summary = "Listar alunosId")
     public ResponseEntity<List<AlunoResponseGetDTO>> listar() {
         List<AlunoResponseGetDTO> listaAlunos = service.listar();
 
@@ -45,7 +47,7 @@ public class AlunoController {
     @PostMapping
     @Operation(summary = "Cadastrar aluno")
     public ResponseEntity<AlunoResponseGetDTO> cadastrar(@Valid @RequestBody AlunoRequestPostDTO cadastroDTO) {
-        Aluno aluno = AlunoMapper.toEntity(cadastroDTO);
+        Aluno aluno = mapper.toEntity(cadastroDTO);
         AlunoResponseGetDTO respostaDTO = service.cadastrar(aluno);
 
         return ResponseEntity.status(201).body(respostaDTO);
@@ -58,7 +60,7 @@ public class AlunoController {
             @PathVariable Integer id,
             @Valid @RequestBody AlunoRequestPostDTO dto) {
 
-        Aluno novoAluno = AlunoMapper.toEntity(dto);
+        Aluno novoAluno = mapper.toEntity(dto);
         AlunoResponseGetDTO atualizado = service.atualizar(id, novoAluno);
         return ResponseEntity.ok(atualizado);
     }

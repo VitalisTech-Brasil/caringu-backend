@@ -29,11 +29,13 @@ public class AlunoService {
     private final AlunoRepository alunoRepository;
     private final PessoaRepository pessoaRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AlunoMapper alunoMapper;
 
-    public AlunoService(AlunoRepository alunoRepository, PessoaRepository pessoaRepository, PasswordEncoder passwordEncoder) {
+    public AlunoService(AlunoRepository alunoRepository, PessoaRepository pessoaRepository, PasswordEncoder passwordEncoder, AlunoMapper alunoMapper) {
         this.alunoRepository = alunoRepository;
         this.pessoaRepository = pessoaRepository;
         this.passwordEncoder = passwordEncoder;
+        this.alunoMapper = alunoMapper;
     }
 
     public List<AlunoResponseGetDTO> listar() {
@@ -41,7 +43,7 @@ public class AlunoService {
         List<AlunoResponseGetDTO> listaRespostaAlunos = new ArrayList<>();
 
         for (Aluno aluno : listaAlunos) {
-            AlunoResponseGetDTO respostaDTO = AlunoMapper.toResponseDTO(aluno);
+            AlunoResponseGetDTO respostaDTO = alunoMapper.toResponseDTO(aluno);
             listaRespostaAlunos.add(respostaDTO);
         }
 
@@ -51,7 +53,7 @@ public class AlunoService {
     public AlunoResponseGetDTO buscarPorId(Integer id) {
         Aluno aluno = alunoRepository.findById(id)
                 .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno não encontrado com ID: " + id));
-        return AlunoMapper.toResponseDTO(aluno);
+        return alunoMapper.toResponseDTO(aluno);
     }
 
     public AlunoResponseGetDTO cadastrar(Aluno aluno) {
@@ -76,7 +78,7 @@ public class AlunoService {
         aluno.setSenha(senhaCriptografada);
 
         alunoRepository.save(aluno);
-        return AlunoMapper.toResponseDTO(aluno);
+        return alunoMapper.toResponseDTO(aluno);
     }
 
     public AlunoResponseGetDTO atualizar(Integer id, Aluno novoAluno) {
@@ -104,7 +106,7 @@ public class AlunoService {
         alunoExistente.setNivelExperiencia(novoAluno.getNivelExperiencia());
 
         alunoRepository.save(alunoExistente);
-        return AlunoMapper.toResponseDTO(alunoExistente);
+        return alunoMapper.toResponseDTO(alunoExistente);
     }
 
     public AlunoResponsePatchDTO atualizarParcial(Integer id, AlunoRequestPatchDTO dto) {

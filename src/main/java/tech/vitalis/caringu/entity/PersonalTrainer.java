@@ -1,6 +1,6 @@
 package tech.vitalis.caringu.entity;
 
-import tech.vitalis.caringu.converter.StringListConverter;
+import tech.vitalis.caringu.entity.Converter.StringListConverter;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public class PersonalTrainer extends Pessoa {
     @Column(nullable = false, length = 20)
     private String cref;
 
-    @Convert(converter = StringListConverter.class)
+    @Convert(converter = tech.vitalis.caringu.entity.Converter.StringListConverter.class)
     @Column(columnDefinition = "json", nullable = false)
     private List<String> especialidade;
 

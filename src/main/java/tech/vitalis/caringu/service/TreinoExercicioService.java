@@ -7,15 +7,11 @@ import tech.vitalis.caringu.dtos.TreinoExericio.TreinoExercicioResponseGetDto;
 import tech.vitalis.caringu.entity.Exercicio;
 import tech.vitalis.caringu.entity.Treino;
 import tech.vitalis.caringu.entity.TreinoExercicio;
-import tech.vitalis.caringu.enums.TreinoExercicio.GrauDificuldadeValidatorEnum;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.mapper.TreinoExercicioMapper;
 import tech.vitalis.caringu.repository.ExercicioRepository;
 import tech.vitalis.caringu.repository.TreinoExercicioRepository;
 import tech.vitalis.caringu.repository.TreinoRepository;
-import tech.vitalis.caringu.strategy.Aluno.NivelAtividadeEnumValidationStrategy;
-import tech.vitalis.caringu.strategy.Aluno.NivelExperienciaEnumValidationStrategy;
-import tech.vitalis.caringu.strategy.Pessoa.GeneroEnumValidationStrategy;
 import tech.vitalis.caringu.strategy.TreinoExercio.GrauDificuldadeEnumValidator;
 import tech.vitalis.caringu.strategy.TreinoExercio.OrigemTreinoExercicioEnumValidator;
 
@@ -110,8 +106,6 @@ public class TreinoExercicioService {
         TreinoExercicio treinoExercicioExistente = treinoExercicioRepository.findById(id).
                 orElseThrow(() -> new ApiExceptions.BadRequestException("Exercício com o ID " + id + " não encontrado."));
 
-        treinoExercicioExistente.setTreinos(null);
-        treinoExercicioExistente.setExercicio(null);
         treinoExercicioRepository.deleteById(id);
     }
 
@@ -131,13 +125,12 @@ public class TreinoExercicioService {
         treinoExercicioRepository.save(treinoExistente);
     }
 
-    public void removerComDesassociacao(Integer id) {
+    public void removerAssociacao(Integer id) {
         TreinoExercicio treinoExistente = treinoExercicioRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Treino com ID " + id + " não encontrado"));
 
         treinoExistente.setTreinos(null);
         treinoExistente.setExercicio(null);
         treinoExercicioRepository.save(treinoExistente); // desassocia
-        treinoExercicioRepository.deleteById(id); // deleta
     }
 }

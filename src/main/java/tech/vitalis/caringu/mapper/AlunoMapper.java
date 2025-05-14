@@ -1,12 +1,14 @@
 package tech.vitalis.caringu.mapper;
 
+import org.springframework.stereotype.Component;
 import tech.vitalis.caringu.dtos.Aluno.AlunoRequestPostDTO;
 import tech.vitalis.caringu.dtos.Aluno.AlunoResponseGetDTO;
 import tech.vitalis.caringu.entity.Aluno;
 
+@Component
 public class AlunoMapper {
 
-    public static Aluno toEntity(AlunoRequestPostDTO cadastroDTO) {
+    public Aluno toEntity(AlunoRequestPostDTO cadastroDTO) {
         Aluno aluno = new Aluno();
 
         aluno.setNome(cadastroDTO.nome());
@@ -25,7 +27,7 @@ public class AlunoMapper {
         return aluno;
     }
 
-    public static AlunoResponseGetDTO toResponseDTO(Aluno aluno) {
+    public AlunoResponseGetDTO toResponseDTO(Aluno aluno) {
 
         return new AlunoResponseGetDTO(
                 aluno.getId(),
