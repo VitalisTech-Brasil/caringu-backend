@@ -5,10 +5,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.vitalis.caringu.dtos.Aluno.AlunoRequestPatchDTO;
-import tech.vitalis.caringu.dtos.Aluno.AlunoRequestPostDTO;
-import tech.vitalis.caringu.dtos.Aluno.AlunoResponsePatchDTO;
-import tech.vitalis.caringu.dtos.Aluno.AlunoResponseGetDTO;
+import tech.vitalis.caringu.dtos.Aluno.*;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.mapper.AlunoMapper;
 import tech.vitalis.caringu.service.AlunoService;
@@ -34,6 +31,13 @@ public class AlunoController {
         List<AlunoResponseGetDTO> listaAlunos = service.listar();
 
         return ResponseEntity.status(200).body(listaAlunos);
+    }
+
+    @GetMapping("/anamneses-pendentes")
+    public ResponseEntity<List<AlunoResponseGetDTO>> listarAlunosSemAnamnese() {
+        List<AlunoResponseGetDTO> alunosSemAnamnese = service.buscarAlunosSemAnamnese();
+
+        return ResponseEntity.ok(alunosSemAnamnese);
     }
 
     @GetMapping("/{id}")
@@ -74,6 +78,18 @@ public class AlunoController {
 
         AlunoResponsePatchDTO atualizado = service.atualizarParcial(id, atualizacoes);
         return ResponseEntity.ok(atualizado);
+    }
+
+    @PatchMapping("/{id}/dados-fisicos")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "Atualizar apenas os dados físicos do aluno utilizados pela anamnese")
+    public ResponseEntity<AlunoResponsePatchDadosFisicosDTO> atualizarDadosFisicos(
+            @PathVariable Integer id,
+            @Valid @RequestBody AlunoRequestPatchDadosFisicosDTO dto) {
+
+        AlunoResponsePatchDadosFisicosDTO atualizado = service.atualizarDadosFisicos(id, dto);
+
+        return ResponseEntity.ok().body(atualizado);
     }
 
     @DeleteMapping("/{id}")

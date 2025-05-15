@@ -19,7 +19,6 @@ public class TreinoController {
 
     private final TreinoService treinoService;
 
-
     public TreinoController(TreinoService treinoService) {
         this.treinoService = treinoService;
     }
@@ -41,6 +40,12 @@ public class TreinoController {
     @Operation(summary = "Buscar Treino por id")
     public ResponseEntity<TreinoResponseGetDTO> buscarPorId(@PathVariable Integer id){
         return ResponseEntity.ok(treinoService.buscarPorId(id));
+    }
+
+    @GetMapping("/treinos-criados/{idPersonal}")
+    public ResponseEntity<Integer> buscarTreinosCriados(@PathVariable Integer idPersonal) {
+        Integer quantidadeTreinosCriados = treinoService.obterQuantidadeTreinosCriados(idPersonal);
+        return ResponseEntity.status(200).body(quantidadeTreinosCriados);
     }
 
     @PutMapping("/{id}/personal/{personalId}")

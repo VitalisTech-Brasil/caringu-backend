@@ -1,6 +1,8 @@
 package tech.vitalis.caringu.mapper;
 
 import org.springframework.stereotype.Component;
+import tech.vitalis.caringu.dtos.PerfilAluno.AlunoGetPerfilDetalhesDTO;
+import tech.vitalis.caringu.dtos.PerfilAluno.PessoaGetPerfilDetalhesDTO;
 import tech.vitalis.caringu.dtos.Pessoa.PessoaRequestPostDTO;
 import tech.vitalis.caringu.dtos.Pessoa.PessoaResponseFotoPerfilGetDTO;
 import tech.vitalis.caringu.dtos.Pessoa.PessoaResponseGetDTO;
@@ -70,6 +72,17 @@ public class PessoaMapper {
         if (dto.genero() != null) {
             pessoa.setGenero(dto.genero());
         }
+    }
+
+    public PessoaGetPerfilDetalhesDTO toResponsePerfilDetalhesDTO(Pessoa pessoa) {
+        return new PessoaGetPerfilDetalhesDTO(
+                pessoa.getNome(),
+                pessoa.getEmail(),
+                pessoa.getCelular(),
+                pessoa.getUrlFotoPerfil(),
+                pessoa.getDataNascimento(),
+                pessoa.getGenero()
+        );
     }
 
     public static Pessoa of(PessoaLoginDTO dto) {

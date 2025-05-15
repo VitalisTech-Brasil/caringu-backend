@@ -7,6 +7,8 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import tech.vitalis.caringu.exception.Aluno.AlunoNaoEncontradoException;
+import tech.vitalis.caringu.exception.Anamnese.AnamneseJaCadastradaException;
+import tech.vitalis.caringu.exception.Anamnese.AnamneseNaoEncontradaException;
 import tech.vitalis.caringu.exception.ApiExceptions.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import tech.vitalis.caringu.exception.Especialidade.EspecialidadeNaoEncontrada;
 import tech.vitalis.caringu.exception.PersonalTrainer.CrefJaExisteException;
 import tech.vitalis.caringu.exception.PersonalTrainer.PersonalNaoEncontradoException;
 import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
@@ -47,6 +50,11 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
     }
 
+    @ExceptionHandler(EspecialidadeNaoEncontrada.class)
+    public ResponseEntity<Map<String, Object>> handleAlunoNaoEncontrado(EspecialidadeNaoEncontrada ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+    }
+
     @ExceptionHandler(PersonalNaoEncontradoException.class)
     public ResponseEntity<Map<String, Object>> handlePersonalNaoEncontrado(PersonalNaoEncontradoException ex, WebRequest request) {
         return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
@@ -55,6 +63,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PessoaNaoEncontradaException.class)
     public ResponseEntity<Map<String, Object>> handlePessoaNaoEncontrado(PessoaNaoEncontradaException ex, WebRequest request) {
         return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(AnamneseNaoEncontradaException.class)
+    public ResponseEntity<Map<String, Object>> handleAnamneseNaoEncontrado(AnamneseNaoEncontradaException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(AnamneseJaCadastradaException.class)
+    public ResponseEntity<Map<String, Object>> handleAnamneseJaCadastrada(AnamneseJaCadastradaException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), request);
     }
 
     @ExceptionHandler(CrefJaExisteException.class)
