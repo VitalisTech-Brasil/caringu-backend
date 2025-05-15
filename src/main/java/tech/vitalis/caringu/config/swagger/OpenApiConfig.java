@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @OpenAPIDefinition(
         info = @Info(
                 title = "API RESTful CaringU",
-                description = "Documentação da API do projeto CaringU, desenvolvida pela Vitalis Tech para gestão de treinos e acompanhamento de alunosId.",
+                description = "Documentação da API do projeto CaringU, desenvolvida pela Vitalis Tech para gestão de treinos e acompanhamento de alunos.",
                 version = "1.0.0",
                 contact = @Contact(
                         name = "Vitalis Tech",

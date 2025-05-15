@@ -29,7 +29,7 @@ public class AlunoController {
 
     @GetMapping
     @SecurityRequirement(name = "Bearer")
-    @Operation(summary = "Listar alunosId")
+    @Operation(summary = "Listar alunos")
     public ResponseEntity<List<AlunoResponseGetDTO>> listar() {
         List<AlunoResponseGetDTO> listaAlunos = service.listar();
 
