@@ -7,7 +7,6 @@ import tech.vitalis.caringu.enums.PeriodoEnum;
 
 @Entity
 @Table(name = "planos")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Plano {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -30,6 +30,24 @@ public class AlunoMapper {
         return aluno;
     }
 
+    public Aluno responseToEntity(AlunoResponseGetDTO alunoResponseGetDTO) {
+        Aluno aluno = new Aluno();
+
+        aluno.setNome(alunoResponseGetDTO.nome());
+        aluno.setEmail(alunoResponseGetDTO.email());
+        aluno.setCelular(alunoResponseGetDTO.celular());
+        aluno.setUrlFotoPerfil(alunoResponseGetDTO.urlFotoPerfil());
+        aluno.setDataNascimento(alunoResponseGetDTO.dataNascimento());
+        aluno.setGenero(alunoResponseGetDTO.genero());
+
+        aluno.setPeso(alunoResponseGetDTO.peso());
+        aluno.setAltura(alunoResponseGetDTO.altura());
+        aluno.setNivelAtividade(alunoResponseGetDTO.nivelAtividade());
+        aluno.setNivelExperiencia(alunoResponseGetDTO.nivelExperiencia());
+
+        return aluno;
+    }
+
     public AlunoResponseGetDTO toResponseDTO(Aluno aluno) {
 
         return new AlunoResponseGetDTO(
