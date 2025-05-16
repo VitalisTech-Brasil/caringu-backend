@@ -43,8 +43,8 @@ public record PersonalTrainerRequestPatchDTO(
         String cref,
 
         @NotEmpty(message = "É necessário informar ao menos uma especialidade")
-        @Schema(description = "Lista de especialidades")
-        List<@NotBlank(message = "Especialidade não pode ser vazia") String> especialidade,
+        @Schema(description = "Lista de IDs das especialidades que o personal possui")
+        List<@NotNull(message = "ID da especialidade não pode ser nulo") Integer> especialidadesIds,
 
         @NotNull
         @Schema(description = "Anos de experiência do profissional")

@@ -85,6 +85,7 @@ public class AlunoService {
 
     public AlunoResponseGetDTO buscarPorId(Integer id) {
         Aluno aluno = buscarAlunoOuLancarExcecao(id);
+      
         return alunoMapper.toResponseDTO(aluno);
     }
 

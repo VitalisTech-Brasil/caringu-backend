@@ -7,17 +7,34 @@ import lombok.*;
 import java.io.Serializable;
 
 @Embeddable
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode
 public class AlunoTreinoId implements Serializable {
 
     @Positive
-    private Integer treinoId;
-    @Positive
     private Integer alunosId;
     @Positive
-    private Integer exercicioId;
+    private Integer treinoExercicioId;
+
+    public AlunoTreinoId(Integer alunosId, Integer treinoExercicioId) {
+        this.alunosId = alunosId;
+        this.treinoExercicioId = treinoExercicioId;
+    }
+
+    public AlunoTreinoId() {}
+
+    public Integer getAlunosId() {
+        return alunosId;
+    }
+
+    public void setAlunosId(Integer alunosId) {
+        this.alunosId = alunosId;
+    }
+
+    public Integer getTreinoExercicioId() {
+        return treinoExercicioId;
+    }
+
+    public void setTreinoExercicioId(Integer treinoExercicioId) {
+        this.treinoExercicioId = treinoExercicioId;
+    }
 }

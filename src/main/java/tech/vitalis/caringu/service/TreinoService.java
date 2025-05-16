@@ -48,6 +48,10 @@ public class TreinoService {
         return treinoMapper.toResponseDTO(treino);
     }
 
+    public Integer obterQuantidadeTreinosCriados(Integer personalId) {
+        return treinoRepository.countByPersonalId(personalId);
+    }
+
     public List<TreinoResponseGetDTO> listarTodos(){
         return treinoRepository.findAll()
                 .stream()

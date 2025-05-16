@@ -4,16 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioRequestPostDTO;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioResponseGetDTO;
-import tech.vitalis.caringu.enums.Exercicio.GrupoMuscularValidatorEnum;
-import tech.vitalis.caringu.enums.Exercicio.OrigemValidatorEnum;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.mapper.ExercicioMapper;
 import tech.vitalis.caringu.entity.Exercicio;
 import tech.vitalis.caringu.repository.ExercicioRepository;
 import tech.vitalis.caringu.strategy.Exercicio.GrupoMuscularEnumValidator;
 import tech.vitalis.caringu.strategy.Exercicio.OrigemEnumValidator;
-import tech.vitalis.caringu.strategy.TreinoExercio.GrauDificuldadeEnumValidator;
-import tech.vitalis.caringu.strategy.TreinoExercio.OrigemTreinoExercicioEnumValidator;
 
 import java.util.List;
 import java.util.Map;

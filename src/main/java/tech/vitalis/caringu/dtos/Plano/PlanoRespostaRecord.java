@@ -8,6 +8,9 @@ import jakarta.validation.constraints.Positive;
 import tech.vitalis.caringu.enums.PeriodoEnum;
 
 public record PlanoRespostaRecord(
+
+        Integer id,
+
         @NotBlank(message = "Nome do plano é obrigatório")
         String nome,
 

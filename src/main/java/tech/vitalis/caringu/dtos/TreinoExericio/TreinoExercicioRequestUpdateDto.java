@@ -24,7 +24,7 @@ public record TreinoExercicioRequestUpdateDto(
         @NotNull(message = "Hora de Criaçãp é obrigatória")
         LocalDateTime dataHoraCriacao,
         LocalDateTime dataHoraModificacao,
-        @NotBlank(message = "O Origem do Treino Exercício é obrigatório.")
+        @NotNull(message = "O Origem do Treino Exercício é obrigatório.")
         OrigemTreinoExercicioEnum origemTreinoExercicio,
         Boolean favorito,
         @NotNull(message = "Grau de Dificuldade é obrigatório ")

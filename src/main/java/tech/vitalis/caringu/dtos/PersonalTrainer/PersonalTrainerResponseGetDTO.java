@@ -1,5 +1,7 @@
 package tech.vitalis.caringu.dtos.PersonalTrainer;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import tech.vitalis.caringu.dtos.Especialidade.EspecialidadeResponseGetDTO;
 import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
 
 import java.time.LocalDate;
@@ -16,7 +18,10 @@ public record PersonalTrainerResponseGetDTO(
         GeneroEnum genero,
 
         String cref,
-        List<String> especialidade,
+
+        @Schema(description = "Nomes das especialidades do personal trainer")
+        List<EspecialidadeResponseGetDTO> especialidades,
+
         Integer experiencia,
         LocalDateTime dataCadastro
 ) {

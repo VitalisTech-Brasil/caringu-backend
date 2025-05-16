@@ -53,7 +53,7 @@ public class TreinoExercicioController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Remover Treino")
     public ResponseEntity<Void> removerTreino(@PathVariable Integer id){
-        treinoExercicioService.removerComDesassociacao(id);
+        treinoExercicioService.removerAssociacao(id);
         treinoExercicioService.remover(id);
         return ResponseEntity.noContent().build();
     }

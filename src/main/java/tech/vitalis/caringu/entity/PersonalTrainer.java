@@ -1,8 +1,9 @@
 package tech.vitalis.caringu.entity;
 
-import jakarta.persistence.*;
 import tech.vitalis.caringu.entity.Converter.StringListConverter;
 
+import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,18 +14,17 @@ public class PersonalTrainer extends Pessoa {
     @Column(nullable = false, length = 20)
     private String cref;
 
-    @Convert(converter = StringListConverter.class)
-    @Column(columnDefinition = "json", nullable = false)
-    private List<String> especialidade;
-
     private Integer experiencia;
+
+    @OneToMany(mappedBy = "personalTrainer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PersonalTrainerEspecialidade> especialidades = new ArrayList<>();
 
     public PersonalTrainer() {}
 
-    public PersonalTrainer(String cref, List<String> especialidade, Integer experiencia) {
+    public PersonalTrainer(String cref, Integer experiencia, List<PersonalTrainerEspecialidade> especialidades) {
         this.cref = cref;
-        this.especialidade = especialidade;
         this.experiencia = experiencia;
+        this.especialidades = especialidades;
     }
 
     public String getCref() {
@@ -35,14 +35,6 @@ public class PersonalTrainer extends Pessoa {
         this.cref = cref;
     }
 
-    public List<String> getEspecialidade() {
-        return especialidade;
-    }
-
-    public void setEspecialidade(List<String> especialidade) {
-        this.especialidade = especialidade;
-    }
-
     public Integer getExperiencia() {
         return experiencia;
     }
@@ -51,7 +43,11 @@ public class PersonalTrainer extends Pessoa {
         this.experiencia = experiencia;
     }
 
-    public PersonalTrainer(Integer id) {
-        this.setId(id);
+    public List<PersonalTrainerEspecialidade> getEspecialidades() {
+        return especialidades;
+    }
+
+    public void setEspecialidades(List<PersonalTrainerEspecialidade> especialidades) {
+        this.especialidades = especialidades;
     }
 }

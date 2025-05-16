@@ -20,7 +20,7 @@ public class PlanoController {
         this.planoService = planoService;
     }
 
-    @GetMapping("/buscarPorPersonal/{personalId}")
+    @GetMapping("/{personalId}")
     @Operation(summary = "Buscar todos os planos")
     public ResponseEntity<List<PlanoRespostaRecord>> listarPlanosPorPersonal(@PathVariable Integer personalId){
         List<PlanoRespostaRecord> listaPlanoRespostaRecord = planoService.listarPlanosPorPersonal(personalId);
@@ -30,14 +30,14 @@ public class PlanoController {
         return ResponseEntity.status(200).body(listaPlanoRespostaRecord);
     }
 
-    @PostMapping("/cadastrarPlano/{personalId}")
+    @PostMapping("/{personalId}")
     @Operation(summary = "Cadastrar plano")
     public ResponseEntity<PlanoRespostaRecord> cadastrarPlano (@PathVariable Integer personalId, @RequestBody PlanoRequisicaoRecord planoRequisicaoRecord) {
         PlanoRespostaRecord planoRespostaRecord = planoService.cadastrarPlano(personalId, planoRequisicaoRecord);
         return ResponseEntity.status(201).body(planoRespostaRecord);
     }
 
-    @PutMapping("/atualizarPlano/{personalId}/{planoId}")
+    @PutMapping("/{personalId}/{planoId}")
     @Operation(summary = "Atualizar plano")
     public ResponseEntity<PlanoRespostaRecord> atualizarPlano(@PathVariable Integer personalId, @PathVariable Integer planoId, @RequestBody PlanoRequisicaoRecord planoRequisicaoRecord){
         PlanoRespostaRecord planoRespostaRecord = planoService.atualizarPlano(planoId, planoRequisicaoRecord, personalId);
@@ -45,7 +45,7 @@ public class PlanoController {
     }
 
 
-    @DeleteMapping("/deletarPlano/{personalId}/{planoId}")
+    @DeleteMapping("/{personalId}/{planoId}")
     @Operation(summary = "Deletar plano")
     public ResponseEntity<Void> deletarPlano(@PathVariable Integer personalId, @PathVariable Integer planoId){
         planoService.deletarPlano(personalId,planoId);
