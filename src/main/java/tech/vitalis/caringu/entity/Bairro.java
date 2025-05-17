@@ -1,27 +1,50 @@
 package tech.vitalis.caringu.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import lombok.*;
 
 
 @Entity
-@Table(name = "treino")
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Table(name = "bairros")
 public class Bairro {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @NotBlank
+
     private String nome;
+
     @ManyToOne
-    @JoinColumn(name = "cidades_id", nullable = false)
+    @JoinColumn(name = "cidades_id")
     private Cidade cidade;
 
+    public Bairro() {}
+
+    public Bairro(Integer id, String nome, Cidade cidade) {
+        this.id = id;
+        this.nome = nome;
+        this.cidade = cidade;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public Cidade getCidade() {
+        return cidade;
+    }
+
+    public void setCidade(Cidade cidade) {
+        this.cidade = cidade;
+    }
 }

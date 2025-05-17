@@ -18,6 +18,7 @@ import tech.vitalis.caringu.service.AlunoService;
 import tech.vitalis.caringu.service.AnamneseService;
 
 @RestController
+@SecurityRequirement(name = "Bearer")
 @RequestMapping("/anamnese")
 public class AnamneseController {
 
@@ -27,7 +28,6 @@ public class AnamneseController {
     }
 
     @GetMapping("/{id}")
-    @SecurityRequirement(name = "Bearer")
     @Operation(summary = "Recuperar detalhes completos do aluno, incluindo informações de pessoa, anamnese e dados físicos")
     public ResponseEntity<AnamneseGetPerfilDetalhesDTO> obterDetalhesAluno(@PathVariable Integer id) {
         AnamneseGetPerfilDetalhesDTO detalhes = service.obterDetalhes(id);
@@ -35,7 +35,6 @@ public class AnamneseController {
     }
 
     @PostMapping
-    @SecurityRequirement(name = "Bearer")
     @Operation(
             summary = "Cadastrar anamnese",
             description = "Cria uma nova anamnese no sistema com as informações fornecidas no corpo da requisição. Requer autenticação via JWT.",
