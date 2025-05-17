@@ -9,8 +9,10 @@ import tech.vitalis.caringu.dtos.Anamnese.AnamneseResponsePatchDTO;
 import tech.vitalis.caringu.dtos.PerfilAluno.AnamneseGetPerfilDetalhesDTO;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.entity.Anamnese;
+import tech.vitalis.caringu.enums.Anamnese.FrequenciaTreinoEnum;
 import tech.vitalis.caringu.exception.Anamnese.AnamneseJaCadastradaException;
 import tech.vitalis.caringu.exception.Anamnese.AnamneseNaoEncontradaException;
+import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.mapper.AnamneseMapper;
 import tech.vitalis.caringu.repository.AnamneseRepository;
 
@@ -41,6 +43,12 @@ public class AnamneseService {
 
         if (anamneseRepository.existsByAlunoId(aluno.getId())) {
             throw new AnamneseJaCadastradaException("Este aluno já possui uma anamnese cadastrada.");
+        }
+
+        try {
+            FrequenciaTreinoEnum.fromValor(requestDTO.frequenciaTreino());
+        } catch (IllegalArgumentException e) {
+            throw new ApiExceptions.BadRequestException("Valor inválido para 'FrequenciaTreino'. Valores válidos: '1', '2', '3', '4', '5', '6', '7'");
         }
 
         Anamnese anamnese = anamneseMapper.toEntity(requestDTO, aluno);

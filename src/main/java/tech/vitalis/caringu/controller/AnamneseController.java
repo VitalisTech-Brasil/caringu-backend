@@ -13,8 +13,6 @@ import tech.vitalis.caringu.dtos.Anamnese.AnamneseRequestPostDTO;
 import tech.vitalis.caringu.dtos.Anamnese.AnamneseResponseGetDTO;
 import tech.vitalis.caringu.dtos.Anamnese.AnamneseResponsePatchDTO;
 import tech.vitalis.caringu.dtos.PerfilAluno.AnamneseGetPerfilDetalhesDTO;
-import tech.vitalis.caringu.entity.Aluno;
-import tech.vitalis.caringu.entity.Anamnese;
 import tech.vitalis.caringu.mapper.AnamneseMapper;
 import tech.vitalis.caringu.service.AlunoService;
 import tech.vitalis.caringu.service.AnamneseService;
@@ -24,13 +22,8 @@ import tech.vitalis.caringu.service.AnamneseService;
 public class AnamneseController {
 
     private final AnamneseService service;
-    private final AlunoService alunoService;
-    private final AnamneseMapper mapper;
-
-    public AnamneseController(AnamneseService service, AlunoService alunoService, AnamneseMapper mapper) {
+    public AnamneseController(AnamneseService service) {
         this.service = service;
-        this.alunoService = alunoService;
-        this.mapper = mapper;
     }
 
     @GetMapping("/{id}/detalhes")
