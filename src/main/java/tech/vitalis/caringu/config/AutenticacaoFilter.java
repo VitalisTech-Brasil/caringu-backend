@@ -1,6 +1,9 @@
 package tech.vitalis.caringu.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +18,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import tech.vitalis.caringu.service.AutenticacaoService;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class AutenticacaoFilter extends OncePerRequestFilter {
@@ -50,6 +56,19 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
                 LOGGER.trace("[FALHA AUTENTICACAO] - stack trace: %s", exception);
 
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                Map<String, Object> errorDetails = new LinkedHashMap<>();
+                errorDetails.put("timestamp", Instant.now().toString());
+                errorDetails.put("status", HttpServletResponse.SC_UNAUTHORIZED);
+                errorDetails.put("error", "TokenExpired");
+                errorDetails.put("message", "JWT token expired");
+                errorDetails.put("path", request.getRequestURI());
+
+                ObjectMapper mapper = new ObjectMapper();
+                String responseBody = mapper.writeValueAsString(errorDetails);
+
+                response.getWriter().write(responseBody);
+                return;
             }
 
         }

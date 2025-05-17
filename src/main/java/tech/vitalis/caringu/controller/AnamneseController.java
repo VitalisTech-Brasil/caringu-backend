@@ -26,7 +26,7 @@ public class AnamneseController {
         this.service = service;
     }
 
-    @GetMapping("/{id}/detalhes")
+    @GetMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     @Operation(summary = "Recuperar detalhes completos do aluno, incluindo informações de pessoa, anamnese e dados físicos")
     public ResponseEntity<AnamneseGetPerfilDetalhesDTO> obterDetalhesAluno(@PathVariable Integer id) {
