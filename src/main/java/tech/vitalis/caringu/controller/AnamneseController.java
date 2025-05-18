@@ -12,9 +12,8 @@ import tech.vitalis.caringu.dtos.Anamnese.AnamneseRequestPatchDTO;
 import tech.vitalis.caringu.dtos.Anamnese.AnamneseRequestPostDTO;
 import tech.vitalis.caringu.dtos.Anamnese.AnamneseResponseGetDTO;
 import tech.vitalis.caringu.dtos.Anamnese.AnamneseResponsePatchDTO;
+import tech.vitalis.caringu.dtos.KPIs.KpiContadorResponse;
 import tech.vitalis.caringu.dtos.PerfilAluno.AnamneseGetPerfilDetalhesDTO;
-import tech.vitalis.caringu.mapper.AnamneseMapper;
-import tech.vitalis.caringu.service.AlunoService;
 import tech.vitalis.caringu.service.AnamneseService;
 
 @RestController
@@ -32,6 +31,11 @@ public class AnamneseController {
     public ResponseEntity<AnamneseGetPerfilDetalhesDTO> obterDetalhesAluno(@PathVariable Integer id) {
         AnamneseGetPerfilDetalhesDTO detalhes = service.obterDetalhes(id);
         return ResponseEntity.ok(detalhes);
+    }
+
+    @GetMapping("/kpis/pendentes/{idPersonal}")
+    public Integer contarPendentes(@PathVariable Integer idPersonal) {
+        return service.contarAnamnesesPendentes(idPersonal);
     }
 
     @PostMapping

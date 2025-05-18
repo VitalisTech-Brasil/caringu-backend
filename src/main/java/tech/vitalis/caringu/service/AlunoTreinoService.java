@@ -4,6 +4,7 @@
     import tech.vitalis.caringu.dtos.AlunosTreino.AlunoTreinoRequestPostDTO;
     import tech.vitalis.caringu.dtos.AlunosTreino.AlunoTreinoRequestUpdateDTO;
     import tech.vitalis.caringu.dtos.AlunosTreino.AlunoTreinoResponseGetDTO;
+    import tech.vitalis.caringu.dtos.KPIs.KpiContadorResponse;
     import tech.vitalis.caringu.entity.Aluno;
     import tech.vitalis.caringu.entity.AlunoTreino;
     import tech.vitalis.caringu.entity.TreinoExercicio;
@@ -13,6 +14,7 @@
     import tech.vitalis.caringu.repository.AlunoTreinoRepository;
     import tech.vitalis.caringu.repository.TreinoExercicioRepository;
 
+    import java.time.LocalDate;
     import java.time.LocalDateTime;
     import java.util.List;
     import java.util.stream.Collectors;
@@ -68,6 +70,11 @@
             return alunoTreinoMapper.toResponseDTO(alunoTreino);
         }
 
+        public Integer contarTreinosProximosVencimento(Integer personalId, int dias) {
+            LocalDate dataLimite = LocalDate.now().plusDays(dias);
+            return alunoTreinoRepository.countTreinosProximosVencimento(personalId, dataLimite);
+        }
+
         public AlunoTreinoResponseGetDTO atualizar(Integer id, AlunoTreinoRequestUpdateDTO treinoDTO, Integer alunosId, Integer treinosExerciciosId){
             AlunoTreino alunoTreinoExistente = alunoTreinoRepository.findById(id)
                     .orElseThrow(() -> new ApiExceptions.BadRequestException("Aluno Treino com o ID " + id + " não encontrado."));
@@ -103,7 +110,7 @@
                 throw new ApiExceptions.BadRequestException("A data de fim deve ser no futuro.");
             }
 
-            if (alunoTreinoExistente.getDataVencimento().isBefore(LocalDateTime.now())) {
+            if (alunoTreinoExistente.getDataVencimento().isBefore(LocalDate.now())) {
                 throw new ApiExceptions.BadRequestException("A data de vencimento deve ser no futuro.");
             }
             alunoTreinoRepository.deleteById(id);

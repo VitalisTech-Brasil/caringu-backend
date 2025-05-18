@@ -7,6 +7,7 @@ import tech.vitalis.caringu.dtos.TreinoExericio.TreinoExercicioResponseGetDto;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.entity.TreinoExercicio;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,6 +19,6 @@ public record AlunoTreinoResponseGetDTO(
         LocalDateTime dataHorarioFim,
         List<String> diasSemana,
         Integer periodoAvaliacao,
-        LocalDateTime dataVencimento
+        LocalDate dataVencimento
 ) {
 }

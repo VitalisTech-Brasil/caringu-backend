@@ -3,6 +3,7 @@ package tech.vitalis.caringu.dtos.AlunosTreino;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public record AlunoTreinoRequestUpdateDTO(
         @PositiveOrZero
         Integer periodoAvaliacao,
         @FutureOrPresent
-        LocalDateTime dataVencimento
+        LocalDate dataVencimento
 
 ) {
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.AlunosTreino.AlunoTreinoRequestPostDTO;
 import tech.vitalis.caringu.dtos.AlunosTreino.AlunoTreinoRequestUpdateDTO;
 import tech.vitalis.caringu.dtos.AlunosTreino.AlunoTreinoResponseGetDTO;
+import tech.vitalis.caringu.dtos.KPIs.KpiContadorResponse;
 import tech.vitalis.caringu.service.AlunoTreinoService;
 
 import java.util.List;
@@ -33,6 +34,12 @@ public class AlunoTreinoController {
     @Operation(summary = "Listar por Id os Alunos Treinos")
     public ResponseEntity<AlunoTreinoResponseGetDTO> listarPorId(@PathVariable Integer id){
         return ResponseEntity.ok(service.buscarPorId(id));
+    }
+
+    @GetMapping("/kpis/proximos-vencimento/{personalId}")
+    public Integer contarProximosDoVencimento(@PathVariable Integer personalId,
+                                              @RequestParam(defaultValue = "7") int dias) {
+        return service.contarTreinosProximosVencimento(personalId, dias);
     }
 
     @PostMapping

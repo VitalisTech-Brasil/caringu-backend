@@ -13,4 +13,9 @@ import java.util.Optional;
 @Repository
 public interface PlanoContratadoRepository extends JpaRepository<PlanoContratado, Integer> {
 
+    @Query("SELECT COUNT(DISTINCT pc.aluno.id) " +
+            "FROM PlanoContratado pc " +
+            "WHERE pc.status = 'ATIVO' " +
+            "AND pc.plano.personalTrainer.id = :personalId")
+    Integer countAlunosAtivosByPersonalId(@Param("personalId") Integer personalId);
 }
