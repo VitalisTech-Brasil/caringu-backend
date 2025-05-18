@@ -6,7 +6,6 @@ import tech.vitalis.caringu.dtos.Anamnese.AnamneseRequestPatchDTO;
 import tech.vitalis.caringu.dtos.Anamnese.AnamneseRequestPostDTO;
 import tech.vitalis.caringu.dtos.Anamnese.AnamneseResponseGetDTO;
 import tech.vitalis.caringu.dtos.Anamnese.AnamneseResponsePatchDTO;
-import tech.vitalis.caringu.dtos.KPIs.KpiContadorResponse;
 import tech.vitalis.caringu.dtos.PerfilAluno.AnamneseGetPerfilDetalhesDTO;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.entity.Anamnese;

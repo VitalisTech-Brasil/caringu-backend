@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.AlunosTreino.AlunoTreinoRequestPostDTO;
 import tech.vitalis.caringu.dtos.AlunosTreino.AlunoTreinoRequestUpdateDTO;
 import tech.vitalis.caringu.dtos.AlunosTreino.AlunoTreinoResponseGetDTO;
-import tech.vitalis.caringu.dtos.KPIs.KpiContadorResponse;
 import tech.vitalis.caringu.service.AlunoTreinoService;
 
 import java.util.List;

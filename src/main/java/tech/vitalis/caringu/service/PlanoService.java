@@ -3,7 +3,6 @@ package tech.vitalis.caringu.service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import tech.vitalis.caringu.dtos.KPIs.KpiContadorResponse;
 import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerResponseGetDTO;
 import tech.vitalis.caringu.dtos.Plano.PlanoRequisicaoRecord;
 import tech.vitalis.caringu.dtos.Plano.PlanoRespostaRecord;
