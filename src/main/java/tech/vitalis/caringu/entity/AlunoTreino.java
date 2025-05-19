@@ -6,6 +6,7 @@ import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,14 +34,14 @@ public class AlunoTreino {
     @Positive
     private Integer periodoAvaliacao;
     @Future
-    private LocalDateTime dataVencimento;
+    private LocalDate dataVencimento;
 
     /*
     @OneToMany(mappedBy = "alunosTreino")
     private List<Feedback> feedbacks; // Para acessar os feedbacks deste treino
      */
 
-    public AlunoTreino(Integer id, Aluno alunos, TreinoExercicio treinosExercicios, LocalDateTime dataHorarioInicio, LocalDateTime dataHorarioFim, List<String> diasSemana, Integer periodoAvaliacao, LocalDateTime dataVencimento) {
+    public AlunoTreino(Integer id, Aluno alunos, TreinoExercicio treinosExercicios, LocalDateTime dataHorarioInicio, LocalDateTime dataHorarioFim, List<String> diasSemana, Integer periodoAvaliacao, LocalDate dataVencimento) {
         this.id = id;
         this.alunos = alunos;
         this.treinosExercicios = treinosExercicios;
@@ -109,11 +110,11 @@ public class AlunoTreino {
         this.periodoAvaliacao = periodoAvaliacao;
     }
 
-    public LocalDateTime getDataVencimento() {
+    public LocalDate getDataVencimento() {
         return dataVencimento;
     }
 
-    public void setDataVencimento(LocalDateTime dataVencimento) {
+    public void setDataVencimento(LocalDate dataVencimento) {
         this.dataVencimento = dataVencimento;
     }
 }

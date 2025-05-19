@@ -17,12 +17,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import tech.vitalis.caringu.exception.Bairro.BairroJaExisteException;
+import tech.vitalis.caringu.exception.Bairro.BairroNaoEncontradoException;
+import tech.vitalis.caringu.exception.Cidade.CidadeJaExisteException;
+import tech.vitalis.caringu.exception.Cidade.CidadeNaoEncontradaException;
 import tech.vitalis.caringu.exception.Especialidade.EspecialidadeNaoEncontrada;
+import tech.vitalis.caringu.exception.Estado.EstadoJaExisteException;
+import tech.vitalis.caringu.exception.Estado.EstadoNaoEncontradoException;
+import tech.vitalis.caringu.exception.EvolucaoCorporal.EvolucaoCorporalJaExisteException;
+import tech.vitalis.caringu.exception.EvolucaoCorporal.EvolucaoCorporalNaoEncontradaException;
 import tech.vitalis.caringu.exception.PersonalTrainer.CrefJaExisteException;
 import tech.vitalis.caringu.exception.PersonalTrainer.PersonalNaoEncontradoException;
 import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
 import tech.vitalis.caringu.exception.Pessoa.PessoaNaoEncontradaException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
+import tech.vitalis.caringu.exception.PreferenciasNotificacao.PreferenciasNotificacaoJaExisteException;
+import tech.vitalis.caringu.exception.PreferenciasNotificacao.PreferenciasNotificacaoNaoEncontradaException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -68,6 +78,56 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AnamneseNaoEncontradaException.class)
     public ResponseEntity<Map<String, Object>> handleAnamneseNaoEncontrado(AnamneseNaoEncontradaException ex, WebRequest request) {
         return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(BairroNaoEncontradoException.class)
+    public ResponseEntity<Map<String, Object>> handleBairroNaoEncontrado(BairroNaoEncontradoException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(CidadeNaoEncontradaException.class)
+    public ResponseEntity<Map<String, Object>> handleCidadeNaoEncontrada(CidadeNaoEncontradaException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(EstadoNaoEncontradoException.class)
+    public ResponseEntity<Map<String, Object>> handleEstadoNaoEncontrado(EstadoNaoEncontradoException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(PreferenciasNotificacaoNaoEncontradaException.class)
+    public ResponseEntity<Map<String, Object>> handlePreferenciasNotificacaoNaoEncontrada(PreferenciasNotificacaoNaoEncontradaException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(EvolucaoCorporalNaoEncontradaException.class)
+    public ResponseEntity<Map<String, Object>> handleEvolucaoCorporalNaoEncontrada(EvolucaoCorporalNaoEncontradaException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(EvolucaoCorporalJaExisteException.class)
+    public ResponseEntity<Map<String, Object>> handleEvolucaoCorporalJaExiste(EvolucaoCorporalJaExisteException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(PreferenciasNotificacaoJaExisteException.class)
+    public ResponseEntity<Map<String, Object>> handlePreferenciasNotificacaolJaExiste(PreferenciasNotificacaoJaExisteException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(BairroJaExisteException.class)
+    public ResponseEntity<Map<String, Object>> handleBairroJaExiste(BairroJaExisteException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(CidadeJaExisteException.class)
+    public ResponseEntity<Map<String, Object>> handleCidadeJaExiste(CidadeJaExisteException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(EstadoJaExisteException.class)
+    public ResponseEntity<Map<String, Object>> handleEstadoJaExiste(EstadoJaExisteException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), request);
     }
 
     @ExceptionHandler(AnamneseJaCadastradaException.class)

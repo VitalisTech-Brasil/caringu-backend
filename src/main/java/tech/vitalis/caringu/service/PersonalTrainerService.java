@@ -37,13 +37,19 @@ public class PersonalTrainerService {
     private final PersonalTrainerMapper personalTrainerMapper;
     private final PersonalTrainerRepository personalTrainerRepository;
     private final EspecialidadeRepository especialidadeRepository;
+    private final PreferenciaNotificacaoService preferenciaNotificacaoService;
 
-    public PersonalTrainerService(PasswordEncoder passwordEncoder, PessoaRepository pessoaRepository, PersonalTrainerMapper personalTrainerMapper, PersonalTrainerRepository personalTrainerRepository, EspecialidadeRepository especialidadeRepository) {
+    public PersonalTrainerService(PasswordEncoder passwordEncoder, PessoaRepository pessoaRepository,
+                                  PersonalTrainerMapper personalTrainerMapper,
+                                  PersonalTrainerRepository personalTrainerRepository,
+                                  EspecialidadeRepository especialidadeRepository,
+                                  PreferenciaNotificacaoService preferenciaNotificacaoService) {
         this.passwordEncoder = passwordEncoder;
         this.pessoaRepository = pessoaRepository;
         this.personalTrainerMapper = personalTrainerMapper;
         this.personalTrainerRepository = personalTrainerRepository;
         this.especialidadeRepository = especialidadeRepository;
+        this.preferenciaNotificacaoService = preferenciaNotificacaoService;
     }
 
     public List<PersonalTrainerResponseGetDTO> listar() {
@@ -104,8 +110,10 @@ public class PersonalTrainerService {
             personalTrainer.setEspecialidades(especialidadesAssociadas);
         }
 
-        personalTrainerRepository.save(personalTrainer);
-        return personalTrainerMapper.toResponseDTO(personalTrainer);
+        PersonalTrainer salvo = personalTrainerRepository.save(personalTrainer);
+        preferenciaNotificacaoService.criarPreferenciasPadrao(salvo);
+
+        return personalTrainerMapper.toResponseDTO(salvo);
     }
 
     public Boolean crefExiste(String cref) {

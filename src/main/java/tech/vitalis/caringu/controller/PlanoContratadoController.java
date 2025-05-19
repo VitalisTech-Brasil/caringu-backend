@@ -4,17 +4,34 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.vitalis.caringu.dtos.Aluno.PlanoPertoFimResponseDTO;
 import tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoRespostaRecord;
+import tech.vitalis.caringu.service.PlanoContratadoService;
 import tech.vitalis.caringu.service.PlanoService;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/planoContratado")
+@RequestMapping("/planos-contratados")
 @SecurityRequirement(name = "Bearer")
 public class PlanoContratadoController {
     private final PlanoService planoService;
+    private final PlanoContratadoService planoContratadoService;
 
-    public PlanoContratadoController(PlanoService planoService) {
+    public PlanoContratadoController(PlanoService planoService, PlanoContratadoService planoContratadoService) {
         this.planoService = planoService;
+        this.planoContratadoService = planoContratadoService;
+    }
+
+    @GetMapping("/kpis/alunos-ativos/{personalId}")
+    public Integer contarAlunosComPlanosAtivos(@PathVariable Integer personalId) {
+        return planoService.contarAlunosAtivos(personalId);
+    }
+
+    @GetMapping("/alunos-perto-do-fim/{personalId}")
+    public ResponseEntity<List<PlanoPertoFimResponseDTO>> alunosComPlanoPertoDoFim(@PathVariable Integer personalId) {
+        List<PlanoPertoFimResponseDTO> resposta = planoContratadoService.listarAlunosComPlanoPertoDoFim(personalId);
+        return ResponseEntity.ok(resposta);
     }
 
     @PostMapping("/contratarPlano/{alunoId}/{planoId}")

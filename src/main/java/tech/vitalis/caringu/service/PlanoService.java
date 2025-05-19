@@ -75,6 +75,10 @@ public class PlanoService {
             planoRepository.deleteById(planoId);
     }
 
+    public Integer contarAlunosAtivos(Integer personalId) {
+        return planoContratadoRepository.countAlunosAtivosByPersonalId(personalId);
+    }
+
     @Transactional
     public PlanoContratadoRespostaRecord contratarPlano(Integer alunoId, Integer planoId){
         Aluno aluno = alunoRepository.findById(alunoId).get();

@@ -29,7 +29,11 @@ import tech.vitalis.caringu.strategy.EnumValidationStrategy;
 import tech.vitalis.caringu.strategy.Pessoa.GeneroEnumValidationStrategy;
 import static tech.vitalis.caringu.strategy.EnumValidador.validarEnums;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -40,27 +44,18 @@ public class AlunoService {
 
     private final PasswordEncoder passwordEncoder;
     private final AlunoMapper alunoMapper;
-    private final PessoaMapper pessoaMapper;
-    private final AnamneseMapper anamneseMapper;
     private final AlunoRepository alunoRepository;
     private final PessoaRepository pessoaRepository;
-    private final AnamneseRepository anamneseRepository;
 
     public AlunoService(PasswordEncoder passwordEncoder,
                         AlunoMapper alunoMapper,
-                        PessoaMapper pessoaMapper,
-                        AnamneseMapper anamneseMapper,
 
                         AlunoRepository alunoRepository,
-                        PessoaRepository pessoaRepository,
-                        AnamneseRepository anamneseRepository) {
+                        PessoaRepository pessoaRepository) {
         this.passwordEncoder = passwordEncoder;
         this.alunoMapper = alunoMapper;
-        this.pessoaMapper = pessoaMapper;
-        this.anamneseMapper = anamneseMapper;
         this.alunoRepository = alunoRepository;
         this.pessoaRepository = pessoaRepository;
-        this.anamneseRepository = anamneseRepository;
     }
 
     public List<AlunoResponseGetDTO> listar() {
@@ -73,6 +68,30 @@ public class AlunoService {
         }
 
         return listaRespostaAlunos;
+    }
+
+    public List<PresencaAlunoResponseDTO> listarPresencas(String periodo, Integer personalId) {
+        LocalDateTime inicio;
+        LocalDateTime fim = LocalDateTime.now();
+
+        if ("SEMANA".equalsIgnoreCase(periodo)) {
+            inicio = LocalDateTime.now()
+                    .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+                    .with(LocalTime.MIN);
+        } else if ("MES".equalsIgnoreCase(periodo)) {
+            inicio = LocalDateTime.now()
+                    .with(TemporalAdjusters.firstDayOfMonth())
+                    .with(LocalTime.MIN);
+            System.out.println("Data Inicio");
+        } else {
+            throw new IllegalArgumentException("Período inválido. Use 'SEMANA' ou 'MES'.");
+        }
+
+        return alunoRepository.buscarPresencaAlunos(inicio, fim, personalId);
+    }
+
+    public List<AlunoAtivoResponseDTO> listarAlunosAtivos(Integer personalId) {
+        return alunoRepository.buscarAlunosAtivosComIndicadores(personalId);
     }
 
     public List<AlunoResponseGetDTO> buscarAlunosSemAnamnese() {

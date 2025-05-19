@@ -16,9 +16,10 @@ public class PlanoContratado {
     private Aluno aluno;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "plano_id", nullable = false)
+    @JoinColumn(name = "planos_id", nullable = false)
     private Plano plano;
 
+    @Enumerated(EnumType.STRING)
     private StatusEnum status;
 
     @Column(name = "data_contratacao")
