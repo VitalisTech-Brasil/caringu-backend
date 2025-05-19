@@ -33,6 +33,20 @@ public class AlunoController {
         return ResponseEntity.status(200).body(listaAlunos);
     }
 
+    @GetMapping("/presenca/{personalId}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<PresencaAlunoResponseDTO>> listarPresencas(
+            @PathVariable Integer personalId,
+            @RequestParam("periodo") String periodo) {
+        return ResponseEntity.ok(service.listarPresencas(periodo, personalId));
+    }
+
+    @GetMapping("/ativos/{personalId}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<AlunoAtivoResponseDTO>> listarAlunosAtivos(@PathVariable Integer personalId) {
+        return ResponseEntity.ok(service.listarAlunosAtivos(personalId));
+    }
+
     @GetMapping("/anamneses-pendentes")
     public ResponseEntity<List<AlunoResponseGetDTO>> listarAlunosSemAnamnese() {
         List<AlunoResponseGetDTO> alunosSemAnamnese = service.buscarAlunosSemAnamnese();
