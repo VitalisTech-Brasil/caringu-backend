@@ -11,17 +11,12 @@ public record AlunoTreinoRequestPostDTO(
 
         Integer alunosId,
         Integer treinosExerciciosId,
-        @FutureOrPresent
-        @NotNull
-        LocalDateTime dataHorarioInicio,
-        @Future
-        @NotNull
-        LocalDateTime dataHorarioFim,
+        //@FutureOrPresent @NotNull LocalDateTime dataHorarioInicio,
+        //@Future @NotNull LocalDateTime dataHorarioFim,
         @NotEmpty(message = "É necessário informar ao menos uma especialidade")
         @Schema(description = "Lista de especialidades")
         List<@NotBlank(message = "Especialidade não pode ser vazia") String> diasSemana,
-        @PositiveOrZero
-        Integer periodoAvaliacao,
+        //@PositiveOrZero Integer periodoAvaliacao,
         @FutureOrPresent
         LocalDate dataVencimento
 

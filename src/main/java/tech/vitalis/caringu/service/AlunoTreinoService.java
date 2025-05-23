@@ -86,10 +86,10 @@
 
             alunoTreinoExistente.setAlunos(alunoExistente);
             alunoTreinoExistente.setTreinosExercicios(treinoExercicioExistente);
-            alunoTreinoExistente.setDataHorarioInicio(treinoDTO.dataHorarioInicio());
-            alunoTreinoExistente.setDataHorarioFim(treinoDTO.dataHorarioFim());
+//            alunoTreinoExistente.setDataHorarioInicio(treinoDTO.dataHorarioInicio());
+//            alunoTreinoExistente.setDataHorarioFim(treinoDTO.dataHorarioFim());
             alunoTreinoExistente.setDiasSemana(treinoDTO.diasSemana());
-            alunoTreinoExistente.setPeriodoAvaliacao(treinoDTO.periodoAvaliacao());
+//            alunoTreinoExistente.setPeriodoAvaliacao(treinoDTO.periodoAvaliacao());
             alunoTreinoExistente.setDataVencimento(treinoDTO.dataVencimento());
 
             AlunoTreino alunoTreino = alunoTreinoRepository.save(alunoTreinoExistente);
@@ -100,14 +100,9 @@
             AlunoTreino alunoTreinoExistente = alunoTreinoRepository.findById(id)
                     .orElseThrow(() -> new ApiExceptions.BadRequestException("Aluno Treino com o ID " + id + " não encontrado."));
 
-            // Verificar se as datas são válidas
-            if (alunoTreinoExistente.getDataHorarioInicio().isBefore(LocalDateTime.now())) {
-                throw new ApiExceptions.BadRequestException("A data de início deve ser no futuro.");
-            }
+//            if (alunoTreinoExistente.getDataHorarioInicio().isBefore(LocalDateTime.now())) {throw new ApiExceptions.BadRequestException("A data de início deve ser no futuro.");}
 
-            if (alunoTreinoExistente.getDataHorarioFim().isBefore(LocalDateTime.now())) {
-                throw new ApiExceptions.BadRequestException("A data de fim deve ser no futuro.");
-            }
+//            if (alunoTreinoExistente.getDataHorarioFim().isBefore(LocalDateTime.now())) {throw new ApiExceptions.BadRequestException("A data de fim deve ser no futuro.");}
 
             if (alunoTreinoExistente.getDataVencimento().isBefore(LocalDate.now())) {
                 throw new ApiExceptions.BadRequestException("A data de vencimento deve ser no futuro.");

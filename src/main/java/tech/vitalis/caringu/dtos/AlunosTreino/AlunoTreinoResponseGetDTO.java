@@ -15,10 +15,10 @@ public record AlunoTreinoResponseGetDTO(
         Integer id,
         AlunoResponseGetDTO alunos,
         TreinoExercicioResponseGetDto treinosExercicios,
-        LocalDateTime dataHorarioInicio,
-        LocalDateTime dataHorarioFim,
+        //LocalDateTime dataHorarioInicio,
+        //LocalDateTime dataHorarioFim,
         List<String> diasSemana,
-        Integer periodoAvaliacao,
+//        Integer periodoAvaliacao,
         LocalDate dataVencimento
 ) {
 }
