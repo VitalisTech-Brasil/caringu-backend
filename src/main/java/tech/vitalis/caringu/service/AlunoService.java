@@ -70,38 +70,6 @@ public class AlunoService {
         return listaRespostaAlunos;
     }
 
-    public List<PresencaAlunoResponseDTO> listarPresencas(String periodo, Integer personalId) {
-        LocalDateTime inicio;
-        LocalDateTime fim = LocalDateTime.now();
-
-        if ("SEMANA".equalsIgnoreCase(periodo)) {
-            inicio = LocalDateTime.now()
-                    .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-                    .with(LocalTime.MIN);
-        } else if ("MES".equalsIgnoreCase(periodo)) {
-            inicio = LocalDateTime.now()
-                    .with(TemporalAdjusters.firstDayOfMonth())
-                    .with(LocalTime.MIN);
-            System.out.println("Data Inicio");
-        } else {
-            throw new IllegalArgumentException("Período inválido. Use 'SEMANA' ou 'MES'.");
-        }
-
-        return alunoRepository.buscarPresencaAlunos(inicio, fim, personalId);
-    }
-
-    public List<AlunoAtivoResponseDTO> listarAlunosAtivos(Integer personalId) {
-        return alunoRepository.buscarAlunosAtivosComIndicadores(personalId);
-    }
-
-    public List<AlunoResponseGetDTO> buscarAlunosSemAnamnese() {
-        List<Aluno> alunosSemAnamnese = alunoRepository.findAlunosSemAnamnese();
-
-        return alunosSemAnamnese.stream()
-                .map(alunoMapper::toResponseDTO)
-                .toList();
-    }
-
     public AlunoResponseGetDTO buscarPorId(Integer id) {
         Aluno aluno = buscarAlunoOuLancarExcecao(id);
       
