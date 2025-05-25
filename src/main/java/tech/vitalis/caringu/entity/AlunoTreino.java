@@ -24,15 +24,12 @@ public class AlunoTreino {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "treinos_exercicios_id")
     private TreinoExercicio treinosExercicios;
-    @FutureOrPresent
-    private LocalDateTime dataHorarioInicio;
-    @Future
-    private LocalDateTime dataHorarioFim;
+    //@FutureOrPresent private LocalDateTime dataHorarioInicio;
+    //@Future private LocalDateTime dataHorarioFim;
     @Convert(converter = tech.vitalis.caringu.entity.Converter.StringListConverter.class)
     @Column(columnDefinition = "json", nullable = false)
     private List<String> diasSemana;
-    @Positive
-    private Integer periodoAvaliacao;
+    // @Positive private Integer periodoAvaliacao;
     @Future
     private LocalDate dataVencimento;
 
@@ -41,14 +38,11 @@ public class AlunoTreino {
     private List<Feedback> feedbacks; // Para acessar os feedbacks deste treino
      */
 
-    public AlunoTreino(Integer id, Aluno alunos, TreinoExercicio treinosExercicios, LocalDateTime dataHorarioInicio, LocalDateTime dataHorarioFim, List<String> diasSemana, Integer periodoAvaliacao, LocalDate dataVencimento) {
+    public AlunoTreino(Integer id, Aluno alunos, TreinoExercicio treinosExercicios, List<String> diasSemana, LocalDate dataVencimento) {
         this.id = id;
         this.alunos = alunos;
         this.treinosExercicios = treinosExercicios;
-        this.dataHorarioInicio = dataHorarioInicio;
-        this.dataHorarioFim = dataHorarioFim;
         this.diasSemana = diasSemana;
-        this.periodoAvaliacao = periodoAvaliacao;
         this.dataVencimento = dataVencimento;
     }
 
@@ -78,36 +72,12 @@ public class AlunoTreino {
         this.treinosExercicios = treinosExercicios;
     }
 
-    public LocalDateTime getDataHorarioInicio() {
-        return dataHorarioInicio;
-    }
-
-    public void setDataHorarioInicio(LocalDateTime dataHorarioInicio) {
-        this.dataHorarioInicio = dataHorarioInicio;
-    }
-
-    public LocalDateTime getDataHorarioFim() {
-        return dataHorarioFim;
-    }
-
-    public void setDataHorarioFim(LocalDateTime dataHorarioFim) {
-        this.dataHorarioFim = dataHorarioFim;
-    }
-
     public List<String> getDiasSemana() {
         return diasSemana;
     }
 
     public void setDiasSemana(List<String> diasSemana) {
         this.diasSemana = diasSemana;
-    }
-
-    public Integer getPeriodoAvaliacao() {
-        return periodoAvaliacao;
-    }
-
-    public void setPeriodoAvaliacao(Integer periodoAvaliacao) {
-        this.periodoAvaliacao = periodoAvaliacao;
     }
 
     public LocalDate getDataVencimento() {

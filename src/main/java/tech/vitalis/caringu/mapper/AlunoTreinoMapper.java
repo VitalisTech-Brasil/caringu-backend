@@ -40,10 +40,10 @@ public class AlunoTreinoMapper {
 
         alunoTreino.setAlunos(aluno);
         alunoTreino.setTreinosExercicios(treinoExercicio);
-        alunoTreino.setDataHorarioInicio(dto.dataHorarioInicio());
-        alunoTreino.setDataHorarioFim(dto.dataHorarioFim());
+//        alunoTreino.setDataHorarioInicio(dto.dataHorarioInicio());
+//        alunoTreino.setDataHorarioFim(dto.dataHorarioFim());
         alunoTreino.setDiasSemana(dto.diasSemana());
-        alunoTreino.setPeriodoAvaliacao(dto.periodoAvaliacao());
+//        alunoTreino.setPeriodoAvaliacao(dto.periodoAvaliacao());
         alunoTreino.setDataVencimento(dto.dataVencimento());
 
         return alunoTreino;
@@ -56,10 +56,10 @@ public class AlunoTreinoMapper {
                 alunoTreino.getId(),
                 alunoMapper.toResponseDTO(alunoTreino.getAlunos()),
                 treinoExercicioMapper.toResponseDTO(alunoTreino.getTreinosExercicios()),
-                alunoTreino.getDataHorarioInicio(),
-                alunoTreino.getDataHorarioFim(),
+//                alunoTreino.getDataHorarioInicio(),
+//                alunoTreino.getDataHorarioFim(),
                 alunoTreino.getDiasSemana(),
-                alunoTreino.getPeriodoAvaliacao(),
+//                alunoTreino.getPeriodoAvaliacao(),
                 alunoTreino.getDataVencimento()
         );
     }
