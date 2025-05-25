@@ -31,6 +31,7 @@ import tech.vitalis.caringu.exception.PersonalTrainer.PersonalNaoEncontradoExcep
 import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
 import tech.vitalis.caringu.exception.Pessoa.PessoaNaoEncontradaException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
+import tech.vitalis.caringu.exception.PlanoContratado.PlanoContratadoNaoEncontradoException;
 import tech.vitalis.caringu.exception.PreferenciasNotificacao.PreferenciasNotificacaoJaExisteException;
 import tech.vitalis.caringu.exception.PreferenciasNotificacao.PreferenciasNotificacaoNaoEncontradaException;
 
@@ -61,7 +62,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(EspecialidadeNaoEncontrada.class)
-    public ResponseEntity<Map<String, Object>> handleAlunoNaoEncontrado(EspecialidadeNaoEncontrada ex, WebRequest request) {
+    public ResponseEntity<Map<String, Object>> handleEspecialidadeNaoEncontrada(EspecialidadeNaoEncontrada ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(PlanoContratadoNaoEncontradoException.class)
+    public ResponseEntity<Map<String, Object>> handlePlanoContratadoNaoEncontrado(PlanoContratadoNaoEncontradoException ex, WebRequest request) {
         return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
     }
 
