@@ -156,7 +156,7 @@ public class PersonalTrainerService {
 
     public PersonalTrainerResponsePatchDTO atualizarParcial(Integer id, PersonalTrainerRequestPatchDTO dto) {
         PersonalTrainer personalTrainer = personalTrainerRepository.findById(id)
-                .orElseThrow(() -> new PersonalNaoEncontradoException("Aluno não encontrado com ID: " + id));
+                .orElseThrow(() -> new PersonalNaoEncontradoException("Personal Trainer não encontrado com ID: " + id));
 
         Optional<String> nome = Optional.ofNullable(dto.nome());
         Optional<String> email = Optional.ofNullable(dto.email());

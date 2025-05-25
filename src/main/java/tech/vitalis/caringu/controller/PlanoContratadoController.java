@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Aluno.PlanoPertoFimResponseDTO;
+import tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoPendenteRequestDTO;
 import tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoRespostaRecord;
 import tech.vitalis.caringu.service.PlanoContratadoService;
 import tech.vitalis.caringu.service.PlanoService;
@@ -32,6 +33,12 @@ public class PlanoContratadoController {
     public ResponseEntity<List<PlanoPertoFimResponseDTO>> alunosComPlanoPertoDoFim(@PathVariable Integer personalId) {
         List<PlanoPertoFimResponseDTO> resposta = planoContratadoService.listarAlunosComPlanoPertoDoFim(personalId);
         return ResponseEntity.ok(resposta);
+    }
+
+    @GetMapping("/solicitacoes-pendentes/{personalId}")
+    public ResponseEntity<List<PlanoContratadoPendenteRequestDTO>> listarSolicitacoesPendentes(@PathVariable Integer personalId) {
+        List<PlanoContratadoPendenteRequestDTO> pendenteRequestDTO = planoContratadoService.listarSolicitacoesPendentes(personalId);
+        return ResponseEntity.ok(pendenteRequestDTO);
     }
 
     @PostMapping("/contratarPlano/{alunoId}/{planoId}")
