@@ -97,12 +97,15 @@ public class PlanoService {
             dataFim = LocalDate.now().plusMonths(1);
         } else if (plano.getPeriodo().equals(PeriodoEnum.SEMESTRAL)){
             dataFim = LocalDate.now().plusMonths(6);
-        } else if (plano.getPeriodo().equals(PeriodoEnum.AVULSO)){
-            if (planoContratado.getDataFim().isAfter(planoContratado.getDataContratacao())){
-                dataFim = LocalDate.now();
+        } else if (plano.getPeriodo().equals(PeriodoEnum.AVULSO)) {
+            dataFim = LocalDate.now();
+            planoContratado.setDataFim(dataFim);
+
+            if (dataFim.isAfter(planoContratado.getDataContratacao())) {
                 planoContratado.setStatus(StatusEnum.INATIVO);
             }
         }
+
 
         planoContratado.setDataFim(dataFim);
 
