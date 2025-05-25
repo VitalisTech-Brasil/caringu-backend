@@ -2,9 +2,7 @@ package tech.vitalis.caringu.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerRequestPatchDTO;
-import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerResponseGetDTO;
-import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerResponsePatchDTO;
+import tech.vitalis.caringu.dtos.PersonalTrainer.*;
 import tech.vitalis.caringu.entity.Especialidade;
 import tech.vitalis.caringu.entity.PersonalTrainer;
 import tech.vitalis.caringu.entity.PersonalTrainerEspecialidade;
@@ -68,6 +66,35 @@ public class PersonalTrainerService {
         PersonalTrainer personalTrainer = personalTrainerRepository.findById(id)
                 .orElseThrow(() -> new PersonalNaoEncontradoException("Personal Trainer não encontrado com ID: " + id));
         return personalTrainerMapper.toResponseDTO(personalTrainer);
+    }
+
+    public List<PersonalTrainerDisponivelResponseDTO> listarPersonaisDisponiveis() {
+        List<PersonalTrainerInfoBasicaDTO> basicos = personalTrainerRepository.buscarBasicos();
+
+        List<Integer> ids = basicos.stream()
+                .map(PersonalTrainerInfoBasicaDTO::id)
+                .toList();
+
+        // Mapeia as especialidades por ID
+        Map<Integer, List<String>> especialidadesPorPersonal = especialidadeRepository.buscarNomesPorPersonalIds(ids)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        obj -> (Integer) obj[0],
+                        Collectors.mapping(obj -> (String) obj[1], Collectors.toList())
+                ));
+
+        return basicos.stream()
+                .map(p -> new PersonalTrainerDisponivelResponseDTO(
+                        p.id(),
+                        p.nomePersonal(),
+                        p.email(),
+                        p.celular(),
+                        p.experiencia(),
+                        especialidadesPorPersonal.getOrDefault(p.id(), List.of()),
+                        p.bairro(),
+                        p.cidade()
+                ))
+                .toList();
     }
 
     public PersonalTrainerResponseGetDTO cadastrar(PersonalTrainer personalTrainer) {

@@ -8,10 +8,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerRequestPatchDTO;
-import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerRequestPostDTO;
-import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerResponseGetDTO;
-import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerResponsePatchDTO;
+import tech.vitalis.caringu.dtos.PersonalTrainer.*;
 import tech.vitalis.caringu.entity.PersonalTrainer;
 import tech.vitalis.caringu.mapper.PersonalTrainerMapper;
 import tech.vitalis.caringu.service.PersonalTrainerService;
@@ -83,6 +80,13 @@ public class PersonalTrainerController {
     public ResponseEntity<PersonalTrainerResponseGetDTO> buscarPorId(@PathVariable Integer id) {
         PersonalTrainerResponseGetDTO personalTrainer = service.buscarPorId(id);
         return ResponseEntity.ok(personalTrainer);
+    }
+
+    @GetMapping("/disponiveis")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<PersonalTrainerDisponivelResponseDTO>> listarPersonaisDisponiveis() {
+        List<PersonalTrainerDisponivelResponseDTO> lista = service.listarPersonaisDisponiveis();
+        return ResponseEntity.ok(lista);
     }
 
     @PostMapping
