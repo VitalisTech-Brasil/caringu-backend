@@ -6,11 +6,14 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.vitalis.caringu.dtos.Notificacoes.NotificacaoTreinoPersonalDTO;
 import tech.vitalis.caringu.dtos.Notificacoes.NotificacoesRequestPatchDto;
 import tech.vitalis.caringu.dtos.Notificacoes.NotificacoesRequestPostDto;
 import tech.vitalis.caringu.dtos.Notificacoes.NotificacoesResponseGetDto;
+import tech.vitalis.caringu.service.NotificacaoTreinoVencimentoService;
 import tech.vitalis.caringu.service.NotificacoesService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -19,9 +22,11 @@ import java.util.List;
 public class NotificacoesController {
 
     private final NotificacoesService notificacoesService;
+    private final NotificacaoTreinoVencimentoService notificacaoVencimentoService;
 
-    public NotificacoesController(NotificacoesService notificacoesService) {
+    public NotificacoesController(NotificacoesService notificacoesService, NotificacaoTreinoVencimentoService notificacaoVencimentoService) {
         this.notificacoesService = notificacoesService;
+        this.notificacaoVencimentoService = notificacaoVencimentoService;
     }
 
     @PostMapping
@@ -62,5 +67,12 @@ public class NotificacoesController {
         notificacoesService.removerAssociacaoComPessoa(id);
         notificacoesService.remover(id);
         return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping("/treinos-vencendo")
+    public List<NotificacaoTreinoPersonalDTO> listarTreinosVencendo() {
+        LocalDate limite = LocalDate.now().plusWeeks(2);
+        return notificacaoVencimentoService.buscarTreinosVencendo(limite);
     }
 }
