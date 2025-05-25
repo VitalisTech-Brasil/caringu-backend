@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Email;
 public class PessoaLoginDTO {
 
     @Email
-    @Schema(description = "E-mail da pessoa", example = "roger.jones@gmail.com")
+    @Schema(description = "E-mail da pessoa", example = "ricardo@gmail.com")
     private String email;
 
     @Schema(description = "Senha da pessoa", example = "123Ab@")

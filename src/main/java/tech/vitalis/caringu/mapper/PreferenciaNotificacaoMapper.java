@@ -9,6 +9,7 @@ public class PreferenciaNotificacaoMapper {
 
     public PreferenciaNotificacaoResponseGetDTO toResponseDTO(PreferenciaNotificacao entity) {
         return new PreferenciaNotificacaoResponseGetDTO(
+                entity.getId(),
                 entity.getTipo(),
                 entity.isAtivada());
     }
