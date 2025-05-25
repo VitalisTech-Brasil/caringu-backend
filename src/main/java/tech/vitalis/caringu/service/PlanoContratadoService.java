@@ -23,14 +23,6 @@ public class PlanoContratadoService {
         this.planoContratadoRepository = planoContratadoRepository;
     }
 
-    public List<PlanoPertoFimResponseDTO> listarAlunosComPlanoPertoDoFim(Integer personalId) {
-        return planoContratadoRepository.buscarAlunosComPlanoPertoDoFim(personalId);
-    }
-
-    public List<PlanoContratadoPendenteRequestDTO> listarSolicitacoesPendentes(Integer personalId) {
-        return planoContratadoRepository.listarSolicitacoesPendentes(personalId);
-    }
-
     public void atualizarStatus(Integer id, StatusEnum novoStatus) {
         PlanoContratado plano = planoContratadoRepository.findById(id)
                 .orElseThrow(() -> new PlanoContratadoNaoEncontradoException("Plano contratado com id %d não encontrado.".formatted(id)));
