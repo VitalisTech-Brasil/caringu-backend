@@ -120,6 +120,8 @@ public class PersonalTrainerService {
                         p.email(),
                         p.celular(),
                         p.experiencia(),
+                        p.urlFotoPerfil(),
+                        p.genero(),
                         especialidadesPorPersonal.getOrDefault(p.id(), List.of()),
                         p.bairro(),
                         p.cidade()

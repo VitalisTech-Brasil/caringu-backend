@@ -21,6 +21,8 @@ public interface PersonalTrainerRepository extends JpaRepository<PersonalTrainer
         p.nome,
         p.email,
         p.celular,
+        p.urlFotoPerfil,
+        p.genero,
         p.experiencia,
         b.nome,
         c.nome
