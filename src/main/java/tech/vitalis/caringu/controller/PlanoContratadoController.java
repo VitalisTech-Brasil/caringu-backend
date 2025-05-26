@@ -30,6 +30,17 @@ public class PlanoContratadoController {
         return planoService.contarAlunosAtivos(personalId);
     }
 
+    @GetMapping("/solicitacoes-pendentes/{personalId}")
+    public ResponseEntity<List<PlanoContratadoPendenteRequestDTO>> listarSolicitacoesPendentes(@PathVariable Integer personalId) {
+        List<PlanoContratadoPendenteRequestDTO> pendenteRequestDTO = planoContratadoService.listarSolicitacoesPendentes(personalId);
+
+        if (pendenteRequestDTO.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(pendenteRequestDTO);
+    }
+
     @PostMapping("/contratarPlano/{alunoId}/{planoId}")
     @Operation(summary = "Contratar plano")
     public ResponseEntity<PlanoContratadoRespostaRecord> contratarPlano (@PathVariable Integer alunoId, @PathVariable Integer planoId) {
