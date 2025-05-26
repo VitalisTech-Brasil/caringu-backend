@@ -1,20 +1,23 @@
 package tech.vitalis.caringu.service;
 
+import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.PersonalTrainer.*;
-import tech.vitalis.caringu.entity.Especialidade;
-import tech.vitalis.caringu.entity.PersonalTrainer;
-import tech.vitalis.caringu.entity.PersonalTrainerEspecialidade;
+import tech.vitalis.caringu.dtos.PersonalTrainerBairro.AtualizarBairroDTO;
+import tech.vitalis.caringu.dtos.PersonalTrainerBairro.PersonalTrainerComBairroCidadeResponseGetDTO;
+import tech.vitalis.caringu.entity.*;
 import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
+import tech.vitalis.caringu.exception.Bairro.BairroNaoEncontradoException;
+import tech.vitalis.caringu.exception.Cidade.CidadeNaoEncontradaException;
 import tech.vitalis.caringu.exception.PersonalTrainer.CrefJaExisteException;
 import tech.vitalis.caringu.exception.PersonalTrainer.PersonalNaoEncontradoException;
 import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
 import tech.vitalis.caringu.mapper.PersonalTrainerMapper;
-import tech.vitalis.caringu.repository.EspecialidadeRepository;
-import tech.vitalis.caringu.repository.PersonalTrainerRepository;
-import tech.vitalis.caringu.repository.PessoaRepository;
+import tech.vitalis.caringu.repository.*;
 import tech.vitalis.caringu.strategy.Pessoa.GeneroEnumValidationStrategy;
 
 import java.time.LocalDate;
@@ -30,6 +33,8 @@ import static tech.vitalis.caringu.strategy.EnumValidador.validarEnums;
 @Service
 public class PersonalTrainerService {
 
+    private static final Logger logger = LoggerFactory.getLogger(PersonalTrainerService.class);
+
     private final PasswordEncoder passwordEncoder;
     private final PessoaRepository pessoaRepository;
     private final PersonalTrainerMapper personalTrainerMapper;
@@ -37,17 +42,23 @@ public class PersonalTrainerService {
     private final EspecialidadeRepository especialidadeRepository;
     private final PreferenciaNotificacaoService preferenciaNotificacaoService;
 
+    private final PersonalTrainerBairroRepository personalTrainerBairroRepository;
+    private final BairroRepository bairroRepository;
+    private final CidadeRepository cidadeRepository;
+
     public PersonalTrainerService(PasswordEncoder passwordEncoder, PessoaRepository pessoaRepository,
-                                  PersonalTrainerMapper personalTrainerMapper,
-                                  PersonalTrainerRepository personalTrainerRepository,
-                                  EspecialidadeRepository especialidadeRepository,
-                                  PreferenciaNotificacaoService preferenciaNotificacaoService) {
+                                  PersonalTrainerMapper personalTrainerMapper, PersonalTrainerRepository personalTrainerRepository,
+                                  EspecialidadeRepository especialidadeRepository, PreferenciaNotificacaoService preferenciaNotificacaoService,
+                                  PersonalTrainerBairroRepository personalTrainerBairroRepository, BairroRepository bairroRepository, CidadeRepository cidadeRepository) {
         this.passwordEncoder = passwordEncoder;
         this.pessoaRepository = pessoaRepository;
         this.personalTrainerMapper = personalTrainerMapper;
         this.personalTrainerRepository = personalTrainerRepository;
         this.especialidadeRepository = especialidadeRepository;
         this.preferenciaNotificacaoService = preferenciaNotificacaoService;
+        this.personalTrainerBairroRepository = personalTrainerBairroRepository;
+        this.bairroRepository = bairroRepository;
+        this.cidadeRepository = cidadeRepository;
     }
 
     public List<PersonalTrainerResponseGetDTO> listar() {
@@ -65,7 +76,26 @@ public class PersonalTrainerService {
     public PersonalTrainerResponseGetDTO buscarPorId(Integer id) {
         PersonalTrainer personalTrainer = personalTrainerRepository.findById(id)
                 .orElseThrow(() -> new PersonalNaoEncontradoException("Personal Trainer não encontrado com ID: " + id));
+
         return personalTrainerMapper.toResponseDTO(personalTrainer);
+    }
+
+    public PersonalTrainerComBairroCidadeResponseGetDTO buscarPersonalPorIdEBairroCidade(Integer id) {
+        PersonalTrainer personalTrainer = personalTrainerRepository.findById(id)
+                .orElseThrow(() -> new PersonalNaoEncontradoException("Personal Trainer não encontrado com ID: " + id));
+
+        Optional<PersonalTrainerBairro> personalBairroOptional =
+                personalTrainerBairroRepository.findFirstByPersonalTrainerId(id);
+
+        Bairro bairro = new Bairro();
+        Cidade cidade = new Cidade();
+
+        if (personalBairroOptional.isPresent()) {
+            bairro = personalBairroOptional.get().getBairro();
+            cidade = bairro.getCidade();
+        }
+
+        return personalTrainerMapper.toResponseDTO(personalTrainer, bairro, cidade);
     }
 
     public List<PersonalTrainerDisponivelResponseDTO> listarPersonaisDisponiveis() {
@@ -226,6 +256,35 @@ public class PersonalTrainerService {
                 especialidadesNomes,
                 experiencia
         );
+    }
+
+    @Transactional
+    public void atualizarBairro(Integer personalId, AtualizarBairroDTO dto) {
+        PersonalTrainer personal = personalTrainerRepository.findById(personalId)
+                .orElseThrow(() -> new PersonalNaoEncontradoException("Personal não encontrado"));
+
+        Bairro bairro = bairroRepository.findById(dto.bairroId())
+                .orElseThrow(() -> new BairroNaoEncontradoException("Bairro não encontrado"));
+
+        String nomeAtualBairro = bairro.getNome();
+        if (!nomeAtualBairro.equals(dto.novoNomeBairro())) {
+            logger.info("Atualizando nome do bairro de '{}' para '{}'", nomeAtualBairro, dto.novoNomeBairro());
+            bairro.setNome(dto.novoNomeBairro());
+        }
+
+        if (dto.cidadeId() != null && dto.novoNomeCidade() != null) {
+            Cidade cidade = cidadeRepository.findById(dto.cidadeId())
+                    .orElseThrow(() -> new CidadeNaoEncontradaException("Cidade não encontrada"));
+
+            String nomeAtualCidade = cidade.getNome();
+            if (!nomeAtualCidade.equals(dto.novoNomeCidade())) {
+                logger.info("Atualizando nome da cidade de '{}' para '{}'", nomeAtualCidade, dto.novoNomeCidade());
+                cidade.setNome(dto.novoNomeCidade());
+                cidadeRepository.save(cidade);
+            }
+        }
+
+        bairroRepository.save(bairro);
     }
 
     public void deletar(Integer id) {

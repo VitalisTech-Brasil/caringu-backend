@@ -70,6 +70,12 @@ public class AlunoService {
         return listaRespostaAlunos;
     }
 
+    public List<AlunoDetalhadoComTreinosDTO> buscarDetalhesPorPersonal(Integer personalId) {
+        var dadosBrutos = alunoRepository.buscarDetalhesPorPersonal(personalId);
+
+        return alunoMapper.preencherDatasTreinos(dadosBrutos);
+    }
+
     public AlunoResponseGetDTO buscarPorId(Integer id) {
         Aluno aluno = buscarAlunoOuLancarExcecao(id);
       

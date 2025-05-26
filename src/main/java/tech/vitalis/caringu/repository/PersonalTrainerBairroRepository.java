@@ -12,4 +12,6 @@ public interface PersonalTrainerBairroRepository extends JpaRepository<PersonalT
 
     Optional<PersonalTrainerBairro> findByPersonalTrainerIdAndBairroId(Integer personalTrainerId, Integer bairroId);
     boolean existsByPersonalTrainerIdAndBairroId(Integer personalTrainerId, Integer bairroId);
+    Optional<PersonalTrainerBairro> findFirstByPersonalTrainerId(Integer personalTrainerId);
+    void deleteByPersonalTrainerId(Integer personalTrainerId);
 }

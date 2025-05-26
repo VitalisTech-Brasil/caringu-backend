@@ -41,6 +41,12 @@ public class AlunoController {
         return ResponseEntity.ok(aluno);
     }
 
+    @GetMapping("/detalhes-aluno-por-personal/{personalId}")
+    @SecurityRequirement(name = "Bearer")
+    public List<AlunoDetalhadoComTreinosDTO> buscarDetalhesPorPersonal(@PathVariable Integer personalId) {
+        return service.buscarDetalhesPorPersonal(personalId);
+    }
+
     @PostMapping
     @Operation(summary = "Cadastrar aluno")
     public ResponseEntity<AlunoResponseGetDTO> cadastrar(@Valid @RequestBody AlunoRequestPostDTO cadastroDTO) {
