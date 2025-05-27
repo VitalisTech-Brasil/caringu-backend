@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import tech.vitalis.caringu.dtos.TreinoFinalizado.TreinoIdentificacaoFinalizadoResponseDTO;
 import tech.vitalis.caringu.entity.TreinoExercicio;
 import tech.vitalis.caringu.entity.TreinoFinalizado;
 
@@ -45,4 +46,24 @@ public interface TreinoFinalizadoRepository extends JpaRepository<TreinoFinaliza
     ORDER BY tf.dataHorarioInicio
 """)
     List<String> buscarHorariosFimTotal(@Param("alunoId") Integer alunoId);
+
+    @Query("""
+        SELECT new tech.vitalis.caringu.dtos.TreinoFinalizado.TreinoIdentificacaoFinalizadoResponseDTO(
+            tf.id,
+            tf.dataHorarioInicio,
+            tf.dataHorarioFim,
+            a.id,
+            a.nome,
+            a.urlFotoPerfil,
+            CASE WHEN tf.dataHorarioFim IS NOT NULL THEN true ELSE false END
+        )
+        FROM TreinoFinalizado tf
+        JOIN tf.alunoTreino at
+        JOIN at.alunos a
+        JOIN PlanoContratado pc ON pc.aluno.id = a.id
+        JOIN pc.plano pl
+        WHERE pc.status = 'ATIVO'
+        AND pl.personalTrainer.id = :personalId
+    """)
+    List<TreinoIdentificacaoFinalizadoResponseDTO> findAllTreinosByPersonalId(@Param("personalId") Integer personalId);
 }
