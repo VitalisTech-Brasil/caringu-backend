@@ -31,4 +31,18 @@ public interface PlanoRepository extends JpaRepository<Plano, Integer> {
     WHERE p.personalTrainer.id IN :personalIds
 """)
     List<PlanoResumoDTO> findResumoByPersonalIds(@Param("personalIds") List<Integer> personalIds);
+
+    @Query("""
+    SELECT new tech.vitalis.caringu.dtos.Plano.PlanoResumoDTO(
+        p.id,
+        p.personalTrainer.id,
+        p.nome,
+        p.periodo,
+        p.quantidadeAulas,
+        p.valorAulas
+    )
+    FROM Plano p
+    WHERE p.personalTrainer.id = :personalIds
+""")
+    List<PlanoResumoDTO> findResumoByPersonalId(@Param("personalIds") Integer personalIds);
 }

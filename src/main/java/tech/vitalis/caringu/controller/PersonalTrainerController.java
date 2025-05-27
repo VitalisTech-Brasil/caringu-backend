@@ -90,6 +90,12 @@ public class PersonalTrainerController {
         return ResponseEntity.ok(lista);
     }
 
+    @GetMapping("/disponiveis/{personalId}")
+    public ResponseEntity<PersonalTrainerDisponivelResponseDTO> buscarPersonalDisponivelPorId(@PathVariable Integer personalId) {
+        PersonalTrainerDisponivelResponseDTO personal = service.buscarPersonalDisponivelPorId(personalId);
+        return ResponseEntity.ok(personal);
+    }
+
     @PostMapping
     @Operation(
             summary = "Cadastrar personal trainer",

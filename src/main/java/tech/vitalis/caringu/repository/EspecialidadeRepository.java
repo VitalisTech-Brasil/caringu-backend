@@ -17,5 +17,13 @@ public interface EspecialidadeRepository extends JpaRepository<Especialidade, In
 """)
     List<Object[]> buscarNomesPorPersonalIds(@Param("ids") List<Integer> ids);
 
+    @Query("""
+    SELECT e.nome
+    FROM PersonalTrainerEspecialidade pe
+    JOIN Especialidade e ON pe.especialidade.id = e.id
+    WHERE pe.personalTrainer.id = :personalId
+""")
+    List<String> buscarNomesPorPersonalId(@Param("personalId") Integer personalId);
+
     Optional<Especialidade> findByNomeIgnoreCase(String nome);
 }

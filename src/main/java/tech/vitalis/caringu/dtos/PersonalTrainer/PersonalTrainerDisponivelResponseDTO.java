@@ -1,8 +1,6 @@
 package tech.vitalis.caringu.dtos.PersonalTrainer;
 
 import tech.vitalis.caringu.dtos.Plano.PlanoResumoDTO;
-import tech.vitalis.caringu.entity.Plano;
-import tech.vitalis.caringu.enums.PeriodoEnum;
 import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
 
 import java.util.List;

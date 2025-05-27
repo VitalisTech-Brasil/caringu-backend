@@ -139,6 +139,34 @@ public class PersonalTrainerService {
                 .toList();
     }
 
+    public PersonalTrainerDisponivelResponseDTO buscarPersonalDisponivelPorId(Integer id) {
+        // Buscar dados básicos do personal
+        PersonalTrainerInfoBasicaDTO basico = personalTrainerRepository.buscarBasicoPorId(id)
+                .orElseThrow(() -> new PersonalNaoEncontradoException("Personal não encontrado"));
+
+        // Buscar especialidades
+        List<String> especialidades = especialidadeRepository.buscarNomesPorPersonalId(id);
+
+        // Buscar planos
+        List<PlanoResumoDTO> planos = planoRepository.findResumoByPersonalId(id);
+
+        // Montar e retornar DTO completo
+        return new PersonalTrainerDisponivelResponseDTO(
+                basico.id(),
+                basico.nomePersonal(),
+                basico.email(),
+                basico.celular(),
+                basico.experiencia(),
+                basico.urlFotoPerfil(),
+                basico.genero(),
+                especialidades,
+                planos,
+                basico.bairro(),
+                basico.cidade()
+        );
+    }
+
+
     public PersonalTrainerResponseGetDTO cadastrar(PersonalTrainer personalTrainer) {
 
         validarEnums(Map.of(
