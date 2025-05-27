@@ -85,7 +85,6 @@ public class PersonalTrainerController {
     }
 
     @GetMapping("/disponiveis")
-    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<PersonalTrainerDisponivelResponseDTO>> listarPersonaisDisponiveis() {
         List<PersonalTrainerDisponivelResponseDTO> lista = service.listarPersonaisDisponiveis();
         return ResponseEntity.ok(lista);

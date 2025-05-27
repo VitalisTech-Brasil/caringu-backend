@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.PersonalTrainer.*;
 import tech.vitalis.caringu.dtos.PersonalTrainerBairro.AtualizarBairroDTO;
 import tech.vitalis.caringu.dtos.PersonalTrainerBairro.PersonalTrainerComBairroCidadeResponseGetDTO;
+import tech.vitalis.caringu.dtos.Plano.PlanoResumoDTO;
 import tech.vitalis.caringu.entity.*;
 import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
 import tech.vitalis.caringu.exception.Bairro.BairroNaoEncontradoException;
@@ -45,11 +46,13 @@ public class PersonalTrainerService {
     private final PersonalTrainerBairroRepository personalTrainerBairroRepository;
     private final BairroRepository bairroRepository;
     private final CidadeRepository cidadeRepository;
+    private final PlanoRepository planoRepository;
 
     public PersonalTrainerService(PasswordEncoder passwordEncoder, PessoaRepository pessoaRepository,
                                   PersonalTrainerMapper personalTrainerMapper, PersonalTrainerRepository personalTrainerRepository,
                                   EspecialidadeRepository especialidadeRepository, PreferenciaNotificacaoService preferenciaNotificacaoService,
-                                  PersonalTrainerBairroRepository personalTrainerBairroRepository, BairroRepository bairroRepository, CidadeRepository cidadeRepository) {
+                                  PersonalTrainerBairroRepository personalTrainerBairroRepository, BairroRepository bairroRepository,
+                                  CidadeRepository cidadeRepository, PlanoRepository planoRepository) {
         this.passwordEncoder = passwordEncoder;
         this.pessoaRepository = pessoaRepository;
         this.personalTrainerMapper = personalTrainerMapper;
@@ -59,6 +62,7 @@ public class PersonalTrainerService {
         this.personalTrainerBairroRepository = personalTrainerBairroRepository;
         this.bairroRepository = bairroRepository;
         this.cidadeRepository = cidadeRepository;
+        this.planoRepository = planoRepository;
     }
 
     public List<PersonalTrainerResponseGetDTO> listar() {
@@ -105,13 +109,18 @@ public class PersonalTrainerService {
                 .map(PersonalTrainerInfoBasicaDTO::id)
                 .toList();
 
-        // Mapeia as especialidades por ID
         Map<Integer, List<String>> especialidadesPorPersonal = especialidadeRepository.buscarNomesPorPersonalIds(ids)
                 .stream()
                 .collect(Collectors.groupingBy(
                         obj -> (Integer) obj[0],
                         Collectors.mapping(obj -> (String) obj[1], Collectors.toList())
                 ));
+
+        List<PlanoResumoDTO> planos = planoRepository.findResumoByPersonalIds(ids);
+
+        // Agrupa planos por personalId
+        Map<Integer, List<PlanoResumoDTO>> planosPorPersonal = planos.stream()
+                .collect(Collectors.groupingBy(PlanoResumoDTO::personalTrainerId));
 
         return basicos.stream()
                 .map(p -> new PersonalTrainerDisponivelResponseDTO(
@@ -123,6 +132,7 @@ public class PersonalTrainerService {
                         p.urlFotoPerfil(),
                         p.genero(),
                         especialidadesPorPersonal.getOrDefault(p.id(), List.of()),
+                        planosPorPersonal.getOrDefault(p.id(), List.of()),
                         p.bairro(),
                         p.cidade()
                 ))

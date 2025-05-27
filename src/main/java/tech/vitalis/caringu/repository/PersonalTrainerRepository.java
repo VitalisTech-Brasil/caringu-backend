@@ -3,7 +3,6 @@ package tech.vitalis.caringu.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerDisponivelResponseDTO;
 import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerInfoBasicaDTO;
 import tech.vitalis.caringu.entity.PersonalTrainer;
 
