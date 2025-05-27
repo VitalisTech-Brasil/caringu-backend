@@ -2,10 +2,11 @@ package tech.vitalis.caringu.dtos.Aluno;
 
 import tech.vitalis.caringu.enums.Aluno.NivelExperienciaEnum;
 import tech.vitalis.caringu.enums.Anamnese.FrequenciaTreinoEnum;
-import tech.vitalis.caringu.enums.PeriodoEnum;
 
 import java.time.LocalDate;
-public record AlunoDetalhadoResponseDTO(
+import java.util.List;
+
+public record AlunoDetalhadoDTO(
         Integer idAluno,
         String nomeAluno,
         String celular,
@@ -13,13 +14,16 @@ public record AlunoDetalhadoResponseDTO(
         NivelExperienciaEnum nivelExperiencia,
 
         String nomePlano,
-        PeriodoEnum periodoPlano,
         Integer totalAulasContratadas,
         LocalDate dataVencimentoPlano,
 
-        Integer idAlunoTreino,
         Long treinosSemana,
         Long treinosTotal,
+
+        List<String> horariosInicioSemana,
+        List<String> horariosFimSemana,
+        List<String> horariosInicioTotal,
+        List<String> horariosFimTotal,
 
         Integer idAnamnese,
         String objetivoTreino,

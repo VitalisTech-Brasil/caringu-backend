@@ -41,10 +41,11 @@ public class AlunoController {
         return ResponseEntity.ok(aluno);
     }
 
-    @GetMapping("/detalhes-aluno-por-personal/{personalId}")
+    @GetMapping("/detalhes/personal/{id}")
     @SecurityRequirement(name = "Bearer")
-    public List<AlunoDetalhadoComTreinosDTO> buscarDetalhesPorPersonal(@PathVariable Integer personalId) {
-        return service.buscarDetalhesPorPersonal(personalId);
+    public ResponseEntity<List<AlunoDetalhadoComTreinosDTO>> buscarPorPersonal(@PathVariable Integer id) {
+        var dados = service.buscarAlunosDetalhados(id);
+        return ResponseEntity.ok(dados);
     }
 
     @PostMapping

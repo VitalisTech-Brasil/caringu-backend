@@ -11,11 +11,38 @@ import java.util.List;
 
 @Repository
 public interface TreinoFinalizadoRepository extends JpaRepository<TreinoFinalizado, Integer> {
+
     @Query("""
-    SELECT DATE_FORMAT(tf.dataHorarioInicio, '%Y-%m-%d')
+    SELECT FUNCTION('DATE_FORMAT', tf.dataHorarioInicio, '%Y-%m-%d %H:%i')
     FROM TreinoFinalizado tf
     WHERE tf.alunoTreino.alunos.id = :alunoId
       AND FUNCTION('YEARWEEK', tf.dataHorarioInicio, 1) = FUNCTION('YEARWEEK', CURRENT_DATE, 1)
+    ORDER BY tf.dataHorarioInicio
 """)
-    List<String> buscarDatasTreinosSemana(@Param("alunoId") Integer alunoId);
+    List<String> buscarHorariosInicioSemana(@Param("alunoId") Integer alunoId);
+
+    @Query("""
+    SELECT FUNCTION('DATE_FORMAT', tf.dataHorarioFim, '%Y-%m-%d %H:%i')
+    FROM TreinoFinalizado tf
+    WHERE tf.alunoTreino.alunos.id = :alunoId
+      AND FUNCTION('YEARWEEK', tf.dataHorarioInicio, 1) = FUNCTION('YEARWEEK', CURRENT_DATE, 1)
+    ORDER BY tf.dataHorarioInicio
+""")
+    List<String> buscarHorariosFimSemana(@Param("alunoId") Integer alunoId);
+
+    @Query("""
+    SELECT FUNCTION('DATE_FORMAT', tf.dataHorarioInicio, '%Y-%m-%d %H:%i')
+    FROM TreinoFinalizado tf
+    WHERE tf.alunoTreino.alunos.id = :alunoId
+    ORDER BY tf.dataHorarioInicio
+""")
+    List<String> buscarHorariosInicioTotal(@Param("alunoId") Integer alunoId);
+
+    @Query("""
+    SELECT FUNCTION('DATE_FORMAT', tf.dataHorarioFim, '%Y-%m-%d %H:%i')
+    FROM TreinoFinalizado tf
+    WHERE tf.alunoTreino.alunos.id = :alunoId
+    ORDER BY tf.dataHorarioInicio
+""")
+    List<String> buscarHorariosFimTotal(@Param("alunoId") Integer alunoId);
 }

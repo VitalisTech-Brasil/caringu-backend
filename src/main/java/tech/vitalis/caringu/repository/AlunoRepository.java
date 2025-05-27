@@ -13,42 +13,38 @@ import java.util.List;
 @Repository
 public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
     @Query("""
-        SELECT new tech.vitalis.caringu.dtos.Aluno.AlunoDetalhadoResponseDTO(
-            a.id, a.nome, a.celular, a.urlFotoPerfil, a.nivelExperiencia,
-            pl.nome, pl.periodo, pl.quantidadeAulas, pc.dataFim,
-            at.id, COUNT(tf.id),
-            ana.id, ana.objetivoTreino, ana.lesao, ana.lesaoDescricao, ana.frequenciaTreino,
-            ana.experiencia, ana.experienciaDescricao, ana.desconforto, ana.desconfortoDescricao,
-            ana.fumante, ana.proteses, ana.protesesDescricao,
-            ana.doencaMetabolica, ana.doencaMetabolicaDescricao,
-            ana.deficiencia, ana.deficienciaDescricao,
-            pt.nome
-        )
-        FROM PlanoContratado pc
-        JOIN pc.plano pl
-        JOIN pl.personalTrainer pt
-        JOIN pc.aluno a
-        LEFT JOIN Anamnese ana ON ana.aluno.id = a.id
-        LEFT JOIN AlunoTreino at ON at.alunos.id = a.id 
-        LEFT JOIN TreinoFinalizado tf
-            ON tf.alunoTreino.id = at.id AND FUNCTION('YEARWEEK', tf.dataHorarioInicio, 1) = FUNCTION('YEARWEEK', CURRENT_DATE, 1)
-        WHERE pt.id = :personalId
-        AND pc.status = 'ATIVO'
-        AND pc.dataContratacao = (
-            SELECT MAX(p2.dataContratacao)
-            FROM PlanoContratado p2
-            WHERE p2.aluno.id = pc.aluno.id AND p2.status = 'ATIVO'
-        )
-        GROUP BY
-            a.id, a.nome, a.celular, a.urlFotoPerfil, a.nivelExperiencia,
-            pl.nome, pl.periodo, pl.quantidadeAulas, pc.dataFim,
-            at.id,
-            ana.id, ana.objetivoTreino, ana.lesao, ana.lesaoDescricao, ana.frequenciaTreino,
-            ana.experiencia, ana.experienciaDescricao, ana.desconforto, ana.desconfortoDescricao,
-            ana.fumante, ana.proteses, ana.protesesDescricao,
-            ana.doencaMetabolica, ana.doencaMetabolicaDescricao,
-            ana.deficiencia, ana.deficienciaDescricao,
-            pt.nome
-    """)
+    SELECT new tech.vitalis.caringu.dtos.Aluno.AlunoDetalhadoResponseDTO(
+        a.id, a.nome, a.celular, a.urlFotoPerfil, a.nivelExperiencia,
+        pl.nome, pl.periodo, pl.quantidadeAulas, pc.dataFim,
+        at.id,
+        COUNT(DISTINCT tfSemana.id),
+        COUNT(DISTINCT tfTotal.id),
+        ana.id, ana.objetivoTreino, ana.lesao, ana.lesaoDescricao, ana.frequenciaTreino,
+        ana.experiencia, ana.experienciaDescricao, ana.desconforto, ana.desconfortoDescricao,
+        ana.fumante, ana.proteses, ana.protesesDescricao,
+        ana.doencaMetabolica, ana.doencaMetabolicaDescricao,
+        ana.deficiencia, ana.deficienciaDescricao
+    )
+    FROM PlanoContratado pc
+    JOIN pc.plano pl
+    JOIN pl.personalTrainer pt
+    JOIN pc.aluno a
+    LEFT JOIN Anamnese ana ON ana.aluno.id = a.id
+    LEFT JOIN AlunoTreino at ON at.alunos.id = a.id
+    LEFT JOIN TreinoFinalizado tfSemana
+        ON tfSemana.alunoTreino.id = at.id
+        AND FUNCTION('YEARWEEK', tfSemana.dataHorarioInicio, 1) = FUNCTION('YEARWEEK', CURRENT_DATE, 1)
+    LEFT JOIN TreinoFinalizado tfTotal ON tfTotal.alunoTreino.id = at.id
+    WHERE pt.id = :personalId
+      AND pc.status = 'ATIVO'
+      AND pc.dataContratacao = (
+        SELECT MAX(p2.dataContratacao)
+        FROM PlanoContratado p2
+        WHERE p2.aluno.id = pc.aluno.id AND p2.status = 'ATIVO'
+    )
+    GROUP BY a.id, a.nome, a.celular, a.urlFotoPerfil, a.nivelExperiencia,
+             pl.nome, pl.periodo, pl.quantidadeAulas, pc.dataFim,
+             at.id, ana.id
+""")
     List<AlunoDetalhadoResponseDTO> buscarDetalhesPorPersonal(@Param("personalId") Integer personalId);
 }

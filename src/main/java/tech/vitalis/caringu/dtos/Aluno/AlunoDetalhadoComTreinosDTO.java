@@ -21,8 +21,12 @@ public record AlunoDetalhadoComTreinosDTO(
 
         Integer idAlunoTreino,
         Long treinosSemana,
+        Long treinosTotal,
 
-        List<String> datasTreinosSemana,
+        List<String> horariosInicioSemana,
+        List<String> horariosFimSemana,
+        List<String> horariosInicioTotal,
+        List<String> horariosFimTotal,
 
         Integer idAnamnese,
         String objetivoTreino,
@@ -39,8 +43,6 @@ public record AlunoDetalhadoComTreinosDTO(
         Boolean doencaMetabolica,
         String doencaMetabolicaDescricao,
         Boolean deficiencia,
-        String deficienciaDescricao,
-
-        String nomePersonal
+        String deficienciaDescricao
 ) {
 }
