@@ -24,6 +24,7 @@ import tech.vitalis.caringu.mapper.PessoaMapper;
 import tech.vitalis.caringu.repository.AlunoRepository;
 import tech.vitalis.caringu.repository.AnamneseRepository;
 import tech.vitalis.caringu.repository.PessoaRepository;
+import tech.vitalis.caringu.repository.TreinoFinalizadoRepository;
 import tech.vitalis.caringu.strategy.Aluno.*;
 import tech.vitalis.caringu.strategy.EnumValidationStrategy;
 import tech.vitalis.caringu.strategy.Pessoa.GeneroEnumValidationStrategy;
@@ -47,15 +48,19 @@ public class AlunoService {
     private final AlunoRepository alunoRepository;
     private final PessoaRepository pessoaRepository;
 
+    private final TreinoFinalizadoRepository treinoFinalizadoRepository;
+
     public AlunoService(PasswordEncoder passwordEncoder,
                         AlunoMapper alunoMapper,
 
                         AlunoRepository alunoRepository,
-                        PessoaRepository pessoaRepository) {
+                        PessoaRepository pessoaRepository,
+                        TreinoFinalizadoRepository treinoFinalizadoRepository) {
         this.passwordEncoder = passwordEncoder;
         this.alunoMapper = alunoMapper;
         this.alunoRepository = alunoRepository;
         this.pessoaRepository = pessoaRepository;
+        this.treinoFinalizadoRepository = treinoFinalizadoRepository;
     }
 
     public List<AlunoResponseGetDTO> listar() {
@@ -68,6 +73,11 @@ public class AlunoService {
         }
 
         return listaRespostaAlunos;
+    }
+
+    public List<AlunoDetalhadoComTreinosDTO> buscarAlunosDetalhados(Integer personalId) {
+        List<AlunoDetalhadoResponseDTO> dadosBrutos = alunoRepository.buscarDetalhesPorPersonal(personalId);
+        return alunoMapper.consolidarPorAluno(dadosBrutos);
     }
 
     public AlunoResponseGetDTO buscarPorId(Integer id) {

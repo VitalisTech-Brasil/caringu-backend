@@ -1,8 +1,8 @@
 package tech.vitalis.caringu.mapper;
 
 import org.springframework.stereotype.Component;
-import tech.vitalis.caringu.dtos.TreinoExericio.TreinoExercicioRequestPostDto;
-import tech.vitalis.caringu.dtos.TreinoExericio.TreinoExercicioResponseGetDto;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioRequestPostDto;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResponseGetDto;
 import tech.vitalis.caringu.entity.TreinoExercicio;
 
 @Component

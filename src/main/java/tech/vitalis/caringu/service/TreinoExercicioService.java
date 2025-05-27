@@ -1,9 +1,10 @@
 package tech.vitalis.caringu.service;
 
 import org.springframework.stereotype.Service;
-import tech.vitalis.caringu.dtos.TreinoExericio.TreinoExercicioRequestPostDto;
-import tech.vitalis.caringu.dtos.TreinoExericio.TreinoExercicioRequestUpdateDto;
-import tech.vitalis.caringu.dtos.TreinoExericio.TreinoExercicioResponseGetDto;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioRequestPostDto;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioRequestUpdateDto;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResponseGetDto;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoDTO;
 import tech.vitalis.caringu.entity.Exercicio;
 import tech.vitalis.caringu.entity.Treino;
 import tech.vitalis.caringu.entity.TreinoExercicio;
@@ -62,6 +63,28 @@ public class TreinoExercicioService {
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Treino com ID " + id + " não encontrado"));
 
         return treinoExercicioMapper.toResponseDTO(treinoExercicio);
+    }
+
+    public List<TreinoExercicioResumoDTO> listarPorPersonal(Integer personalId) {
+        List<TreinoExercicioResumoDTO> resumosSemQtd = treinoExercicioRepository.findResumosSemQuantidade(personalId);
+
+        Map<Integer, Long> quantidadePorTreino = treinoExercicioRepository.countExerciciosPorTreino().stream()
+                .collect(Collectors.toMap(
+                        row -> (Integer) row[0],
+                        row -> (Long) row[1]
+                ));
+
+        return resumosSemQtd.stream()
+                .map(dto -> new TreinoExercicioResumoDTO(
+                        dto.treinoExercicioId(),
+                        dto.treinoId(),
+                        dto.nomeTreino(),
+                        dto.grauDificuldade(),
+                        dto.favorito(),
+                        dto.origemTreinoExercicio(),
+                        quantidadePorTreino.getOrDefault(dto.treinoId(), 0L).intValue()
+                ))
+                .toList();
     }
 
     public List<TreinoExercicioResponseGetDto> listarTodos(){

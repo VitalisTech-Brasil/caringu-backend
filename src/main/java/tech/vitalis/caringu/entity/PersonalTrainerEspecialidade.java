@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import tech.vitalis.caringu.id.PersonalTrainerEspecialidadeId;
 
 @Entity
-@Table(name = "personal_trainer_especialidades")
+@Table(name = "personal_trainers_especialidades")
 @IdClass(PersonalTrainerEspecialidadeId.class)
 public class PersonalTrainerEspecialidade {
 

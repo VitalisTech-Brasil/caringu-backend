@@ -34,6 +34,7 @@ import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
 import tech.vitalis.caringu.exception.PlanoContratado.PlanoContratadoNaoEncontradoException;
 import tech.vitalis.caringu.exception.PreferenciasNotificacao.PreferenciasNotificacaoJaExisteException;
 import tech.vitalis.caringu.exception.PreferenciasNotificacao.PreferenciasNotificacaoNaoEncontradaException;
+import tech.vitalis.caringu.exception.TreinoFinalizado.TreinoFinalizadoNaoEncontradoException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -103,6 +104,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(PreferenciasNotificacaoNaoEncontradaException.class)
     public ResponseEntity<Map<String, Object>> handlePreferenciasNotificacaoNaoEncontrada(PreferenciasNotificacaoNaoEncontradaException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(TreinoFinalizadoNaoEncontradoException.class)
+    public ResponseEntity<Map<String, Object>> handleTreinoFinalizadoNaoEncontrado(TreinoFinalizadoNaoEncontradoException ex, WebRequest request) {
         return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
     }
 

@@ -5,9 +5,8 @@ import tech.vitalis.caringu.dtos.Especialidade.EspecialidadeResponseGetDTO;
 import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerRequestPatchDTO;
 import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerRequestPostDTO;
 import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerResponseGetDTO;
-import tech.vitalis.caringu.entity.Especialidade;
-import tech.vitalis.caringu.entity.PersonalTrainer;
-import tech.vitalis.caringu.entity.PersonalTrainerEspecialidade;
+import tech.vitalis.caringu.dtos.PersonalTrainerBairro.PersonalTrainerComBairroCidadeResponseGetDTO;
+import tech.vitalis.caringu.entity.*;
 import tech.vitalis.caringu.exception.Especialidade.EspecialidadeNaoEncontrada;
 import tech.vitalis.caringu.repository.EspecialidadeRepository;
 
@@ -97,6 +96,34 @@ public class PersonalTrainerMapper {
                 especialidadesDTO,
                 personalTrainer.getExperiencia(),
                 personalTrainer.getDataCadastro()
+        );
+    }
+
+    public PersonalTrainerComBairroCidadeResponseGetDTO toResponseDTO(PersonalTrainer personalTrainer, Bairro bairro, Cidade cidade) {
+        List<EspecialidadeResponseGetDTO> especialidadesDTO  = personalTrainer.getEspecialidades().stream()
+                .map(pte -> new EspecialidadeResponseGetDTO(
+                        pte.getEspecialidade().getId(),
+                        pte.getEspecialidade().getNome()
+                ))
+
+                .toList();
+
+        return new PersonalTrainerComBairroCidadeResponseGetDTO(
+                personalTrainer.getId(),
+                personalTrainer.getNome(),
+                personalTrainer.getEmail(),
+                personalTrainer.getCelular(),
+                personalTrainer.getUrlFotoPerfil(),
+                personalTrainer.getDataNascimento(),
+                personalTrainer.getGenero(),
+                personalTrainer.getCref(),
+                especialidadesDTO,
+                personalTrainer.getExperiencia(),
+                personalTrainer.getDataCadastro(),
+                bairro.getId(),
+                bairro.getNome(),
+                cidade.getId(),
+                cidade.getNome()
         );
     }
 

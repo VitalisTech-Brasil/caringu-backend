@@ -1,9 +1,7 @@
-package tech.vitalis.caringu.dtos.TreinoExericio;
+package tech.vitalis.caringu.dtos.TreinoExercicio;
 
-import jakarta.validation.constraints.NotBlank;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioResponseGetDTO;
 import tech.vitalis.caringu.dtos.Treino.TreinoResponseGetDTO;
-import tech.vitalis.caringu.entity.Exercicio;
 import tech.vitalis.caringu.enums.TreinoExercicio.GrauDificuldadeEnum;
 import tech.vitalis.caringu.enums.TreinoExercicio.OrigemTreinoExercicioEnum;
 

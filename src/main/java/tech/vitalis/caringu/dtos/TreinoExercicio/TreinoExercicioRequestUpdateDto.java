@@ -1,6 +1,5 @@
-package tech.vitalis.caringu.dtos.TreinoExericio;
+package tech.vitalis.caringu.dtos.TreinoExercicio;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import tech.vitalis.caringu.enums.TreinoExercicio.GrauDificuldadeEnum;

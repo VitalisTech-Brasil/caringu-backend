@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import tech.vitalis.caringu.entity.Especialidade;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface EspecialidadeRepository extends JpaRepository<Especialidade, Integer> {
     @Query("""
@@ -15,4 +16,6 @@ public interface EspecialidadeRepository extends JpaRepository<Especialidade, In
     WHERE pe.personalTrainer.id IN :ids
 """)
     List<Object[]> buscarNomesPorPersonalIds(@Param("ids") List<Integer> ids);
+
+    Optional<Especialidade> findByNomeIgnoreCase(String nome);
 }

@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.PersonalTrainer.*;
+import tech.vitalis.caringu.dtos.PersonalTrainerBairro.AtualizarBairroDTO;
+import tech.vitalis.caringu.dtos.PersonalTrainerBairro.PersonalTrainerComBairroCidadeResponseGetDTO;
 import tech.vitalis.caringu.entity.PersonalTrainer;
 import tech.vitalis.caringu.mapper.PersonalTrainerMapper;
 import tech.vitalis.caringu.service.PersonalTrainerService;
@@ -77,13 +79,12 @@ public class PersonalTrainerController {
                     )
             }
     )
-    public ResponseEntity<PersonalTrainerResponseGetDTO> buscarPorId(@PathVariable Integer id) {
-        PersonalTrainerResponseGetDTO personalTrainer = service.buscarPorId(id);
+    public ResponseEntity<PersonalTrainerComBairroCidadeResponseGetDTO> buscarPorId(@PathVariable Integer id) {
+        PersonalTrainerComBairroCidadeResponseGetDTO personalTrainer = service.buscarPersonalPorIdEBairroCidade(id);
         return ResponseEntity.ok(personalTrainer);
     }
 
     @GetMapping("/disponiveis")
-    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<PersonalTrainerDisponivelResponseDTO>> listarPersonaisDisponiveis() {
         List<PersonalTrainerDisponivelResponseDTO> lista = service.listarPersonaisDisponiveis();
         return ResponseEntity.ok(lista);
@@ -210,6 +211,16 @@ public class PersonalTrainerController {
 
         PersonalTrainerResponsePatchDTO atualizado = service.atualizarParcial(id, atualizacoes);
         return ResponseEntity.ok(atualizado);
+    }
+
+    @PatchMapping("/{id}/bairro")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> atualizarBairro(
+            @PathVariable Integer id,
+            @RequestBody AtualizarBairroDTO dto
+    ) {
+        service.atualizarBairro(id, dto);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
