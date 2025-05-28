@@ -56,4 +56,11 @@ public class PlanoContratadoController {
         planoContratadoService.atualizarStatus(id, dto.status());
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/alunos/{alunosId}/contratacao-pendente")
+    public ResponseEntity<Boolean> verificarContratacaoPendentePorAluno(@PathVariable Integer alunosId) {
+        boolean existeContratacaoPendente = planoContratadoService.verificarContratacaoPendentePorAluno(alunosId);
+
+        return ResponseEntity.ok(existeContratacaoPendente);
+    }
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoPendenteRequestDTO;
 import tech.vitalis.caringu.entity.PlanoContratado;
+import tech.vitalis.caringu.enums.StatusEnum;
 
 import java.util.List;
 
@@ -38,5 +39,7 @@ public interface PlanoContratadoRepository extends JpaRepository<PlanoContratado
                 WHERE pc.status = "EM_PROCESSO" AND p.personalTrainer.id = :personalId
             """)
     List<PlanoContratadoPendenteRequestDTO> listarSolicitacoesPendentes(@Param("personalId") Integer personalId);
+
+    Boolean existsByAlunoIdAndStatus(Integer alunoId, StatusEnum status);
 
 }

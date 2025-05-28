@@ -57,4 +57,8 @@ public class PlanoContratadoService {
         planoContratado.setStatus(novoStatus);
         planoContratadoRepository.save(planoContratado);
     }
+
+    public Boolean verificarContratacaoPendentePorAluno(Integer alunosId) {
+        return planoContratadoRepository.existsByAlunoIdAndStatus(alunosId, StatusEnum.PENDENTE);
+    }
 }
