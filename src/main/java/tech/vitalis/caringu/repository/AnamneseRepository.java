@@ -14,11 +14,13 @@ public interface AnamneseRepository extends JpaRepository<Anamnese, Integer> {
     Optional<Anamnese> findByAlunoId(Integer id);
     boolean existsByAlunoId(Integer id);
     @Query("""
-    SELECT COUNT(a)
-    FROM Anamnese a
-    JOIN PlanoContratado pc ON pc.aluno = a.aluno
-    JOIN Plano p ON pc.plano = p
-    WHERE p.personalTrainer.id = :personalId
+    SELECT COUNT(DISTINCT a)
+    FROM Aluno a
+    LEFT JOIN Anamnese an ON an.aluno.id = a.id
+    JOIN PlanoContratado pc ON pc.aluno.id = a.id
+    JOIN Plano pl ON pc.plano.id = pl.id
+    WHERE an.id IS NULL AND pc.status = "ATIVO" AND pl.personalTrainer.id = :personalId
 """)
     Integer countAnamnesesPendentesByPersonalId(@Param("personalId") Integer personalId);
+
 }

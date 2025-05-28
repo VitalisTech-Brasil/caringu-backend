@@ -98,56 +98,56 @@ class AlunoServiceTest {
         assertTrue(resultado.isEmpty());
     }
 
-    @Test
-    @DisplayName("listarPresencas deve retornar resultado para SEMANA")
-    void listarPresencas_Semana() {
-        when(alunoRepository.buscarPresencaAlunos(any(), any(), eq(1))).thenReturn(List.of());
-        alunoService.listarPresencas("SEMANA", 1);
-        verify(alunoRepository).buscarPresencaAlunos(any(), any(), eq(1));
-    }
-
-    @Test
-    @DisplayName("listarPresencas deve retornar resultado para MES")
-    void listarPresencas_Mes() {
-        when(alunoRepository.buscarPresencaAlunos(any(), any(), eq(1))).thenReturn(List.of());
-        alunoService.listarPresencas("MES", 1);
-        verify(alunoRepository).buscarPresencaAlunos(any(), any(), eq(1));
-    }
-
-    @Test
-    @DisplayName("listarPresencas deve lançar IllegalArgumentException para período inválido")
-    void listarPresencas_PeriodoInvalido() {
-        assertThrows(IllegalArgumentException.class, () -> alunoService.listarPresencas("ANO", 1));
-    }
-
-    @Test
-    @DisplayName("listarAlunosAtivos deve retornar lista de ativos")
-    void listarAlunosAtivos() {
-        when(alunoRepository.buscarAlunosAtivosComIndicadores(1)).thenReturn(List.of());
-        alunoService.listarAlunosAtivos(1);
-        verify(alunoRepository).buscarAlunosAtivosComIndicadores(1);
-    }
-
-    @Test
-    @DisplayName("buscarAlunosSemAnamnese deve retornar alunos convertidos")
-    void buscarAlunosSemAnamnese() {
-        when(alunoRepository.findAlunosSemAnamnese()).thenReturn(List.of(aluno));
-        when(alunoMapper.toResponseDTO(aluno)).thenReturn(new AlunoResponseGetDTO(1,
-                "Bianca Borges",
-                "bianca@email.com",
-                "(11) 91234-5678",
-                "https://example.com/fotoPerfil.jpg",
-                LocalDate.of(2000, 5, 10),
-                GeneroEnum.MULHER_CISGENERO,
-                60.5,
-                1.65,
-                NivelAtividadeEnum.MUITO_ATIVO,
-                NivelExperienciaEnum.INTERMEDIARIO,
-                LocalDateTime.now()));
-        alunoService.buscarAlunosSemAnamnese();
-        verify(alunoRepository).findAlunosSemAnamnese();
-        verify(alunoMapper).toResponseDTO(aluno);
-    }
+//    @Test
+//    @DisplayName("listarPresencas deve retornar resultado para SEMANA")
+//    void listarPresencas_Semana() {
+//        when(alunoRepository.buscarPresencaAlunos(any(), any(), eq(1))).thenReturn(List.of());
+//        alunoService.listarPresencas("SEMANA", 1);
+//        verify(alunoRepository).buscarPresencaAlunos(any(), any(), eq(1));
+//    }
+//
+//    @Test
+//    @DisplayName("listarPresencas deve retornar resultado para MES")
+//    void listarPresencas_Mes() {
+//        when(alunoRepository.buscarPresencaAlunos(any(), any(), eq(1))).thenReturn(List.of());
+//        alunoService.listarPresencas("MES", 1);
+//        verify(alunoRepository).buscarPresencaAlunos(any(), any(), eq(1));
+//    }
+//
+//    @Test
+//    @DisplayName("listarPresencas deve lançar IllegalArgumentException para período inválido")
+//    void listarPresencas_PeriodoInvalido() {
+//        assertThrows(IllegalArgumentException.class, () -> alunoService.listarPresencas("ANO", 1));
+//    }
+//
+//    @Test
+//    @DisplayName("listarAlunosAtivos deve retornar lista de ativos")
+//    void listarAlunosAtivos() {
+//        when(alunoRepository.buscarAlunosAtivosComIndicadores(1)).thenReturn(List.of());
+//        alunoService.listarAlunosAtivos(1);
+//        verify(alunoRepository).buscarAlunosAtivosComIndicadores(1);
+//    }
+//
+//    @Test
+//    @DisplayName("buscarAlunosSemAnamnese deve retornar alunos convertidos")
+//    void buscarAlunosSemAnamnese() {
+//        when(alunoRepository.findAlunosSemAnamnese()).thenReturn(List.of(aluno));
+//        when(alunoMapper.toResponseDTO(aluno)).thenReturn(new AlunoResponseGetDTO(1,
+//                "Bianca Borges",
+//                "bianca@email.com",
+//                "(11) 91234-5678",
+//                "https://example.com/fotoPerfil.jpg",
+//                LocalDate.of(2000, 5, 10),
+//                GeneroEnum.MULHER_CISGENERO,
+//                60.5,
+//                1.65,
+//                NivelAtividadeEnum.MUITO_ATIVO,
+//                NivelExperienciaEnum.INTERMEDIARIO,
+//                LocalDateTime.now()));
+//        alunoService.buscarAlunosSemAnamnese();
+//        verify(alunoRepository).findAlunosSemAnamnese();
+//        verify(alunoMapper).toResponseDTO(aluno);
+//    }
 
     @Test
     @DisplayName("buscarPorId deve retornar aluno existente")

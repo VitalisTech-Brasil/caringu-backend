@@ -37,7 +37,7 @@ public class AlunoTreinoController {
 
     @GetMapping("/kpis/proximos-vencimento/{personalId}")
     public Integer contarProximosDoVencimento(@PathVariable Integer personalId,
-                                              @RequestParam(defaultValue = "7") int dias) {
+                                              @RequestParam(defaultValue = "14") int dias) {
         return service.contarTreinosProximosVencimento(personalId, dias);
     }
 
