@@ -13,16 +13,11 @@ public class Cidade {
     @Column(nullable = false, length = 45)
     private String nome;
 
-    @ManyToOne
-    @JoinColumn(name = "estados_id")
-    private Estado estado;
-
     public Cidade() {}
 
-    public Cidade(Integer id, String nome, Estado estado) {
+    public Cidade(Integer id, String nome) {
         this.id = id;
         this.nome = nome;
-        this.estado = estado;
     }
 
     public Integer getId() {
@@ -39,13 +34,5 @@ public class Cidade {
 
     public void setNome(String nome) {
         this.nome = nome;
-    }
-
-    public Estado getEstado() {
-        return estado;
-    }
-
-    public void setEstado(Estado estado) {
-        this.estado = estado;
     }
 }

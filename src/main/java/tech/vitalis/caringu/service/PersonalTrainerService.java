@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.PersonalTrainer.*;
 import tech.vitalis.caringu.dtos.PersonalTrainerBairro.AtualizarBairroDTO;
+import tech.vitalis.caringu.dtos.PersonalTrainerBairro.CriarBairroDTO;
 import tech.vitalis.caringu.dtos.PersonalTrainerBairro.PersonalTrainerComBairroCidadeResponseGetDTO;
 import tech.vitalis.caringu.dtos.Plano.PlanoResumoDTO;
 import tech.vitalis.caringu.entity.*;
@@ -325,6 +326,35 @@ public class PersonalTrainerService {
         }
 
         bairroRepository.save(bairro);
+    }
+
+    @Transactional
+    public void criarBairroEAssociar(Integer personalId, CriarBairroDTO dto) {
+        PersonalTrainer personal = personalTrainerRepository.findById(personalId)
+                .orElseThrow(() -> new PersonalNaoEncontradoException("Personal não encontrado"));
+
+        Cidade cidade;
+
+        if (dto.cidadeId() != null) {
+            cidade = cidadeRepository.findById(dto.cidadeId())
+                    .orElseThrow(() -> new CidadeNaoEncontradaException("Cidade não encontrada"));
+        } else if (dto.nomeCidade() != null && !dto.nomeCidade().isBlank()) {
+            cidade = new Cidade();
+            cidade.setNome(dto.nomeCidade());
+            cidade = cidadeRepository.save(cidade);
+        } else {
+            throw new IllegalArgumentException("É necessário informar o nome da cidade");
+        }
+
+        Bairro bairro = new Bairro();
+        bairro.setNome(dto.nomeBairro());
+        bairro.setCidade(cidade);
+        bairro = bairroRepository.save(bairro);
+
+        PersonalTrainerBairro associacao = new PersonalTrainerBairro();
+        associacao.setPersonalTrainer(personal);
+        associacao.setBairro(bairro);
+        personalTrainerBairroRepository.save(associacao);
     }
 
     public void deletar(Integer id) {

@@ -6,10 +6,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.PersonalTrainer.*;
 import tech.vitalis.caringu.dtos.PersonalTrainerBairro.AtualizarBairroDTO;
+import tech.vitalis.caringu.dtos.PersonalTrainerBairro.CriarBairroDTO;
 import tech.vitalis.caringu.dtos.PersonalTrainerBairro.PersonalTrainerComBairroCidadeResponseGetDTO;
 import tech.vitalis.caringu.entity.PersonalTrainer;
 import tech.vitalis.caringu.mapper.PersonalTrainerMapper;
@@ -227,6 +229,16 @@ public class PersonalTrainerController {
     ) {
         service.atualizarBairro(id, dto);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/bairros")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> criarBairroEAssociar(
+            @PathVariable Integer id,
+            @RequestBody CriarBairroDTO dto
+    ) {
+        service.criarBairroEAssociar(id, dto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/{id}")

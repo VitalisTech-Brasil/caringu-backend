@@ -12,7 +12,7 @@ public class StatusEnumValidationStrategy implements EnumValidationStrategy {
         try {
             StatusEnum.valueOf(valorEnum);
         } catch (IllegalArgumentException e) {
-            throw new ApiExceptions.BadRequestException("Valor inválido para 'Status'. Valores válidos: ATIVO, PENDENTE, INATIVO");
+            throw new ApiExceptions.BadRequestException("Valor inválido para 'Status'. Valores válidos: ATIVO, PENDENTE, INATIVO, EM_PROCESSO");
         }
 
     }

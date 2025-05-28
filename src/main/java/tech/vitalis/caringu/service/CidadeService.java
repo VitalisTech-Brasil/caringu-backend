@@ -42,7 +42,7 @@ public class CidadeService {
     }
 
     public CidadeResponseGetDTO cadastrar(Cidade cidade) {
-        boolean existe = repository.existsByNomeIgnoreCaseAndEstadoId(cidade.getNome(), cidade.getEstado().getId());
+        boolean existe = repository.existsByNomeIgnoreCase(cidade.getNome());
 
         if (existe) {
             throw new CidadeJaExisteException("Já existe uma cidade com esse nome no estado informado.");
@@ -55,7 +55,7 @@ public class CidadeService {
         Cidade existente = repository.findById(id)
                 .orElseThrow(() -> new CidadeNaoEncontradaException("Cidade com ID %d não encontrada".formatted(id)));
 
-        boolean nomeDuplicado = repository.existsByNomeIgnoreCaseAndEstadoId(novaCidade.getNome(), novaCidade.getEstado().getId())
+        boolean nomeDuplicado = repository.existsByNomeIgnoreCase(novaCidade.getNome())
                 && !existente.getId().equals(novaCidade.getId());
 
         if (nomeDuplicado) {
@@ -63,7 +63,6 @@ public class CidadeService {
         }
 
         existente.setNome(novaCidade.getNome());
-        existente.setEstado(novaCidade.getEstado());
 
         return mapper.toDTO(repository.save(existente));
     }

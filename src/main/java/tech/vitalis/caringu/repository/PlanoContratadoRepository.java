@@ -35,7 +35,7 @@ public interface PlanoContratadoRepository extends JpaRepository<PlanoContratado
                     ON pc.plano.id = p.id
                 JOIN Aluno a
                     ON pc.aluno.id = a.id
-                WHERE pc.status = "PENDENTE" AND p.personalTrainer.id = :personalId
+                WHERE pc.status = "EM_PROCESSO" AND p.personalTrainer.id = :personalId
             """)
     List<PlanoContratadoPendenteRequestDTO> listarSolicitacoesPendentes(@Param("personalId") Integer personalId);
 

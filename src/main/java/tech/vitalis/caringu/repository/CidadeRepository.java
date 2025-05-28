@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface CidadeRepository extends JpaRepository<Cidade, Integer> {
 
-    boolean existsByNomeIgnoreCaseAndEstadoId(String nome, Integer estadoId);
+    boolean existsByNomeIgnoreCase(String nome);
     List<Cidade> findByNomeContainingIgnoreCase(String nome);
 }
