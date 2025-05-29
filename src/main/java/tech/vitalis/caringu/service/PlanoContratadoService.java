@@ -1,13 +1,16 @@
 package tech.vitalis.caringu.service;
 
 import org.springframework.stereotype.Service;
+import tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoPagamentoPendenteResponseDTO;
 import tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoPendenteRequestDTO;
 import tech.vitalis.caringu.entity.*;
 import tech.vitalis.caringu.enums.Notificacoes.TipoNotificacaoEnum;
 import tech.vitalis.caringu.enums.PeriodoEnum;
 import tech.vitalis.caringu.enums.PreferenciaNotificacao.TipoPreferenciaEnum;
 import tech.vitalis.caringu.enums.StatusEnum;
+import tech.vitalis.caringu.exception.Aluno.AlunoNaoEncontradoException;
 import tech.vitalis.caringu.exception.PlanoContratado.PlanoContratadoNaoEncontradoException;
+import tech.vitalis.caringu.repository.AlunoRepository;
 import tech.vitalis.caringu.repository.NotificacoesRepository;
 import tech.vitalis.caringu.repository.PlanoContratadoRepository;
 import tech.vitalis.caringu.repository.PreferenciaNotificacaoRepository;
@@ -26,11 +29,13 @@ public class PlanoContratadoService {
     private final PlanoContratadoRepository planoContratadoRepository;
     private final NotificacoesRepository notificacoesRepository;
     private final PreferenciaNotificacaoRepository preferenciaNotificacaoRepository;
+    private final AlunoRepository alunoRepository;
 
-    public PlanoContratadoService(PlanoContratadoRepository planoContratadoRepository, NotificacoesRepository notificacoesRepository, PreferenciaNotificacaoRepository preferenciaNotificacaoRepository) {
+    public PlanoContratadoService(PlanoContratadoRepository planoContratadoRepository, NotificacoesRepository notificacoesRepository, PreferenciaNotificacaoRepository preferenciaNotificacaoRepository, AlunoRepository alunoRepository) {
         this.planoContratadoRepository = planoContratadoRepository;
         this.notificacoesRepository = notificacoesRepository;
         this.preferenciaNotificacaoRepository = preferenciaNotificacaoRepository;
+        this.alunoRepository = alunoRepository;
     }
 
     public List<PlanoContratadoPendenteRequestDTO> listarSolicitacoesPendentes(Integer personalId) {
@@ -84,7 +89,12 @@ public class PlanoContratadoService {
         planoContratadoRepository.save(planoContratado);
     }
 
-    public Boolean verificarContratacaoPendentePorAluno(Integer alunosId) {
-        return planoContratadoRepository.existsByAlunoIdAndStatus(alunosId, StatusEnum.PENDENTE);
+    public List<PlanoContratadoPagamentoPendenteResponseDTO> verificarContratacaoPendentePorAluno(Integer alunosId) {
+        Aluno aluno = alunoRepository.findById(alunosId)
+                .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno com ID %d não encontrado.".formatted(alunosId)));
+
+
+
+        return planoContratadoRepository.buscarPorAlunoIdStatus(alunosId);
     }
 }

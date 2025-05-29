@@ -1,0 +1,8 @@
+
+
+${Ansi.BLUE}     ██████  █████  ██████  ██ ███    ██  ██████  ██    ██
+${Ansi.BLUE}    ██      ██   ██ ██   ██ ██ ████   ██ ██       ██    ██
+${Ansi.BLUE}    ██      ███████ ██████  ██ ██ ██  ██ ██   ███ ██    ██
+${Ansi.BLUE}    ██      ██   ██ ██   ██ ██ ██  ██ ██ ██    ██ ██    ██
+${Ansi.BLUE}     ██████ ██   ██ ██   ██ ██ ██   ████  ██████   ██████
+${AnsiColor.BRIGHT_GREEN}            :: Spring Boot${spring-boot.formatted-version} :: ${Ansi.DEFAULT}

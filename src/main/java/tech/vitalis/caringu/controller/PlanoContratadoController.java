@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.PlanoContratado.AtualizarStatusPlanoDTO;
+import tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoPagamentoPendenteResponseDTO;
 import tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoPendenteRequestDTO;
 import tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoRespostaRecord;
 import tech.vitalis.caringu.service.PlanoContratadoService;
@@ -41,10 +42,14 @@ public class PlanoContratadoController {
     }
 
     @GetMapping("/alunos/{alunosId}/contratacao-pendente")
-    public ResponseEntity<Boolean> verificarContratacaoPendentePorAluno(@PathVariable Integer alunosId) {
-        boolean existeContratacaoPendente = planoContratadoService.verificarContratacaoPendentePorAluno(alunosId);
+    public ResponseEntity<List<PlanoContratadoPagamentoPendenteResponseDTO>> verificarContratacaoPendentePorAluno(@PathVariable Integer alunosId) {
+        List<PlanoContratadoPagamentoPendenteResponseDTO> contratacaoPendente = planoContratadoService.verificarContratacaoPendentePorAluno(alunosId);
 
-        return ResponseEntity.ok(existeContratacaoPendente);
+        if (contratacaoPendente.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(contratacaoPendente);
     }
 
     @PostMapping("/contratarPlano/{alunoId}/{planoId}")

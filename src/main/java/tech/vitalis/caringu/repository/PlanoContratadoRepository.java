@@ -5,11 +5,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoPagamentoPendenteResponseDTO;
 import tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoPendenteRequestDTO;
 import tech.vitalis.caringu.entity.PlanoContratado;
 import tech.vitalis.caringu.enums.StatusEnum;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PlanoContratadoRepository extends JpaRepository<PlanoContratado, Integer> {
@@ -40,6 +42,19 @@ public interface PlanoContratadoRepository extends JpaRepository<PlanoContratado
             """)
     List<PlanoContratadoPendenteRequestDTO> listarSolicitacoesPendentes(@Param("personalId") Integer personalId);
 
-    Boolean existsByAlunoIdAndStatus(Integer alunoId, StatusEnum status);
+    @Query("""
+            SELECT new tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoPagamentoPendenteResponseDTO(
+                pc.id,
+                pc.plano.id,
+                pc.aluno,
+                pc.status,
+                pc.dataContratacao,
+                pc.dataFim
+            ) 
+            FROM PlanoContratado pc 
+            WHERE pc.aluno.id = :alunoId
+            AND pc.status IN ("PENDENTE", "EM_PROCESSO")
+            """)
+    List<PlanoContratadoPagamentoPendenteResponseDTO> buscarPorAlunoIdStatus(Integer alunoId);
 
 }
