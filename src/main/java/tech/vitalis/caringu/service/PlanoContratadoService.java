@@ -3,14 +3,19 @@ package tech.vitalis.caringu.service;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Aluno.PlanoPertoFimResponseDTO;
 import tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoPendenteRequestDTO;
-import tech.vitalis.caringu.entity.PlanoContratado;
+import tech.vitalis.caringu.entity.*;
+import tech.vitalis.caringu.enums.Notificacoes.TipoNotificacaoEnum;
 import tech.vitalis.caringu.enums.PeriodoEnum;
+import tech.vitalis.caringu.enums.PreferenciaNotificacao.TipoPreferenciaEnum;
 import tech.vitalis.caringu.enums.StatusEnum;
 import tech.vitalis.caringu.exception.PlanoContratado.PlanoContratadoNaoEncontradoException;
+import tech.vitalis.caringu.repository.NotificacoesRepository;
 import tech.vitalis.caringu.repository.PlanoContratadoRepository;
+import tech.vitalis.caringu.repository.PreferenciaNotificacaoRepository;
 import tech.vitalis.caringu.strategy.PlanoContratado.StatusEnumValidationStrategy;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -20,28 +25,50 @@ import static tech.vitalis.caringu.strategy.EnumValidador.validarEnums;
 public class PlanoContratadoService {
 
     private final PlanoContratadoRepository planoContratadoRepository;
+    private final NotificacoesRepository notificacoesRepository;
+    private final PreferenciaNotificacaoRepository preferenciaNotificacaoRepository;
 
-    public PlanoContratadoService(PlanoContratadoRepository planoContratadoRepository) {
+    public PlanoContratadoService(PlanoContratadoRepository planoContratadoRepository, NotificacoesRepository notificacoesRepository, PreferenciaNotificacaoRepository preferenciaNotificacaoRepository) {
         this.planoContratadoRepository = planoContratadoRepository;
+        this.notificacoesRepository = notificacoesRepository;
+        this.preferenciaNotificacaoRepository = preferenciaNotificacaoRepository;
     }
 
     public List<PlanoContratadoPendenteRequestDTO> listarSolicitacoesPendentes(Integer personalId) {
         return planoContratadoRepository.listarSolicitacoesPendentes(personalId);
     }
 
-    public void atualizarStatus(Integer id, StatusEnum novoStatus) {
-        PlanoContratado planoContratado = planoContratadoRepository.findById(id)
-                .orElseThrow(() -> new PlanoContratadoNaoEncontradoException("Plano contratado com id %d não encontrado.".formatted(id)));
+    public void atualizarStatus(Integer idPlanoContratado, StatusEnum novoStatus) {
+        PlanoContratado planoContratado = planoContratadoRepository.findById(idPlanoContratado)
+                .orElseThrow(() -> new PlanoContratadoNaoEncontradoException("Plano contratado com id %d não encontrado.".formatted(idPlanoContratado)));
 
         validarEnums(Map.of(
                 new StatusEnumValidationStrategy(), novoStatus
         ));
 
-        boolean isAvulso = planoContratado.getPlano().getPeriodo().equals(PeriodoEnum.AVULSO);
-        boolean isMensal = planoContratado.getPlano().getPeriodo().equals(PeriodoEnum.MENSAL);
-        boolean isSemestral = planoContratado.getPlano().getPeriodo().equals(PeriodoEnum.SEMESTRAL);
+        if (novoStatus.equals(StatusEnum.EM_PROCESSO)) {
+
+            Plano plano = planoContratado.getPlano();
+            PersonalTrainer personal = plano.getPersonalTrainer();
+
+            boolean deveNotificar = preferenciaNotificacaoRepository.existsByPessoaIdAndTipoAndAtivadaTrue(personal.getId(), TipoPreferenciaEnum.PAGAMENTO_REALIZADO);
+
+            if (deveNotificar) {
+                Notificacoes notificacao = new Notificacoes();
+                notificacao.setPessoa(personal);
+                notificacao.setTipo(TipoNotificacaoEnum.PAGAMENTO_REALIZADO);
+                notificacao.setTitulo("Novo plano aguardando confirmação de pagamento");
+                notificacao.setDataCriacao(LocalDateTime.now());
+
+                notificacoesRepository.save(notificacao);
+            }
+        }
 
         if (novoStatus.equals(StatusEnum.ATIVO)) {
+            boolean isAvulso = planoContratado.getPlano().getPeriodo().equals(PeriodoEnum.AVULSO);
+            boolean isMensal = planoContratado.getPlano().getPeriodo().equals(PeriodoEnum.MENSAL);
+            boolean isSemestral = planoContratado.getPlano().getPeriodo().equals(PeriodoEnum.SEMESTRAL);
+
             if (!isAvulso) {
                 planoContratado.setDataContratacao(LocalDate.now());
 

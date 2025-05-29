@@ -41,6 +41,13 @@ public class PlanoContratadoController {
         return ResponseEntity.ok(pendenteRequestDTO);
     }
 
+    @GetMapping("/alunos/{alunosId}/contratacao-pendente")
+    public ResponseEntity<Boolean> verificarContratacaoPendentePorAluno(@PathVariable Integer alunosId) {
+        boolean existeContratacaoPendente = planoContratadoService.verificarContratacaoPendentePorAluno(alunosId);
+
+        return ResponseEntity.ok(existeContratacaoPendente);
+    }
+
     @PostMapping("/contratarPlano/{alunoId}/{planoId}")
     @Operation(summary = "Contratar plano")
     public ResponseEntity<PlanoContratadoRespostaRecord> contratarPlano (@PathVariable Integer alunoId, @PathVariable Integer planoId) {
@@ -48,19 +55,12 @@ public class PlanoContratadoController {
         return ResponseEntity.status(201).body(planoContratadoRespostaRecord);
     }
 
-    @PatchMapping("/{id}/status")
+    @PatchMapping("/{idPlanoContratado}/status")
     public ResponseEntity<Void> atualizarStatus(
-            @PathVariable Integer id,
+            @PathVariable Integer idPlanoContratado,
             @RequestBody AtualizarStatusPlanoDTO dto
     ) {
-        planoContratadoService.atualizarStatus(id, dto.status());
+        planoContratadoService.atualizarStatus(idPlanoContratado, dto.status());
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/alunos/{alunosId}/contratacao-pendente")
-    public ResponseEntity<Boolean> verificarContratacaoPendentePorAluno(@PathVariable Integer alunosId) {
-        boolean existeContratacaoPendente = planoContratadoService.verificarContratacaoPendentePorAluno(alunosId);
-
-        return ResponseEntity.ok(existeContratacaoPendente);
     }
 }
