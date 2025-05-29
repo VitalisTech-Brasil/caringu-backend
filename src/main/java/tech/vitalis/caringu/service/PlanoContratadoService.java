@@ -1,7 +1,6 @@
 package tech.vitalis.caringu.service;
 
 import org.springframework.stereotype.Service;
-import tech.vitalis.caringu.dtos.Aluno.PlanoPertoFimResponseDTO;
 import tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoPendenteRequestDTO;
 import tech.vitalis.caringu.entity.*;
 import tech.vitalis.caringu.enums.Notificacoes.TipoNotificacaoEnum;
