@@ -53,7 +53,7 @@ public interface PlanoContratadoRepository extends JpaRepository<PlanoContratado
             ) 
             FROM PlanoContratado pc 
             WHERE pc.aluno.id = :alunoId
-            AND pc.status IN ("PENDENTE", "EM_PROCESSO")
+            AND pc.status IN ("PENDENTE", "EM_PROCESSO", "ATIVO")
             """)
     List<PlanoContratadoPagamentoPendenteResponseDTO> buscarPorAlunoIdStatus(Integer alunoId);
 

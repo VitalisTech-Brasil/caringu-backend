@@ -93,8 +93,6 @@ public class PlanoContratadoService {
         Aluno aluno = alunoRepository.findById(alunosId)
                 .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno com ID %d não encontrado.".formatted(alunosId)));
 
-
-
         return planoContratadoRepository.buscarPorAlunoIdStatus(alunosId);
     }
 }
