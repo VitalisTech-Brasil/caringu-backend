@@ -8,7 +8,6 @@
         import java.time.LocalDateTime;
         
         public record TreinoExercicioRequestPostDto(
-                Integer treinosId,
                 Integer exercicioId,
                 @Positive
                 @NotNull(message = "Carga é obrigatória e não pode ser zero")

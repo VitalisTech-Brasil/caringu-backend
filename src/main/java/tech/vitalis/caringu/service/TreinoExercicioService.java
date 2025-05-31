@@ -1,10 +1,7 @@
 package tech.vitalis.caringu.service;
 
 import org.springframework.stereotype.Service;
-import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioRequestPostDto;
-import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioRequestUpdateDto;
-import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResponseGetDto;
-import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoDTO;
+import tech.vitalis.caringu.dtos.TreinoExercicio.*;
 import tech.vitalis.caringu.entity.Exercicio;
 import tech.vitalis.caringu.entity.Treino;
 import tech.vitalis.caringu.entity.TreinoExercicio;
@@ -16,6 +13,7 @@ import tech.vitalis.caringu.repository.TreinoRepository;
 import tech.vitalis.caringu.strategy.TreinoExercio.GrauDificuldadeEnumValidator;
 import tech.vitalis.caringu.strategy.TreinoExercio.OrigemTreinoExercicioEnumValidator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,6 +35,7 @@ public class TreinoExercicioService {
         this.exercicioRepository = exercicioRepository;
     }
 
+    /*
     public TreinoExercicioResponseGetDto cadastrar(TreinoExercicioRequestPostDto treinoDTO){
         validarEnums(Map.of(
                 new OrigemTreinoExercicioEnumValidator(), treinoDTO.origemTreinoExercicio(),
@@ -57,6 +56,8 @@ public class TreinoExercicioService {
 
         return treinoExercicioMapper.toResponseDTO(treinoSalvo);
     }
+
+     */
 
     public TreinoExercicioResponseGetDto buscarPorId(Integer id){
         TreinoExercicio treinoExercicio = treinoExercicioRepository.findById(id)
@@ -155,5 +156,40 @@ public class TreinoExercicioService {
         treinoExistente.setTreinos(null);
         treinoExistente.setExercicio(null);
         treinoExercicioRepository.save(treinoExistente); // desassocia
+    }
+
+    public List<TreinoExercicioResponseGetDto> cadastrarComVariosExercicios(TreinoExercicioAssociacaoRequestDTO treinosDto){
+
+        Treino treinoExistente = treinoRepository.findById(treinosDto.treinoId()).
+                orElseThrow(() -> new ApiExceptions.BadRequestException("Treino com o ID " + treinosDto.treinoId() + " não encontrado."));
+
+        List<TreinoExercicio> treinoExercicios = new ArrayList<>();
+
+        for (TreinoExercicioRequestPostDto dto : treinosDto.exercicios()){
+            validarEnums(Map.of(
+                    new OrigemTreinoExercicioEnumValidator(), dto.origemTreinoExercicio(),
+                    new GrauDificuldadeEnumValidator(), dto.grauDificuldade()
+            ));
+
+            Exercicio exercicioExistente = exercicioRepository.findById(dto.exercicioId()).
+                    orElseThrow(() -> new ApiExceptions.BadRequestException("Exercício com o ID " + dto.exercicioId() + " não encontrado."));
+
+            boolean jaAssociado = treinoExercicioRepository.existsByTreinos_IdAndExercicio_Id(treinosDto.treinoId(), dto.exercicioId());
+            if (jaAssociado){
+                throw new ApiExceptions.BadRequestException("Exercício com o ID " + dto.exercicioId() + " já está associado ao treino com ID " + treinosDto.treinoId());
+            }
+
+            TreinoExercicio novoTreino = treinoExercicioMapper.toEntity(dto);
+            novoTreino.setTreinos(treinoExistente);
+            novoTreino.setExercicio(exercicioExistente);
+
+            treinoExercicios.add(novoTreino);
+        }
+
+        List<TreinoExercicio> salvos = treinoExercicioRepository.saveAll(treinoExercicios);
+
+        return salvos.stream()
+                .map(treinoExercicioMapper::toResponseDTO)
+                .collect(Collectors.toList());
     }
 }
