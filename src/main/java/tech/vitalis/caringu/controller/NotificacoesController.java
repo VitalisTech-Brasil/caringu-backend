@@ -74,7 +74,13 @@ public class NotificacoesController {
         return notificacaoVencimentoService.buscarTreinosVencendo(limite);
     }
 
-    @PatchMapping("/{id}/visualizada")
+    @GetMapping("/treinos-vencendo/{personalId}")
+    public List<NotificacaoTreinoPersonalDTO> listarTreinosVencendoPorPersonal(@PathVariable Integer personalId) {
+        LocalDate limite = LocalDate.now().plusWeeks(2);
+        return notificacaoVencimentoService.buscarTreinosVencendoPorPersonal(limite, personalId);
+    }
+      
+   @PatchMapping("/{id}/visualizada")
     public ResponseEntity<Void> atualizarVisualizada(@PathVariable Integer id, @RequestBody NotificacaoVisualizadaRequestPatchDto dto){
         notificacoesService.atualizarVisualizada(id, dto.visualizada());
         return ResponseEntity.status(204).build();
