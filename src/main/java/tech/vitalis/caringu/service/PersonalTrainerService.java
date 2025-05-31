@@ -3,6 +3,9 @@ package tech.vitalis.caringu.service;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.PersonalTrainer.*;
@@ -35,6 +38,8 @@ import static tech.vitalis.caringu.strategy.EnumValidador.validarEnums;
 @Service
 public class PersonalTrainerService {
 
+    @Autowired
+    private Environment env;
     private static final Logger logger = LoggerFactory.getLogger(PersonalTrainerService.class);
 
     private final PasswordEncoder passwordEncoder;
@@ -124,19 +129,26 @@ public class PersonalTrainerService {
                 .collect(Collectors.groupingBy(PlanoResumoDTO::personalTrainerId));
 
         return basicos.stream()
-                .map(p -> new PersonalTrainerDisponivelResponseDTO(
-                        p.id(),
-                        p.nomePersonal(),
-                        p.email(),
-                        p.celular(),
-                        p.experiencia(),
-                        p.urlFotoPerfil(),
-                        p.genero(),
-                        especialidadesPorPersonal.getOrDefault(p.id(), List.of()),
-                        planosPorPersonal.getOrDefault(p.id(), List.of()),
-                        p.bairro(),
-                        p.cidade()
-                ))
+                .map(p -> {
+                    String urlFoto = p.urlFotoPerfil();
+                    if (urlFoto != null && !urlFoto.startsWith("http") && !env.acceptsProfiles(Profiles.of("prod"))) {
+                        urlFoto = "http://localhost:8080/pessoas/fotos-perfil/" + urlFoto;
+                    }
+
+                    return new PersonalTrainerDisponivelResponseDTO(
+                            p.id(),
+                            p.nomePersonal(),
+                            p.email(),
+                            p.celular(),
+                            p.experiencia(),
+                            urlFoto,
+                            p.genero(),
+                            especialidadesPorPersonal.getOrDefault(p.id(), List.of()),
+                            planosPorPersonal.getOrDefault(p.id(), List.of()),
+                            p.bairro(),
+                            p.cidade()
+                    );
+                })
                 .toList();
     }
 

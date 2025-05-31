@@ -9,6 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import tech.vitalis.caringu.config.GerenciadorTokenJwt;
 import tech.vitalis.caringu.dtos.Pessoa.PessoaResponseFotoPerfilGetDTO;
 import tech.vitalis.caringu.dtos.Pessoa.PessoaResponseGetDTO;
@@ -21,6 +23,8 @@ import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
 import tech.vitalis.caringu.mapper.PessoaMapper;
 import tech.vitalis.caringu.entity.Pessoa;
 import tech.vitalis.caringu.repository.PessoaRepository;
+import tech.vitalis.caringu.service.ArmazenamentoFotos.ArmazenamentoService;
+
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -39,15 +43,17 @@ public class PessoaService {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private AzureBlobService azureBlobService;
+    private Environment env;
 
     private final PessoaRepository pessoaRepository;
 
     private final PessoaMapper pessoaMapper;
+    private final ArmazenamentoService armazenamentoService;
 
-    public PessoaService(PessoaRepository pessoaRepository, PessoaMapper pessoaMapper) {
+    public PessoaService(PessoaRepository pessoaRepository, PessoaMapper pessoaMapper, ArmazenamentoService armazenamentoService) {
         this.pessoaRepository = pessoaRepository;
         this.pessoaMapper = pessoaMapper;
+        this.armazenamentoService = armazenamentoService;
     }
 
     public PessoaResponseGetDTO cadastrar(Pessoa pessoa) {
@@ -168,7 +174,11 @@ public class PessoaService {
         Pessoa pessoa = pessoaRepository.findById(id)
                 .orElseThrow(() -> new PessoaNaoEncontradaException("Pessoa não encontrada"));
 
-        String url = azureBlobService.uploadArquivo(arquivo);
+        if (pessoa.getUrlFotoPerfil() != null) {
+            armazenamentoService.deletarArquivoPorUrl(pessoa.getUrlFotoPerfil());
+        }
+
+        String url = armazenamentoService.uploadArquivo(arquivo);
 
         pessoa.setUrlFotoPerfil(url);
         pessoaRepository.save(pessoa);
@@ -176,10 +186,38 @@ public class PessoaService {
         return url;
     }
 
+    public void removerFotoPerfil(Integer id) {
+        Pessoa pessoa = pessoaRepository.findById(id)
+                .orElseThrow(() -> new PessoaNaoEncontradaException("Pessoa não encontrada"));
+
+        if (pessoa.getUrlFotoPerfil() != null) {
+            armazenamentoService.deletarArquivoPorUrl(pessoa.getUrlFotoPerfil());
+            pessoa.setUrlFotoPerfil(null);
+            pessoaRepository.save(pessoa);
+        }
+    }
+
     public PessoaResponseFotoPerfilGetDTO buscarFotoPerfilPorId(Integer id) {
         Pessoa pessoa = pessoaRepository.findById(id)
                 .orElseThrow(() -> new PessoaNaoEncontradaException("Pessoa não encontrada com ID " + id));
 
-        return pessoaMapper.toFotoPerfilDTO(pessoa);
+        PessoaResponseFotoPerfilGetDTO dto = pessoaMapper.toFotoPerfilDTO(pessoa);
+
+        String urlFinal;
+
+        if (env.acceptsProfiles(Profiles.of("prod"))) {
+            urlFinal = dto.urlFotoPerfil();
+        } else {
+            String nomeArquivo = dto.urlFotoPerfil();
+            urlFinal = "http://localhost:8080/pessoas/fotos-perfil/" + nomeArquivo;
+        }
+
+        return new PessoaResponseFotoPerfilGetDTO(
+                dto.id(),
+                dto.nome(),
+                dto.email(),
+                urlFinal
+        );
     }
+
 }
