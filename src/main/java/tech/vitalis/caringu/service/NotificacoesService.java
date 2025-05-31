@@ -1,5 +1,6 @@
 package tech.vitalis.caringu.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Notificacoes.NotificacoesRequestPatchDto;
 import tech.vitalis.caringu.dtos.Notificacoes.NotificacoesRequestPostDto;
@@ -115,5 +116,13 @@ public class NotificacoesService {
 
         notificacoesExistente.setPessoa(null);
         notificacoesRepository.save(notificacoesExistente);
+    }
+
+    @Transactional
+    public void atualizarVisualizada(Integer id, boolean visualizada){
+        Notificacoes notificacoesVisualizada = notificacoesRepository.findById(id)
+                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Notificação não encontrada"));
+
+        notificacoesVisualizada.setVisualizada(visualizada);
     }
 }

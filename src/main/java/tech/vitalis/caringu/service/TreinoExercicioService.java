@@ -1,11 +1,15 @@
 package tech.vitalis.caringu.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.TreinoExercicio.*;
 import tech.vitalis.caringu.entity.Exercicio;
+import tech.vitalis.caringu.entity.PreferenciaNotificacao;
 import tech.vitalis.caringu.entity.Treino;
 import tech.vitalis.caringu.entity.TreinoExercicio;
+import tech.vitalis.caringu.enums.PreferenciaNotificacao.TipoPreferenciaEnum;
 import tech.vitalis.caringu.exception.ApiExceptions;
+import tech.vitalis.caringu.exception.PreferenciasNotificacao.PreferenciasNotificacaoNaoEncontradaException;
 import tech.vitalis.caringu.mapper.TreinoExercicioMapper;
 import tech.vitalis.caringu.repository.ExercicioRepository;
 import tech.vitalis.caringu.repository.TreinoExercicioRepository;
@@ -244,5 +248,21 @@ public class TreinoExercicioService {
         return treinoExerciciosSalvos.stream()
                 .map(treinoExercicioMapper::toResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    public List<TreinoExercicioResponseGetDto> buscarPorTreino(Integer treinoId){
+        List<TreinoExercicio> treinoExercicios = treinoExercicioRepository.findAllByTreinos_Id(treinoId);
+
+        return treinoExercicios.stream()
+                .map(treinoExercicioMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void atualizarFavorito(Integer id, boolean favorito){
+        TreinoExercicio treinoExercicioFavorito = treinoExercicioRepository.findById(id)
+                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("TreinoExercicio não encontrado"));
+
+        treinoExercicioFavorito.setFavorito(favorito);
     }
 }
