@@ -5,10 +5,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioRequestPostDto;
-import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioRequestUpdateDto;
-import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResponseGetDto;
-import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoDTO;
+import tech.vitalis.caringu.dtos.TreinoExercicio.*;
 import tech.vitalis.caringu.service.TreinoExercicioService;
 
 import java.util.List;
@@ -24,12 +21,14 @@ public class TreinoExercicioController {
         this.treinoExercicioService = treinoExercicioService;
     }
 
+    /*
     @PostMapping
     @Operation(summary = "Cadastrar novo Treino Exercício")
     public ResponseEntity<TreinoExercicioResponseGetDto> cadastrar(@Valid @RequestBody TreinoExercicioRequestPostDto treinoDTO){
         TreinoExercicioResponseGetDto treinoCriado = treinoExercicioService.cadastrar(treinoDTO);
         return ResponseEntity.status(201).body(treinoCriado);
     }
+     */
 
     @GetMapping("/personal/{personalId}")
     public ResponseEntity<List<TreinoExercicioResumoDTO>> listarPorPersonal(@PathVariable Integer personalId) {
@@ -63,4 +62,26 @@ public class TreinoExercicioController {
         treinoExercicioService.remover(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/cadastrar-lote")
+    @Operation(summary = "Cadastrar Novo Treino com vários Exercícios")
+    public ResponseEntity<List<TreinoExercicioResponseGetDto>> cadastrarComVariosExercicios(
+            @Valid @RequestBody TreinoExercicioAssociacaoRequestDTO treinoExercicioAssociacaoDTO) {
+
+        List<TreinoExercicioResponseGetDto> treinoCriado = treinoExercicioService.cadastrarComVariosExercicios(treinoExercicioAssociacaoDTO);
+        return ResponseEntity.status(201).body(treinoCriado);
+    }
+
+    @PutMapping("/atualizar/treinos/{treinoId}/exercicios")
+    @Operation(summary = "Atualizar Treino com vários Exercícios")
+    public ResponseEntity<List<TreinoExercicioResponseGetDto>> atualizarComVariosExercicios(
+            @PathVariable Integer treinoId,
+            @RequestBody @Valid TreinoExercicioAssociacaoRequestDTO dto
+    ){
+        List<TreinoExercicioResponseGetDto> treinoExercicioAtualizados =
+                treinoExercicioService.atualizarComVariosExercicios(treinoId, dto);
+
+        return ResponseEntity.ok(treinoExercicioAtualizados);
+    }
+
 }

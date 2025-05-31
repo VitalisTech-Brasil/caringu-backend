@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoDTO;
+import tech.vitalis.caringu.entity.Treino;
 import tech.vitalis.caringu.entity.TreinoExercicio;
 
 import java.util.List;
@@ -34,4 +35,10 @@ public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio
     GROUP BY te.treinos.id
 """)
     List<Object[]> countExerciciosPorTreino();
+
+    boolean existsByTreinosAndExercicio_Id(Treino treinos, Integer exercicioId);
+
+    boolean existsByTreinos_IdAndExercicio_Id(Integer treinosId, Integer exercicioId);
+
+    List<TreinoExercicio> findByTreinos_Id(Integer treinosId);
 }
