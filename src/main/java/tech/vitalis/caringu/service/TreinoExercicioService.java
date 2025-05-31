@@ -192,4 +192,57 @@ public class TreinoExercicioService {
                 .map(treinoExercicioMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
+
+    public List<TreinoExercicioResponseGetDto> atualizarComVariosExercicios(Integer treinoId, TreinoExercicioAssociacaoRequestDTO dto){
+
+        Treino treinoExistente = treinoRepository.findById(treinoId).
+                orElseThrow(() -> new ApiExceptions.BadRequestException("Treino com o ID " + treinoId + " não encontrado."));
+
+        // Por segurança, verifica se o treinoId da requisição bate com o path param
+        if (!treinoId.equals(dto.treinoId())) {
+            throw new ApiExceptions.BadRequestException("ID do treino na URL e no corpo da requisição não conferem.");
+        }
+
+        List<TreinoExercicio> treinoExerciciosExistentes = treinoExercicioRepository.findByTreinos_Id(treinoId);
+
+        Map<Integer, TreinoExercicio> exerciciosExistentes = treinoExerciciosExistentes.stream()
+                .collect(Collectors.toMap(treinoExercicio -> treinoExercicio.getExercicio().getId(), treinoExercicio -> treinoExercicio));
+
+        List<TreinoExercicio> treinoExerciciosParaSalvar = new ArrayList<>();
+
+        for (TreinoExercicioRequestPostDto exercicioDto : dto.exercicios()){
+            validarEnums(Map.of(
+                    new OrigemTreinoExercicioEnumValidator(), exercicioDto.origemTreinoExercicio(),
+                    new GrauDificuldadeEnumValidator(), exercicioDto.grauDificuldade()
+            ));
+
+            Exercicio exercicioExistente = exercicioRepository.findById(exercicioDto.exercicioId()).
+                    orElseThrow(() -> new ApiExceptions.BadRequestException("Exercício com o ID " + exercicioDto.exercicioId() + " não encontrado."));
+
+            if (exerciciosExistentes.containsKey(exercicioDto.exercicioId())){
+                TreinoExercicio treinoExercicioAtual = exerciciosExistentes.get(exercicioDto.exercicioId());
+                treinoExercicioAtual.setCarga(exercicioDto.carga());
+                treinoExercicioAtual.setRepeticoes(exercicioDto.repeticoes());
+                treinoExercicioAtual.setSeries(exercicioDto.series());
+                treinoExercicioAtual.setDescanso(exercicioDto.descanso());
+                treinoExercicioAtual.setDataHoraCriacao(exercicioDto.dataHoraCriacao());
+                treinoExercicioAtual.setDataHoraModificacao(exercicioDto.dataHoraModificacao());
+                treinoExercicioAtual.setOrigemTreinoExercicio(exercicioDto.origemTreinoExercicio());
+                treinoExercicioAtual.setFavorito(exercicioDto.favorito());
+                treinoExercicioAtual.setGrauDificuldade(exercicioDto.grauDificuldade());
+
+                treinoExerciciosParaSalvar.add(treinoExercicioAtual);
+            }else {
+                TreinoExercicio novoTreinoExercicio = treinoExercicioMapper.toEntity(exercicioDto);
+                novoTreinoExercicio.setTreinos(treinoExistente);
+                novoTreinoExercicio.setExercicio(exercicioExistente);
+                treinoExerciciosParaSalvar.add(novoTreinoExercicio);
+            }
+        }
+        List<TreinoExercicio> treinoExerciciosSalvos = treinoExercicioRepository.saveAll(treinoExerciciosParaSalvar);
+
+        return treinoExerciciosSalvos.stream()
+                .map(treinoExercicioMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
 }

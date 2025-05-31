@@ -39,4 +39,6 @@ public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio
     boolean existsByTreinosAndExercicio_Id(Treino treinos, Integer exercicioId);
 
     boolean existsByTreinos_IdAndExercicio_Id(Integer treinosId, Integer exercicioId);
+
+    List<TreinoExercicio> findByTreinos_Id(Integer treinosId);
 }

@@ -72,4 +72,16 @@ public class TreinoExercicioController {
         return ResponseEntity.status(201).body(treinoCriado);
     }
 
+    @PutMapping("/atualizar/treinos/{treinoId}/exercicios")
+    @Operation(summary = "Atualizar Treino com vários Exercícios")
+    public ResponseEntity<List<TreinoExercicioResponseGetDto>> atualizarComVariosExercicios(
+            @PathVariable Integer treinoId,
+            @RequestBody @Valid TreinoExercicioAssociacaoRequestDTO dto
+    ){
+        List<TreinoExercicioResponseGetDto> treinoExercicioAtualizados =
+                treinoExercicioService.atualizarComVariosExercicios(treinoId, dto);
+
+        return ResponseEntity.ok(treinoExercicioAtualizados);
+    }
+
 }
