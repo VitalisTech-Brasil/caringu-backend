@@ -36,5 +36,16 @@ public interface AlunoTreinoRepository extends JpaRepository<AlunoTreino, Intege
             "AND pc.status = 'ATIVO'")
     List<NotificacaoTreinoPersonalDTO> findTreinosVencendo(@Param("dataLimite") LocalDate dataLimite);
 
-
+    @Query("SELECT DISTINCT new tech.vitalis.caringu.dtos.Notificacoes.NotificacaoTreinoPersonalDTO(" +
+            "pt.id, pt.cref, a.id, at.dataVencimento) " +
+            "FROM AlunoTreino at " +
+            "JOIN at.alunos a " +
+            "JOIN PlanoContratado pc ON pc.aluno.id = a.id " +
+            "JOIN pc.plano p " +
+            "JOIN p.personalTrainer pt " +
+            "WHERE at.dataVencimento BETWEEN CURRENT_DATE AND :dataLimite " +
+            "AND p.personalTrainer.id = :personalId " +
+            "AND pc.status = 'ATIVO'")
+    List<NotificacaoTreinoPersonalDTO> findTreinosVencendoPorPersonal(@Param("dataLimite") LocalDate dataLimite,
+                                                           @Param("personalId") Integer personalId);
 }
