@@ -88,6 +88,20 @@ public class NotificacaoTreinoVencimentoService {
         }
     }
 
+    public void notificarPorPersonaisTreinadores(Integer personalId) {
+        LocalDate hoje = LocalDate.now();
+        LocalDate daquiDuasSemanas = hoje.plusWeeks(2);
+
+        List<NotificacaoTreinoPersonalDTO> notificacoes = buscarTreinosVencendoPorPersonal(daquiDuasSemanas, personalId);
+
+        if (notificacoes.isEmpty()) return;
+
+        String mensagem = montarMensagem(notificacoes);
+
+        notificacaoEnviarService.enviarNotificacao(personalId, mensagem);
+    }
+
+
     private String montarMensagem(List<NotificacaoTreinoPersonalDTO> itens) {
         StringBuilder sb = new StringBuilder();
         sb.append("Você tem treinos vencendo nos próximos 14 dias para os seguintes alunos:\n");
@@ -101,6 +115,11 @@ public class NotificacaoTreinoVencimentoService {
 
     public List<NotificacaoTreinoPersonalDTO> buscarTreinosVencendo(LocalDate dataLimite) {
         return alunoTreinoRepository.findTreinosVencendo(dataLimite);
+    }
+
+
+    public List<NotificacaoTreinoPersonalDTO> buscarTreinosVencendoPorPersonal(LocalDate dataLimite, Integer personalId) {
+        return alunoTreinoRepository.findTreinosVencendoPorPersonal(dataLimite, personalId);
     }
 
 }

@@ -75,4 +75,10 @@ public class NotificacoesController {
         LocalDate limite = LocalDate.now().plusWeeks(2);
         return notificacaoVencimentoService.buscarTreinosVencendo(limite);
     }
+
+    @GetMapping("/treinos-vencendo/{personalId}")
+    public List<NotificacaoTreinoPersonalDTO> listarTreinosVencendoPorPersonal(@PathVariable Integer personalId) {
+        LocalDate limite = LocalDate.now().plusWeeks(2);
+        return notificacaoVencimentoService.buscarTreinosVencendoPorPersonal(limite, personalId);
+    }
 }
