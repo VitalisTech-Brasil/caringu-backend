@@ -6,10 +6,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.vitalis.caringu.dtos.Notificacoes.NotificacaoTreinoPersonalDTO;
-import tech.vitalis.caringu.dtos.Notificacoes.NotificacoesRequestPatchDto;
-import tech.vitalis.caringu.dtos.Notificacoes.NotificacoesRequestPostDto;
-import tech.vitalis.caringu.dtos.Notificacoes.NotificacoesResponseGetDto;
+import tech.vitalis.caringu.dtos.Notificacoes.*;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioFavoritoRequestPatchDto;
 import tech.vitalis.caringu.service.NotificacaoTreinoVencimentoService;
 import tech.vitalis.caringu.service.NotificacoesService;
 
@@ -74,5 +72,11 @@ public class NotificacoesController {
     public List<NotificacaoTreinoPersonalDTO> listarTreinosVencendo() {
         LocalDate limite = LocalDate.now().plusWeeks(2);
         return notificacaoVencimentoService.buscarTreinosVencendo(limite);
+    }
+
+    @PatchMapping("/{id}/visualizada")
+    public ResponseEntity<Void> atualizarVisualizada(@PathVariable Integer id, @RequestBody NotificacaoVisualizadaRequestPatchDto dto){
+        notificacoesService.atualizarVisualizada(id, dto.visualizada());
+        return ResponseEntity.status(204).build();
     }
 }

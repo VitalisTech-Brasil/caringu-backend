@@ -5,8 +5,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.vitalis.caringu.dtos.Exercicio.ExercicioFavoritoRequestPatchDto;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioRequestPostDTO;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioResponseGetDTO;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioFavoritoRequestPatchDto;
 import tech.vitalis.caringu.service.ExercicioService;
 import java.util.List;
 
@@ -57,5 +59,11 @@ public class ExercicioController {
     public ResponseEntity<Void> remover(@PathVariable Integer id) {
         exercicioService.remover(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/favorito")
+    public ResponseEntity<Void> atualizarFavorito(@PathVariable Integer id, @RequestBody ExercicioFavoritoRequestPatchDto dto){
+        exercicioService.atualizarFavorito(id, dto.favorito());
+        return ResponseEntity.status(204).build();
     }
 }

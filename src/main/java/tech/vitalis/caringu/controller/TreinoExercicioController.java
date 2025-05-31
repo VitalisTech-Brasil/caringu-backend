@@ -84,4 +84,17 @@ public class TreinoExercicioController {
         return ResponseEntity.ok(treinoExercicioAtualizados);
     }
 
+    @GetMapping("/treinos/{treinosId}/exercicios")
+    public ResponseEntity<List<TreinoExercicioResponseGetDto>> listarExerciciosDoTreino(@PathVariable Integer treinosId){
+        List<TreinoExercicioResponseGetDto> dtos = treinoExercicioService.buscarPorTreino(treinosId);
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    @PatchMapping("/{id}/favorito")
+    public ResponseEntity<Void> atualizarFavorito(@PathVariable Integer id, @RequestBody TreinoExercicioFavoritoRequestPatchDto dto){
+        treinoExercicioService.atualizarFavorito(id, dto.favorito());
+        return ResponseEntity.status(204).build();
+    }
+
 }
