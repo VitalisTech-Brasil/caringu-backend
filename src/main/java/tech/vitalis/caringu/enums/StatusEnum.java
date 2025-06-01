@@ -4,5 +4,6 @@ public enum StatusEnum {
     ATIVO,
     PENDENTE,
     INATIVO,
-    EM_PROCESSO
+    EM_PROCESSO,
+    CANCELADO
 }

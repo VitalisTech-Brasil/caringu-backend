@@ -4,8 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.vitalis.caringu.dtos.Aluno.PlanoPertoFimResponseDTO;
 import tech.vitalis.caringu.dtos.PlanoContratado.AtualizarStatusPlanoDTO;
+import tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoPagamentoPendenteResponseDTO;
 import tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoPendenteRequestDTO;
 import tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoRespostaRecord;
 import tech.vitalis.caringu.service.PlanoContratadoService;
@@ -41,6 +41,17 @@ public class PlanoContratadoController {
         return ResponseEntity.ok(pendenteRequestDTO);
     }
 
+    @GetMapping("/alunos/{alunosId}/contratacao-pendente")
+    public ResponseEntity<List<PlanoContratadoPagamentoPendenteResponseDTO>> verificarContratacaoPendentePorAluno(@PathVariable Integer alunosId) {
+        List<PlanoContratadoPagamentoPendenteResponseDTO> contratacaoPendente = planoContratadoService.verificarContratacaoPendentePorAluno(alunosId);
+
+        if (contratacaoPendente.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(contratacaoPendente);
+    }
+
     @PostMapping("/contratarPlano/{alunoId}/{planoId}")
     @Operation(summary = "Contratar plano")
     public ResponseEntity<PlanoContratadoRespostaRecord> contratarPlano (@PathVariable Integer alunoId, @PathVariable Integer planoId) {
@@ -48,12 +59,12 @@ public class PlanoContratadoController {
         return ResponseEntity.status(201).body(planoContratadoRespostaRecord);
     }
 
-    @PatchMapping("/{id}/status")
+    @PatchMapping("/{idPlanoContratado}/status")
     public ResponseEntity<Void> atualizarStatus(
-            @PathVariable Integer id,
+            @PathVariable Integer idPlanoContratado,
             @RequestBody AtualizarStatusPlanoDTO dto
     ) {
-        planoContratadoService.atualizarStatus(id, dto.status());
+        planoContratadoService.atualizarStatus(idPlanoContratado, dto.status());
         return ResponseEntity.noContent().build();
     }
 }

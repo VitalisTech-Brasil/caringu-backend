@@ -1,5 +1,8 @@
 package tech.vitalis.caringu.mapper;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.stereotype.Component;
 import tech.vitalis.caringu.dtos.Especialidade.EspecialidadeResponseGetDTO;
 import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerRequestPatchDTO;
@@ -14,6 +17,10 @@ import java.util.List;
 
 @Component
 public class PersonalTrainerMapper {
+
+
+    @Autowired
+    private Environment env;
 
     private final EspecialidadeRepository especialidadeRepository;
 
@@ -108,12 +115,18 @@ public class PersonalTrainerMapper {
 
                 .toList();
 
+        String urlFoto = personalTrainer.getUrlFotoPerfil();
+        if (urlFoto != null && !urlFoto.startsWith("http") && !env.acceptsProfiles(Profiles.of("prod"))) {
+            urlFoto = "http://localhost:8080/pessoas/fotos-perfil/" + urlFoto;
+        }
+
+
         return new PersonalTrainerComBairroCidadeResponseGetDTO(
                 personalTrainer.getId(),
                 personalTrainer.getNome(),
                 personalTrainer.getEmail(),
                 personalTrainer.getCelular(),
-                personalTrainer.getUrlFotoPerfil(),
+                urlFoto,
                 personalTrainer.getDataNascimento(),
                 personalTrainer.getGenero(),
                 personalTrainer.getCref(),

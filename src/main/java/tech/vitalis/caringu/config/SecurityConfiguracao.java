@@ -54,6 +54,7 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/alunos", "POST"),
             new AntPathRequestMatcher("/fale-conosco", "POST"),
             new AntPathRequestMatcher("/pessoas/verificacao-email", "GET"),
+            new AntPathRequestMatcher("/pessoas/fotos-perfil/{nomeArquivo}", "GET"),
             new AntPathRequestMatcher("/personal-trainers/verificacao-cref", "GET"),
             new AntPathRequestMatcher("/especialidades", "GET"),
             new AntPathRequestMatcher("/docs", "GET"),
@@ -61,7 +62,6 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/h2-console/**/**"),
             new AntPathRequestMatcher("/error/**"),
             new AntPathRequestMatcher("/esqueci-senha/**")
-
     };
 
     @Bean
