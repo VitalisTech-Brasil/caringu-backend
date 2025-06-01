@@ -63,7 +63,7 @@ public class TreinoExercicioService {
 
      */
 
-    public TreinoExercicioResponseGetDto buscarPorId(Integer id){
+    public TreinoExercicioResponseGetDto buscarPorId(Integer id) {
         TreinoExercicio treinoExercicio = treinoExercicioRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Treino com ID " + id + " não encontrado"));
 
@@ -71,35 +71,34 @@ public class TreinoExercicioService {
     }
 
     public List<TreinoExercicioResumoDTO> listarPorPersonal(Integer personalId) {
-        List<TreinoExercicioResumoDTO> resumosSemQtd = treinoExercicioRepository.findResumosSemQuantidade(personalId);
+        List<TreinoExercicioResumoModeloCruQuerySqlDTO> listaComValoresNaoTratados = treinoExercicioRepository.buscarTreinosExerciciosPorPersonal(personalId);
 
-        Map<Integer, Long> quantidadePorTreino = treinoExercicioRepository.countExerciciosPorTreino().stream()
-                .collect(Collectors.toMap(
-                        row -> (Integer) row[0],
-                        row -> (Long) row[1]
-                ));
+        Map<Integer, List<TreinoExercicioResumoModeloCruQuerySqlDTO>> agrupadoPorTreinoId = listaComValoresNaoTratados.stream()
+                .collect(Collectors.groupingBy(TreinoExercicioResumoModeloCruQuerySqlDTO::treinoId));
 
-        return resumosSemQtd.stream()
-                .map(dto -> new TreinoExercicioResumoDTO(
-                        dto.treinoExercicioId(),
-                        dto.treinoId(),
-                        dto.nomeTreino(),
-                        dto.grauDificuldade(),
-                        dto.favorito(),
-                        dto.origemTreinoExercicio(),
-                        quantidadePorTreino.getOrDefault(dto.treinoId(), 0L).intValue()
-                ))
-                .toList();
+        return agrupadoPorTreinoId.values().stream()
+                .map(listaDeExercicioPorTreino -> {
+                            TreinoExercicioResumoModeloCruQuerySqlDTO primeiroItem = listaDeExercicioPorTreino.getFirst();
+                            return new TreinoExercicioResumoDTO(
+                                    primeiroItem.treinoId(),
+                                    primeiroItem.nomeTreino(),
+                                    primeiroItem.grauDificuldade(),
+                                    primeiroItem.favorito(),
+                                    primeiroItem.origemTreinoExercicio(),
+                                    listaDeExercicioPorTreino.size()
+                            );
+                        }
+                ).toList();
     }
 
-    public List<TreinoExercicioResponseGetDto> listarTodos(){
+    public List<TreinoExercicioResponseGetDto> listarTodos() {
         return treinoExercicioRepository.findAll()
                 .stream()
                 .map(treinoExercicioMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
-    public TreinoExercicioResponseGetDto atualizar(Integer id, TreinoExercicioRequestUpdateDto treinoDTO, Integer exercicioId, Integer treinoId){
+    public TreinoExercicioResponseGetDto atualizar(Integer id, TreinoExercicioRequestUpdateDto treinoDTO, Integer exercicioId, Integer treinoId) {
         validarEnums(Map.of(
                 new OrigemTreinoExercicioEnumValidator(), treinoDTO.origemTreinoExercicio(),
                 new GrauDificuldadeEnumValidator(), treinoDTO.grauDificuldade()
@@ -130,14 +129,14 @@ public class TreinoExercicioService {
         return treinoExercicioMapper.toResponseDTO(treinoExercicioAtualizado);
     }
 
-    public void remover(Integer id){
+    public void remover(Integer id) {
         TreinoExercicio treinoExercicioExistente = treinoExercicioRepository.findById(id).
                 orElseThrow(() -> new ApiExceptions.BadRequestException("Exercício com o ID " + id + " não encontrado."));
 
         treinoExercicioRepository.deleteById(id);
     }
 
-    public void removerAssociacaoComTreino(Integer id){
+    public void removerAssociacaoComTreino(Integer id) {
         TreinoExercicio treinoExistente = treinoExercicioRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Treino com ID " + id + " não encontrado"));
 
@@ -145,7 +144,7 @@ public class TreinoExercicioService {
         treinoExercicioRepository.save(treinoExistente);
     }
 
-    public void removerAssociacaoComExercicio(Integer id){
+    public void removerAssociacaoComExercicio(Integer id) {
         TreinoExercicio treinoExistente = treinoExercicioRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Treino com ID " + id + " não encontrado"));
 
@@ -162,14 +161,14 @@ public class TreinoExercicioService {
         treinoExercicioRepository.save(treinoExistente); // desassocia
     }
 
-    public List<TreinoExercicioResponseGetDto> cadastrarComVariosExercicios(TreinoExercicioAssociacaoRequestDTO treinosDto){
+    public List<TreinoExercicioResponseGetDto> cadastrarComVariosExercicios(TreinoExercicioAssociacaoRequestDTO treinosDto) {
 
         Treino treinoExistente = treinoRepository.findById(treinosDto.treinoId()).
                 orElseThrow(() -> new ApiExceptions.BadRequestException("Treino com o ID " + treinosDto.treinoId() + " não encontrado."));
 
         List<TreinoExercicio> treinoExercicios = new ArrayList<>();
 
-        for (TreinoExercicioRequestPostDto dto : treinosDto.exercicios()){
+        for (TreinoExercicioRequestPostDto dto : treinosDto.exercicios()) {
             validarEnums(Map.of(
                     new OrigemTreinoExercicioEnumValidator(), dto.origemTreinoExercicio(),
                     new GrauDificuldadeEnumValidator(), dto.grauDificuldade()
@@ -179,7 +178,7 @@ public class TreinoExercicioService {
                     orElseThrow(() -> new ApiExceptions.BadRequestException("Exercício com o ID " + dto.exercicioId() + " não encontrado."));
 
             boolean jaAssociado = treinoExercicioRepository.existsByTreinos_IdAndExercicio_Id(treinosDto.treinoId(), dto.exercicioId());
-            if (jaAssociado){
+            if (jaAssociado) {
                 throw new ApiExceptions.BadRequestException("Exercício com o ID " + dto.exercicioId() + " já está associado ao treino com ID " + treinosDto.treinoId());
             }
 
@@ -197,7 +196,7 @@ public class TreinoExercicioService {
                 .collect(Collectors.toList());
     }
 
-    public List<TreinoExercicioResponseGetDto> atualizarComVariosExercicios(Integer treinoId, TreinoExercicioAssociacaoRequestDTO dto){
+    public List<TreinoExercicioResponseGetDto> atualizarComVariosExercicios(Integer treinoId, TreinoExercicioAssociacaoRequestDTO dto) {
 
         Treino treinoExistente = treinoRepository.findById(treinoId).
                 orElseThrow(() -> new ApiExceptions.BadRequestException("Treino com o ID " + treinoId + " não encontrado."));
@@ -214,7 +213,7 @@ public class TreinoExercicioService {
 
         List<TreinoExercicio> treinoExerciciosParaSalvar = new ArrayList<>();
 
-        for (TreinoExercicioRequestPostDto exercicioDto : dto.exercicios()){
+        for (TreinoExercicioRequestPostDto exercicioDto : dto.exercicios()) {
             validarEnums(Map.of(
                     new OrigemTreinoExercicioEnumValidator(), exercicioDto.origemTreinoExercicio(),
                     new GrauDificuldadeEnumValidator(), exercicioDto.grauDificuldade()
@@ -223,7 +222,7 @@ public class TreinoExercicioService {
             Exercicio exercicioExistente = exercicioRepository.findById(exercicioDto.exercicioId()).
                     orElseThrow(() -> new ApiExceptions.BadRequestException("Exercício com o ID " + exercicioDto.exercicioId() + " não encontrado."));
 
-            if (exerciciosExistentes.containsKey(exercicioDto.exercicioId())){
+            if (exerciciosExistentes.containsKey(exercicioDto.exercicioId())) {
                 TreinoExercicio treinoExercicioAtual = exerciciosExistentes.get(exercicioDto.exercicioId());
                 treinoExercicioAtual.setCarga(exercicioDto.carga());
                 treinoExercicioAtual.setRepeticoes(exercicioDto.repeticoes());
@@ -236,7 +235,7 @@ public class TreinoExercicioService {
                 treinoExercicioAtual.setGrauDificuldade(exercicioDto.grauDificuldade());
 
                 treinoExerciciosParaSalvar.add(treinoExercicioAtual);
-            }else {
+            } else {
                 TreinoExercicio novoTreinoExercicio = treinoExercicioMapper.toEntity(exercicioDto);
                 novoTreinoExercicio.setTreinos(treinoExistente);
                 novoTreinoExercicio.setExercicio(exercicioExistente);
@@ -250,7 +249,7 @@ public class TreinoExercicioService {
                 .collect(Collectors.toList());
     }
 
-    public List<TreinoExercicioResponseGetDto> buscarPorTreino(Integer treinoId){
+    public List<TreinoExercicioResponseGetDto> buscarPorTreino(Integer treinoId) {
         List<TreinoExercicio> treinoExercicios = treinoExercicioRepository.findAllByTreinos_Id(treinoId);
 
         return treinoExercicios.stream()
@@ -259,7 +258,7 @@ public class TreinoExercicioService {
     }
 
     @Transactional
-    public void atualizarFavorito(Integer id, boolean favorito){
+    public void atualizarFavorito(Integer id, boolean favorito) {
         TreinoExercicio treinoExercicioFavorito = treinoExercicioRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("TreinoExercicio não encontrado"));
 

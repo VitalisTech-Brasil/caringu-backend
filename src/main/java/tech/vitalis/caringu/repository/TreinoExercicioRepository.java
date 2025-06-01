@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoDTO;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoModeloCruQuerySqlDTO;
 import tech.vitalis.caringu.entity.Treino;
 import tech.vitalis.caringu.entity.TreinoExercicio;
 
@@ -14,27 +15,21 @@ import java.util.List;
 public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio, Integer> {
 
     @Query("""
-    SELECT new tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoDTO(
-        te.id,
-        t.id,
-        t.nome,
+    SELECT new tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoModeloCruQuerySqlDTO(
+        e.nome AS nome_exercicio,
+        e.id AS exercicio_id,
+        t.id AS treino_id,
+        t.nome AS nomeTreino,
         te.grauDificuldade,
         te.favorito,
-        te.origemTreinoExercicio,
-        0
+        te.origemTreinoExercicio
     )
     FROM TreinoExercicio te
     JOIN te.treinos t
+    JOIN te.exercicio e
     WHERE t.personal.id = :personalId
 """)
-    List<TreinoExercicioResumoDTO> findResumosSemQuantidade(@Param("personalId") Integer personalId);
-
-    @Query("""
-    SELECT te.treinos.id, COUNT(te)
-    FROM TreinoExercicio te
-    GROUP BY te.treinos.id
-""")
-    List<Object[]> countExerciciosPorTreino();
+    List<TreinoExercicioResumoModeloCruQuerySqlDTO> buscarTreinosExerciciosPorPersonal(@Param("personalId") Integer personalId);
 
     boolean existsByTreinosAndExercicio_Id(Treino treinos, Integer exercicioId);
 
