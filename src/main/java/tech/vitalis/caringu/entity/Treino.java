@@ -13,6 +13,7 @@ public class Treino {
     private Integer id;
     private String nome;
     private String descricao;
+    private Boolean favorito;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "personal_id", nullable = false)
     private PersonalTrainer personal;
