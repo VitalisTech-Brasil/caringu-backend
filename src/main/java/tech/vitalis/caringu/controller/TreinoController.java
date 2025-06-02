@@ -58,7 +58,6 @@ public class TreinoController {
     @Operation(summary = "Remover Treino")
     public ResponseEntity<Void> removerTreino(@PathVariable Integer id){
         treinoService.removerComDesassociacao(id);
-        treinoService.remover(id);
         return ResponseEntity.noContent().build();
     }
 
