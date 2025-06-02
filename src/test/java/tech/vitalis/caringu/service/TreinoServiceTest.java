@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import tech.vitalis.caringu.dtos.Especialidade.EspecialidadeResponseGetDTO;
@@ -59,8 +60,8 @@ class TreinoServiceTest {
     }
 
     @Test
-    void testCadastrar_Success() {
-        // Mock DTO and entities
+    @DisplayName("Deve cadastrar o treino com sucesso")
+    void CadastrarTreino_Successo() {
         TreinoRequestPostDTO requestDto = mock(TreinoRequestPostDTO.class);
         when(requestDto.personalId()).thenReturn(1);
 
@@ -87,7 +88,8 @@ class TreinoServiceTest {
     }
 
     @Test
-    void testBuscarPorId_Success() {
+    @DisplayName("Deve buscar treino por ID com sucesso")
+    void BuscarPorId_Successo() {
         Treino treino = new Treino();
         TreinoResponseGetDTO responseDto = new TreinoResponseGetDTO( 1,
                 "Treino de Força",
@@ -103,7 +105,8 @@ class TreinoServiceTest {
     }
 
     @Test
-    void testObterQuantidadeTreinosCriados_ReturnsCount() {
+    @DisplayName("Deve retornar 5 treinos criados")
+    void ObterQuantidadeTreinosCriados_RetornaContagem() {
         when(treinoRepository.countByPersonalId(1)).thenReturn(5);
 
         Integer count = treinoService.obterQuantidadeTreinosCriados(1);
@@ -112,7 +115,8 @@ class TreinoServiceTest {
     }
 
     @Test
-    void testListarTodos_ReturnsList() {
+    @DisplayName("Deve retornar lista de treinos com sucesso")
+    void ListarTodos_RetornaLista() {
         Treino treino1 = new Treino();
         treino1.setId(1);
 
@@ -148,7 +152,8 @@ class TreinoServiceTest {
     }
 
     @Test
-    void testAtualizar_Success() {
+    @DisplayName("Deve atualizar treino com sucesso")
+    void Atualizar_Successo() {
         Treino treinoExistente = new Treino();
         PersonalTrainer personal = new PersonalTrainer();
         TreinoRequestUpdateDto updateDto = mock(TreinoRequestUpdateDto.class);
@@ -176,7 +181,8 @@ class TreinoServiceTest {
     }
 
     @Test
-    void testRemover_Success() {
+    @DisplayName("Deve remover treino com sucesso")
+    void Remover_Successo() {
         Treino treinoExistente = new Treino();
 
         when(treinoRepository.findById(1)).thenReturn(Optional.of(treinoExistente));
@@ -186,4 +192,5 @@ class TreinoServiceTest {
         verify(treinoRepository).deleteById(1);
         assertNull(treinoExistente.getPersonal());
     }
+
 }

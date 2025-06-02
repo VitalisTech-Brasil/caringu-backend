@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import tech.vitalis.caringu.dtos.Aluno.AlunoResponseGetDTO;
+import tech.vitalis.caringu.dtos.Aluno.*;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.enums.Aluno.NivelAtividadeEnum;
 import tech.vitalis.caringu.enums.Aluno.NivelExperienciaEnum;
@@ -98,57 +98,6 @@ class AlunoServiceTest {
         assertTrue(resultado.isEmpty());
     }
 
-//    @Test
-//    @DisplayName("listarPresencas deve retornar resultado para SEMANA")
-//    void listarPresencas_Semana() {
-//        when(alunoRepository.buscarPresencaAlunos(any(), any(), eq(1))).thenReturn(List.of());
-//        alunoService.listarPresencas("SEMANA", 1);
-//        verify(alunoRepository).buscarPresencaAlunos(any(), any(), eq(1));
-//    }
-//
-//    @Test
-//    @DisplayName("listarPresencas deve retornar resultado para MES")
-//    void listarPresencas_Mes() {
-//        when(alunoRepository.buscarPresencaAlunos(any(), any(), eq(1))).thenReturn(List.of());
-//        alunoService.listarPresencas("MES", 1);
-//        verify(alunoRepository).buscarPresencaAlunos(any(), any(), eq(1));
-//    }
-//
-//    @Test
-//    @DisplayName("listarPresencas deve lançar IllegalArgumentException para período inválido")
-//    void listarPresencas_PeriodoInvalido() {
-//        assertThrows(IllegalArgumentException.class, () -> alunoService.listarPresencas("ANO", 1));
-//    }
-//
-//    @Test
-//    @DisplayName("listarAlunosAtivos deve retornar lista de ativos")
-//    void listarAlunosAtivos() {
-//        when(alunoRepository.buscarAlunosAtivosComIndicadores(1)).thenReturn(List.of());
-//        alunoService.listarAlunosAtivos(1);
-//        verify(alunoRepository).buscarAlunosAtivosComIndicadores(1);
-//    }
-//
-//    @Test
-//    @DisplayName("buscarAlunosSemAnamnese deve retornar alunos convertidos")
-//    void buscarAlunosSemAnamnese() {
-//        when(alunoRepository.findAlunosSemAnamnese()).thenReturn(List.of(aluno));
-//        when(alunoMapper.toResponseDTO(aluno)).thenReturn(new AlunoResponseGetDTO(1,
-//                "Bianca Borges",
-//                "bianca@email.com",
-//                "(11) 91234-5678",
-//                "https://example.com/fotoPerfil.jpg",
-//                LocalDate.of(2000, 5, 10),
-//                GeneroEnum.MULHER_CISGENERO,
-//                60.5,
-//                1.65,
-//                NivelAtividadeEnum.MUITO_ATIVO,
-//                NivelExperienciaEnum.INTERMEDIARIO,
-//                LocalDateTime.now()));
-//        alunoService.buscarAlunosSemAnamnese();
-//        verify(alunoRepository).findAlunosSemAnamnese();
-//        verify(alunoMapper).toResponseDTO(aluno);
-//    }
-
     @Test
     @DisplayName("buscarPorId deve retornar aluno existente")
     void buscarPorId_DeveRetornarAluno() {
@@ -228,4 +177,84 @@ class AlunoServiceTest {
         when(alunoRepository.findById(1)).thenReturn(Optional.empty());
         assertThrows(AlunoNaoEncontradoException.class, () -> alunoService.deletar(1));
     }
+
+    @Test
+    @DisplayName("atualizarParcial deve atualizar apenas os campos fornecidos")
+    void atualizarParcial_DeveAtualizarCamposParciais() {
+        when(alunoRepository.findById(1)).thenReturn(Optional.of(aluno));
+
+        AlunoRequestPatchDTO dto = new AlunoRequestPatchDTO(
+                "João Atualizado", "joao.atualizado@email.com", null, null,
+                null, null, null, null,
+                null, null, null
+        );
+
+        AlunoResponsePatchDTO response = alunoService.atualizarParcial(1, dto);
+
+        assertEquals(Optional.of("João Atualizado"), response.nome());
+        assertEquals(Optional.of("joao.atualizado@email.com"), response.email());
+        verify(alunoRepository).save(aluno);
+    }
+
+    @Test
+    @DisplayName("atualizarDadosFisicos deve atualizar campos físicos do aluno")
+    void atualizarDadosFisicos_DeveAtualizarCamposFisicos() {
+        when(alunoRepository.findById(1)).thenReturn(Optional.of(aluno));
+
+        AlunoRequestPatchDadosFisicosDTO dto = new AlunoRequestPatchDadosFisicosDTO(
+                75.0,
+                1.80,
+                NivelAtividadeEnum.MUITO_ATIVO,
+                NivelExperienciaEnum.AVANCADO
+        );
+
+        when(alunoMapper.toResponseDadosFisicosDTO(any())).thenReturn(
+                new AlunoResponsePatchDadosFisicosDTO(
+                        1,
+                        dto.peso(),
+                        dto.altura(),
+                        dto.nivelAtividade(),
+                        dto.nivelExperiencia()
+                )
+        );
+
+        AlunoResponsePatchDadosFisicosDTO response = alunoService.atualizarDadosFisicos(1, dto);
+
+        assertEquals(75.0, aluno.getPeso());
+        assertEquals(1.80, aluno.getAltura());
+        assertEquals(NivelAtividadeEnum.MUITO_ATIVO, aluno.getNivelAtividade());
+        assertEquals(NivelExperienciaEnum.AVANCADO, aluno.getNivelExperiencia());
+
+        assertNotNull(response);
+        assertEquals(75.0, response.peso());
+        assertEquals(1.80, response.altura());
+        assertEquals(NivelAtividadeEnum.MUITO_ATIVO, response.nivelAtividade());
+        assertEquals(NivelExperienciaEnum.AVANCADO, response.nivelExperiencia());
+
+        verify(alunoRepository).save(aluno);
+    }
+
+    @Test
+    @DisplayName("buscarAlunosDetalhados deve retornar lista de DTOs detalhados")
+    void buscarAlunosDetalhados_DeveRetornarDTOsDetalhados() {
+        Integer personalId = 1;
+
+        List<AlunoDetalhadoResponseDTO> dadosBrutos = List.of(
+                mock(AlunoDetalhadoResponseDTO.class)
+        );
+        when(alunoRepository.buscarDetalhesPorPersonal(personalId)).thenReturn(dadosBrutos);
+
+        List<AlunoDetalhadoComTreinosDTO> listaConsolidada = List.of(
+                mock(AlunoDetalhadoComTreinosDTO.class)
+        );
+        when(alunoMapper.consolidarPorAluno(dadosBrutos)).thenReturn(listaConsolidada);
+
+        List<AlunoDetalhadoComTreinosDTO> resultado = alunoService.buscarAlunosDetalhados(personalId);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.size());
+        verify(alunoRepository).buscarDetalhesPorPersonal(personalId);
+        verify(alunoMapper).consolidarPorAluno(dadosBrutos);
+    }
+
 }
