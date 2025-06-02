@@ -14,7 +14,7 @@ import java.util.List;
 public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
     @Query("""
     SELECT new tech.vitalis.caringu.dtos.Aluno.AlunoDetalhadoResponseDTO(
-        a.id, a.nome, a.celular, a.urlFotoPerfil, a.nivelExperiencia,
+        a.id, a.peso, a.altura, a.nome, a.celular, a.urlFotoPerfil, a.nivelExperiencia, a.nivelAtividade,
         pl.nome, pl.periodo, pl.quantidadeAulas, pc.dataFim,
         at.id,
         COUNT(DISTINCT tfSemana.id),

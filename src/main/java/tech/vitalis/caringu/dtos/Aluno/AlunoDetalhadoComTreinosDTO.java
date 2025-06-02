@@ -1,5 +1,6 @@
 package tech.vitalis.caringu.dtos.Aluno;
 
+import tech.vitalis.caringu.enums.Aluno.NivelAtividadeEnum;
 import tech.vitalis.caringu.enums.Aluno.NivelExperienciaEnum;
 import tech.vitalis.caringu.enums.Anamnese.FrequenciaTreinoEnum;
 import tech.vitalis.caringu.enums.PeriodoEnum;
@@ -12,6 +13,9 @@ public record AlunoDetalhadoComTreinosDTO(
         String nomeAluno,
         String celular,
         String urlFotoPerfil,
+        Double peso,
+        Double altura,
+        NivelAtividadeEnum nivelAtividade,
         NivelExperienciaEnum nivelExperiencia,
 
         String nomePlano,
