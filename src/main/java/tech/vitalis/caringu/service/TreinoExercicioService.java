@@ -1,12 +1,10 @@
 package tech.vitalis.caringu.service;
 
 import jakarta.transaction.Transactional;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.TreinoExercicio.*;
-import tech.vitalis.caringu.entity.Exercicio;
-import tech.vitalis.caringu.entity.PreferenciaNotificacao;
-import tech.vitalis.caringu.entity.Treino;
-import tech.vitalis.caringu.entity.TreinoExercicio;
+import tech.vitalis.caringu.entity.*;
 import tech.vitalis.caringu.enums.PreferenciaNotificacao.TipoPreferenciaEnum;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.exception.PreferenciasNotificacao.PreferenciasNotificacaoNaoEncontradaException;
@@ -68,6 +66,13 @@ public class TreinoExercicioService {
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Treino com ID " + id + " não encontrado"));
 
         return treinoExercicioMapper.toResponseDTO(treinoExercicio);
+    }
+
+    public List<TreinoExercicioEditResponseGetDTO> buscarInfosEditTreinoExercicio(Integer personalId, Integer treinoId) {
+        Treino treino = treinoRepository.findById(treinoId)
+                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Treino com ID " + treinoId + " não encontrado"));
+
+        return treinoExercicioRepository.buscarInfosEditTreinoExercicio(personalId, treinoId);
     }
 
     public List<TreinoExercicioResumoDTO> listarPorPersonal(Integer personalId) {

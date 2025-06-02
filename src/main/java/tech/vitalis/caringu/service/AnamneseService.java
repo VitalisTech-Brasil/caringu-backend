@@ -10,21 +10,27 @@ import tech.vitalis.caringu.dtos.PerfilAluno.AnamneseGetPerfilDetalhesDTO;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.entity.Anamnese;
 import tech.vitalis.caringu.enums.Anamnese.FrequenciaTreinoEnum;
+import tech.vitalis.caringu.exception.Aluno.AlunoNaoEncontradoException;
 import tech.vitalis.caringu.exception.Anamnese.AnamneseJaCadastradaException;
 import tech.vitalis.caringu.exception.Anamnese.AnamneseNaoEncontradaException;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.mapper.AnamneseMapper;
+import tech.vitalis.caringu.repository.AlunoRepository;
 import tech.vitalis.caringu.repository.AnamneseRepository;
+
+import java.util.Optional;
 
 @Service
 public class AnamneseService {
+    private final AlunoRepository alunoRepository;
     private final AnamneseRepository anamneseRepository;
     private final AnamneseMapper anamneseMapper;
     private final AlunoService alunoService;
 
-    public AnamneseService(AnamneseRepository anamneseRepository,
+    public AnamneseService(AlunoRepository alunoRepository, AnamneseRepository anamneseRepository,
                            AnamneseMapper anamneseMapper,
                            AlunoService alunoService) {
+        this.alunoRepository = alunoRepository;
         this.anamneseRepository = anamneseRepository;
         this.anamneseMapper = anamneseMapper;
         this.alunoService = alunoService;
@@ -32,10 +38,16 @@ public class AnamneseService {
 
     public AnamneseGetPerfilDetalhesDTO obterDetalhes(Integer id) {
 
-        Anamnese anamnese = anamneseRepository.findByAlunoId(id)
-                .orElseThrow(() -> new AnamneseNaoEncontradaException("Anamnese não encontrada"));
+        Optional<Anamnese> optAnamnese = anamneseRepository.findByAlunoId(id);
 
-        return anamneseMapper.toResponsePerfilDetalhesDTO(anamnese);
+        if (optAnamnese.isPresent()) {
+            return anamneseMapper.toResponsePerfilDetalhesDTO(optAnamnese.get());
+        }
+
+        Aluno aluno = alunoRepository.findById(id)
+                .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno não encontrado"));
+
+        return anamneseMapper.toResponsePerfilDetalhesDTOSemAnamnese(aluno);
     }
 
     public Integer contarAnamnesesPendentes(Integer personalId) {

@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioEditResponseGetDTO;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoDTO;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoModeloCruQuerySqlDTO;
 import tech.vitalis.caringu.entity.Treino;
@@ -30,6 +31,26 @@ public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio
     WHERE t.personal.id = :personalId
 """)
     List<TreinoExercicioResumoModeloCruQuerySqlDTO> buscarTreinosExerciciosPorPersonal(@Param("personalId") Integer personalId);
+
+    @Query("""
+    SELECT new tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioEditResponseGetDTO(
+        t.nome AS nomeTreino, t.descricao AS descricaoTreino, t.personal.id,
+        
+        te.id AS idTreinoExercicio, te.treinos.id, te.exercicio.id, te.carga,
+        te.repeticoes, te.series, te.descanso, te.dataHoraCriacao,
+        te.dataHoraModificacao, te.origemTreinoExercicio,
+        te.favorito AS favoritoTreinoExercicio, te.grauDificuldade,
+        
+        e.nome AS nomeExercicio, e.grupoMuscular, e.urlVideo,
+        e.observacoes, e.favorito AS favoritoExercicio, e.origem AS origemExercicio
+    )
+    FROM Treino t
+    JOIN TreinoExercicio te ON t.id = te.treinos.id
+    JOIN Exercicio e ON e.id = te.exercicio.id
+    WHERE t.personal.id = :personalId AND t.id = :treinoId
+""")
+    List<TreinoExercicioEditResponseGetDTO> buscarInfosEditTreinoExercicio(@Param("personalId") Integer personalId,
+                                                                           @Param("treinoId") Integer treinoId);
 
     boolean existsByTreinosAndExercicio_Id(Treino treinos, Integer exercicioId);
 
