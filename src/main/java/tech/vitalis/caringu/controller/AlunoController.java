@@ -41,10 +41,10 @@ public class AlunoController {
         return ResponseEntity.ok(aluno);
     }
 
-    @GetMapping("/detalhes/personal/{id}")
+    @GetMapping("/detalhes/personal/{personalId}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<AlunoDetalhadoComTreinosDTO>> buscarPorPersonal(@PathVariable Integer id) {
-        var dados = service.buscarAlunosDetalhados(id);
+    public ResponseEntity<List<AlunoDetalhadoComTreinosDTO>> buscarPorPersonal(@PathVariable Integer personalId) {
+        var dados = service.buscarAlunosDetalhados(personalId);
         return ResponseEntity.ok(dados);
     }
 
@@ -57,37 +57,37 @@ public class AlunoController {
         return ResponseEntity.status(201).body(respostaDTO);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{alunoId}")
     @SecurityRequirement(name = "Bearer")
     @Operation(summary = "Atualizar aluno")
     public ResponseEntity<AlunoResponseGetDTO> atualizar(
-            @PathVariable Integer id,
+            @PathVariable Integer alunoId,
             @Valid @RequestBody AlunoRequestPostDTO dto) {
 
         Aluno novoAluno = mapper.toEntity(dto);
-        AlunoResponseGetDTO atualizado = service.atualizar(id, novoAluno);
+        AlunoResponseGetDTO atualizado = service.atualizar(alunoId, novoAluno);
         return ResponseEntity.ok(atualizado);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{alunoId}")
     @SecurityRequirement(name = "Bearer")
     @Operation(summary = "Atualizar aluno parcialmente")
     public ResponseEntity<AlunoResponsePatchDTO> atualizarParcial(
-            @PathVariable Integer id,
+            @PathVariable Integer alunoId,
             @Valid @RequestBody AlunoRequestPatchDTO atualizacoes) {
 
-        AlunoResponsePatchDTO atualizado = service.atualizarParcial(id, atualizacoes);
+        AlunoResponsePatchDTO atualizado = service.atualizarParcial(alunoId, atualizacoes);
         return ResponseEntity.ok(atualizado);
     }
 
-    @PatchMapping("/{id}/dados-fisicos")
+    @PatchMapping("/{alunoId}/dados-fisicos")
     @SecurityRequirement(name = "Bearer")
     @Operation(summary = "Atualizar apenas os dados físicos do aluno utilizados pela anamnese")
     public ResponseEntity<AlunoResponsePatchDadosFisicosDTO> atualizarDadosFisicos(
-            @PathVariable Integer id,
+            @PathVariable Integer alunoId,
             @Valid @RequestBody AlunoRequestPatchDadosFisicosDTO dto) {
 
-        AlunoResponsePatchDadosFisicosDTO atualizado = service.atualizarDadosFisicos(id, dto);
+        AlunoResponsePatchDadosFisicosDTO atualizado = service.atualizarDadosFisicos(alunoId, dto);
 
         return ResponseEntity.ok().body(atualizado);
     }

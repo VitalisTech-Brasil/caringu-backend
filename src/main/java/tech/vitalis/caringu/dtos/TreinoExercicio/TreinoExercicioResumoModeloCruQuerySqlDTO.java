@@ -9,7 +9,6 @@ public record TreinoExercicioResumoModeloCruQuerySqlDTO(
         Integer treinoId,
         String nomeTreino,
         GrauDificuldadeEnum grauDificuldade,
-        Boolean favorito,
         OrigemTreinoExercicioEnum origemTreinoExercicio
 ) {
 }

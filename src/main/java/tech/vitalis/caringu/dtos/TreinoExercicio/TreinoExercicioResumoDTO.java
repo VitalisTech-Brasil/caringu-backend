@@ -7,7 +7,6 @@ public record TreinoExercicioResumoDTO(
         Integer treinoId,
         String nomeTreino,
         GrauDificuldadeEnum grauDificuldade,
-        Boolean favorito,
         OrigemTreinoExercicioEnum origemTreinoExercicio,
         int quantidadeExercicios
 ) {

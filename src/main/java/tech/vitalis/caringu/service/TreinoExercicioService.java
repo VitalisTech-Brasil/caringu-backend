@@ -88,7 +88,6 @@ public class TreinoExercicioService {
                                     primeiroItem.treinoId(),
                                     primeiroItem.nomeTreino(),
                                     primeiroItem.grauDificuldade(),
-                                    primeiroItem.favorito(),
                                     primeiroItem.origemTreinoExercicio(),
                                     listaDeExercicioPorTreino.size()
                             );
@@ -127,7 +126,6 @@ public class TreinoExercicioService {
         treinoExercicioExistente.setDescanso(treinoDTO.descanso());
         treinoExercicioExistente.setDataHoraCriacao(treinoDTO.dataHoraCriacao());
         treinoExercicioExistente.setDataHoraModificacao(treinoDTO.dataHoraModificacao());
-        treinoExercicioExistente.setFavorito(treinoDTO.favorito());
         treinoExercicioExistente.setGrauDificuldade(treinoDTO.grauDificuldade());
 
         TreinoExercicio treinoExercicioAtualizado = treinoExercicioRepository.save(treinoExercicioExistente);
@@ -236,7 +234,6 @@ public class TreinoExercicioService {
                 treinoExercicioAtual.setDataHoraCriacao(exercicioDto.dataHoraCriacao());
                 treinoExercicioAtual.setDataHoraModificacao(exercicioDto.dataHoraModificacao());
                 treinoExercicioAtual.setOrigemTreinoExercicio(exercicioDto.origemTreinoExercicio());
-                treinoExercicioAtual.setFavorito(exercicioDto.favorito());
                 treinoExercicioAtual.setGrauDificuldade(exercicioDto.grauDificuldade());
 
                 treinoExerciciosParaSalvar.add(treinoExercicioAtual);
@@ -262,11 +259,11 @@ public class TreinoExercicioService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public void atualizarFavorito(Integer id, boolean favorito) {
-        TreinoExercicio treinoExercicioFavorito = treinoExercicioRepository.findById(id)
-                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("TreinoExercicio não encontrado"));
-
-        treinoExercicioFavorito.setFavorito(favorito);
-    }
+//    @Transactional
+//    public void atualizarFavorito(Integer id, boolean favorito) {
+//        TreinoExercicio treinoExercicioFavorito = treinoExercicioRepository.findById(id)
+//                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("TreinoExercicio não encontrado"));
+//
+//        treinoExercicioFavorito.setFavorito(favorito);
+//    }
 }

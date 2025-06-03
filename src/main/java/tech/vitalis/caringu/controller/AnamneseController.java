@@ -25,10 +25,10 @@ public class AnamneseController {
         this.service = service;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{alunoId}")
     @Operation(summary = "Recuperar detalhes completos do aluno, incluindo informações de pessoa, anamnese e dados físicos")
-    public ResponseEntity<AnamneseGetPerfilDetalhesDTO> obterDetalhesAluno(@PathVariable Integer id) {
-        AnamneseGetPerfilDetalhesDTO detalhes = service.obterDetalhes(id);
+    public ResponseEntity<AnamneseGetPerfilDetalhesDTO> obterDetalhesAluno(@PathVariable Integer alunoId) {
+        AnamneseGetPerfilDetalhesDTO detalhes = service.obterDetalhes(alunoId);
         return ResponseEntity.ok(detalhes);
     }
 
@@ -63,12 +63,12 @@ public class AnamneseController {
         return ResponseEntity.status(201).body(responseDTO);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{anamneseId}")
     public ResponseEntity<AnamneseResponsePatchDTO> atualizarParcialmente(
-            @PathVariable Integer id,
+            @PathVariable Integer anamneseId,
             @RequestBody @Valid AnamneseRequestPatchDTO dto
     ) {
-        AnamneseResponsePatchDTO responsePatchDTO = service.atualizarParcialmente(id, dto);
+        AnamneseResponsePatchDTO responsePatchDTO = service.atualizarParcialmente(anamneseId, dto);
         return ResponseEntity.ok().body(responsePatchDTO);
     }
 }

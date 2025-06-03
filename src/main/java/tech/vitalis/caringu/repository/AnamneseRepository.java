@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface AnamneseRepository extends JpaRepository<Anamnese, Integer> {
 
-    Optional<Anamnese> findByAlunoId(Integer id);
+    Optional<Anamnese> findByAlunoId(Integer alunoId);
     boolean existsByAlunoId(Integer id);
     @Query("""
     SELECT COUNT(DISTINCT a)

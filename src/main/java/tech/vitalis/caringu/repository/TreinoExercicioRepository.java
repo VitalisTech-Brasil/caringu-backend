@@ -22,7 +22,6 @@ public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio
         t.id AS treino_id,
         t.nome AS nomeTreino,
         te.grauDificuldade,
-        te.favorito,
         te.origemTreinoExercicio
     )
     FROM TreinoExercicio te
@@ -39,7 +38,7 @@ public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio
         te.id AS idTreinoExercicio, te.treinos.id, te.exercicio.id, te.carga,
         te.repeticoes, te.series, te.descanso, te.dataHoraCriacao,
         te.dataHoraModificacao, te.origemTreinoExercicio,
-        te.favorito AS favoritoTreinoExercicio, te.grauDificuldade,
+        t.favorito AS favoritoTreino, te.grauDificuldade,
         
         e.nome AS nomeExercicio, e.grupoMuscular, e.urlVideo,
         e.observacoes, e.favorito AS favoritoExercicio, e.origem AS origemExercicio

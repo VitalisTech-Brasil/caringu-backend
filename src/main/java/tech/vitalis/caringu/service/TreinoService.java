@@ -1,11 +1,13 @@
 package tech.vitalis.caringu.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Treino.TreinoRequestPostDTO;
 import tech.vitalis.caringu.dtos.Treino.TreinoRequestUpdateDto;
 import tech.vitalis.caringu.dtos.Treino.TreinoResponseGetDTO;
 import tech.vitalis.caringu.entity.PersonalTrainer;
 import tech.vitalis.caringu.entity.Treino;
+import tech.vitalis.caringu.entity.TreinoExercicio;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.mapper.TreinoMapper;
 import tech.vitalis.caringu.repository.PersonalTrainerRepository;
@@ -97,6 +99,15 @@ public class TreinoService {
         treino.setPersonal(null);
         treinoRepository.save(treino); // desassocia
         treinoRepository.deleteById(id); // deleta
+    }
+
+    @Transactional
+    public void atualizarFavorito(Integer treinoId, boolean favorito) {
+        Treino favoritoTreino = treinoRepository.findById(treinoId)
+                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Treino não encontrado"));
+
+        favoritoTreino.setFavorito(favorito);
+
     }
 
 }

@@ -36,15 +36,15 @@ public class AnamneseService {
         this.alunoService = alunoService;
     }
 
-    public AnamneseGetPerfilDetalhesDTO obterDetalhes(Integer id) {
+    public AnamneseGetPerfilDetalhesDTO obterDetalhes(Integer alunoId) {
 
-        Optional<Anamnese> optAnamnese = anamneseRepository.findByAlunoId(id);
+        Optional<Anamnese> optAnamnese = anamneseRepository.findByAlunoId(alunoId);
 
         if (optAnamnese.isPresent()) {
             return anamneseMapper.toResponsePerfilDetalhesDTO(optAnamnese.get());
         }
 
-        Aluno aluno = alunoRepository.findById(id)
+        Aluno aluno = alunoRepository.findById(alunoId)
                 .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno não encontrado"));
 
         return anamneseMapper.toResponsePerfilDetalhesDTOSemAnamnese(aluno);
@@ -73,9 +73,9 @@ public class AnamneseService {
     }
 
     @Transactional
-    public AnamneseResponsePatchDTO atualizarParcialmente(Integer id, AnamneseRequestPatchDTO dto) {
-        Anamnese anamnese = anamneseRepository.findById(id)
-                .orElseThrow(() -> new AnamneseNaoEncontradaException("Anamnese com ID " + id + " não encontrada."));
+    public AnamneseResponsePatchDTO atualizarParcialmente(Integer anamneseId, AnamneseRequestPatchDTO dto) {
+        Anamnese anamnese = anamneseRepository.findById(anamneseId)
+                .orElseThrow(() -> new AnamneseNaoEncontradaException("Anamnese com ID " + anamneseId + " não encontrada."));
 
         anamneseMapper.updateAnamneseFromDto(dto, anamnese);
 

@@ -23,7 +23,7 @@ public record TreinoExercicioEditResponseGetDTO(
         LocalDateTime dataHoraCriacao,
         LocalDateTime dataHoraModificacao,
         OrigemTreinoExercicioEnum origemTreinoExercicio,
-        Boolean favoritoTreinoExercicio,
+        Boolean favoritoTreino,
         GrauDificuldadeEnum grauDificuldade,
 
         String nomeExercicio,

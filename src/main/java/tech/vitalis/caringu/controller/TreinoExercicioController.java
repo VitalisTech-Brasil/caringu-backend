@@ -103,10 +103,10 @@ public class TreinoExercicioController {
         return ResponseEntity.ok(dtos);
     }
 
-    @PatchMapping("/{id}/favorito")
-    public ResponseEntity<Void> atualizarFavorito(@PathVariable Integer id, @RequestBody TreinoExercicioFavoritoRequestPatchDto dto){
-        treinoExercicioService.atualizarFavorito(id, dto.favorito());
-        return ResponseEntity.status(204).build();
-    }
+//    @PatchMapping("/{id}/favorito")
+//    public ResponseEntity<Void> atualizarFavorito(@PathVariable Integer id, @RequestBody TreinoExercicioFavoritoRequestPatchDto dto){
+//        treinoExercicioService.atualizarFavorito(id, dto.favorito());
+//        return ResponseEntity.status(204).build();
+//    }
 
 }
