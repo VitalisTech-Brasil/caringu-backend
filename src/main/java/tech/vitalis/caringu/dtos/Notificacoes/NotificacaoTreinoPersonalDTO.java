@@ -11,6 +11,7 @@ public record NotificacaoTreinoPersonalDTO(
         String nomeTreino,
         String titulo,
         LocalDate dataVencimento,
-        LocalDateTime dataCriacao
+        LocalDateTime dataCriacao,
+        boolean visualizada
 ) {
 }

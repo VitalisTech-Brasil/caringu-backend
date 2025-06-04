@@ -26,7 +26,7 @@ public interface AlunoTreinoRepository extends JpaRepository<AlunoTreino, Intege
 
 
     @Query("SELECT DISTINCT new tech.vitalis.caringu.dtos.Notificacoes.NotificacaoTreinoPersonalDTO(" +
-            "pt.id, pePersonal.nome, a.id, peAluno.nome, t.nome, n.titulo, ata.dataVencimento, n.dataCriacao) " +
+            "pt.id, pePersonal.nome, a.id, peAluno.nome, t.nome, n.titulo, ata.dataVencimento, n.dataCriacao, n.visualizada) " +
             "FROM AlunoTreino ata " +
             "JOIN ata.alunos a " +
             "JOIN PlanoContratado pc ON pc.aluno.id = a.id " +
@@ -44,7 +44,7 @@ public interface AlunoTreinoRepository extends JpaRepository<AlunoTreino, Intege
 
 
     @Query("SELECT DISTINCT new tech.vitalis.caringu.dtos.Notificacoes.NotificacaoTreinoPersonalDTO(" +
-            "pt.id, pePersonal.nome, a.id, peAluno.nome, t.nome, n.titulo, ata.dataVencimento, n.dataCriacao) " +
+            "pt.id, pePersonal.nome, a.id, peAluno.nome, t.nome, n.titulo, ata.dataVencimento, n.dataCriacao, n.visualizada) " +
             "FROM AlunoTreino ata " +
             "JOIN ata.alunos a " +
             "JOIN PlanoContratado pc ON pc.aluno.id = a.id " +
