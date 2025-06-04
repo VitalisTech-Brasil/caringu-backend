@@ -5,13 +5,15 @@ import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Notificacoes.NotificacoesRequestPatchDto;
 import tech.vitalis.caringu.dtos.Notificacoes.NotificacoesRequestPostDto;
 import tech.vitalis.caringu.dtos.Notificacoes.NotificacoesResponseGetDto;
-import tech.vitalis.caringu.entity.Notificacoes;
-import tech.vitalis.caringu.entity.Pessoa;
-import tech.vitalis.caringu.entity.TreinoExercicio;
+import tech.vitalis.caringu.entity.*;
+import tech.vitalis.caringu.enums.Notificacoes.TipoNotificacaoEnum;
 import tech.vitalis.caringu.exception.ApiExceptions;
+import tech.vitalis.caringu.exception.PersonalTrainer.PersonalNaoEncontradoException;
 import tech.vitalis.caringu.mapper.NotificacoesMapper;
 import tech.vitalis.caringu.mapper.PessoaMapper;
+import tech.vitalis.caringu.repository.AlunoRepository;
 import tech.vitalis.caringu.repository.NotificacoesRepository;
+import tech.vitalis.caringu.repository.PersonalTrainerRepository;
 import tech.vitalis.caringu.repository.PessoaRepository;
 import tech.vitalis.caringu.strategy.Notificacoes.NotificacoesEnumValidator;
 
@@ -43,7 +45,6 @@ public class NotificacoesService {
 
         Pessoa pessoa = pessoaRepository.findById(notificacoesDto.pessoaId()).
                 orElseThrow(() -> new ApiExceptions.BadRequestException("Pessoa com o ID" + notificacoesDto.pessoaId() + "não encontrado."));
-
 
         Notificacoes novaNotificacao = notificacoesMapper.toEntity(notificacoesDto);
         novaNotificacao.setPessoa(pessoa);
@@ -125,4 +126,68 @@ public class NotificacoesService {
 
         notificacoesVisualizada.setVisualizada(visualizada);
     }
+
+    public List<NotificacoesResponseGetDto> buscarPorPessoaIdENaoVisualzaTreinoVencimento(Integer pessoaId) {
+        Pessoa pessoa = pessoaRepository.findById(pessoaId)
+                .orElseThrow(() -> new ApiExceptions.BadRequestException(
+                        "Pessoa com o ID " + pessoaId + " não foi encontrada."
+                ));
+
+        List<Notificacoes> notificacoes = notificacoesRepository
+                .findByPessoaAndTipoAndVisualizadaFalse(pessoa, TipoNotificacaoEnum.TREINO_PROXIMO_VENCIMENTO);
+
+        if (notificacoes.isEmpty()) {
+            throw new ApiExceptions.ResourceNotFoundException(
+                    "Nenhuma notificação não visualizada encontrada para a pessoa com ID " + pessoaId
+            );
+        }
+
+        return notificacoes.stream()
+                .map(notificacoesMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<NotificacoesResponseGetDto> buscarPorPessoaIdENaoVisualza(Integer pessoaId) {
+        Pessoa pessoa = pessoaRepository.findById(pessoaId)
+                .orElseThrow(() -> new ApiExceptions.BadRequestException(
+                        "Pessoa com o ID " + pessoaId + " não foi encontrada."
+                ));
+
+        List<Notificacoes> notificacoes = notificacoesRepository
+                .findByPessoaAndVisualizadaFalse(pessoa);
+
+        if (notificacoes.isEmpty()) {
+            throw new ApiExceptions.ResourceNotFoundException(
+                    "Nenhuma notificação não visualizada encontrada para a pessoa com ID " + pessoaId
+            );
+        }
+
+        return notificacoes.stream()
+                .map(notificacoesMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void marcarTodasComoVisualizadasPorPessoaId(Integer pessoaId){
+        Pessoa pessoa = pessoaRepository.findById(pessoaId)
+                .orElseThrow(() -> new ApiExceptions.BadRequestException(
+                        "Pessoa com o ID " + pessoaId + " não foi encontrada."
+                ));
+
+        List<Notificacoes> notificacoes = notificacoesRepository.findByPessoaAndVisualizadaFalse(pessoa);
+
+        if (notificacoes.isEmpty()){
+            throw new ApiExceptions.ResourceNotFoundException(
+                    "Nenhuma notificação não visualizada encontrada para a pessoa com ID " + pessoaId
+            );
+        }
+
+        for (Notificacoes notificacao : notificacoes){
+            notificacao.setVisualizada(true);
+        }
+
+        notificacoesRepository.saveAll(notificacoes);
+    }
+
+
 }

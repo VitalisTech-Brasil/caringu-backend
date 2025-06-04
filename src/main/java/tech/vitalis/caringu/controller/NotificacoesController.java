@@ -81,8 +81,38 @@ public class NotificacoesController {
     }
       
    @PatchMapping("/{id}/visualizada")
+   @Operation(summary = "Visualizar notificação")
     public ResponseEntity<Void> atualizarVisualizada(@PathVariable Integer id, @RequestBody NotificacaoVisualizadaRequestPatchDto dto){
         notificacoesService.atualizarVisualizada(id, dto.visualizada());
         return ResponseEntity.status(204).build();
     }
+
+    @GetMapping("/testar/notificacoes")
+    public ResponseEntity<String> testarNotificacoesManual() {
+        notificacaoVencimentoService.enviarNotificacoesTreinosVencendo();
+        notificacaoVencimentoService.notificarPersonaisTreinadores();
+        return ResponseEntity.ok("Notificações enviadas com sucesso!");
+    }
+
+    @GetMapping("/pessoas/notificacoes-nao-visualizada/treino-vencimento/{id}")
+    @Operation(summary = "Buscar todas as Notificações não visualizadas por pessoa do treino vencimento")
+    public ResponseEntity<List<NotificacoesResponseGetDto>> buscarPorPessoaIdENaoVisualzaTreinoVencimento(@PathVariable Integer id){
+        List<NotificacoesResponseGetDto> notificacoes = notificacoesService.buscarPorPessoaIdENaoVisualzaTreinoVencimento(id);
+        return ResponseEntity.ok(notificacoes);
+    }
+
+    @GetMapping("/pessoas/notificacoes-nao-visualizada/{id}")
+    @Operation(summary = "Buscar todas as Notificações não visualizadas por pessoa")
+    public ResponseEntity<List<NotificacoesResponseGetDto>> buscarPorPessoaIdENaoVisualza(@PathVariable Integer id){
+        List<NotificacoesResponseGetDto> notificacoes = notificacoesService.buscarPorPessoaIdENaoVisualza(id);
+        return ResponseEntity.ok(notificacoes);
+    }
+
+    @PatchMapping("/visualizar-todas/{pessoaId}")
+    @Operation(summary = "Visualizar todas as notificações")
+    public ResponseEntity<Void> marcarTodasComoVisualizadas(@PathVariable Integer pessoaId){
+        notificacoesService.marcarTodasComoVisualizadasPorPessoaId(pessoaId);
+        return ResponseEntity.status(204).build();
+    }
+
 }

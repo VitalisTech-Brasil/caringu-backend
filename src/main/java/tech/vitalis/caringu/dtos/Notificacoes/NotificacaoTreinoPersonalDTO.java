@@ -1,11 +1,16 @@
 package tech.vitalis.caringu.dtos.Notificacoes;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record NotificacaoTreinoPersonalDTO(
         Integer personalTrainerId,
-        String cref,
+        String nomePersonal,
         Integer alunoId,
-        LocalDate dataVencimento
+        String alunoNome,
+        String nomeTreino,
+        String titulo,
+        LocalDate dataVencimento,
+        LocalDateTime dataCriacao
 ) {
 }

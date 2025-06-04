@@ -2,10 +2,7 @@ package tech.vitalis.caringu.service;
 
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Notificacoes.NotificacaoTreinoPersonalDTO;
-import tech.vitalis.caringu.entity.AlunoTreino;
-import tech.vitalis.caringu.entity.Notificacoes;
-import tech.vitalis.caringu.entity.Pessoa;
-import tech.vitalis.caringu.entity.PlanoContratado;
+import tech.vitalis.caringu.entity.*;
 import tech.vitalis.caringu.enums.Notificacoes.TipoNotificacaoEnum;
 import tech.vitalis.caringu.enums.PreferenciaNotificacao.TipoPreferenciaEnum;
 import tech.vitalis.caringu.repository.AlunoTreinoRepository;
@@ -33,41 +30,56 @@ public class NotificacaoTreinoVencimentoService {
         this.notificacaoEnviarService = notificacaoEnviarService;
     }
 
-    public void enviarNotificacoesTreinosVencendo(){
+    public void enviarNotificacoesTreinosVencendo() {
         LocalDate hoje = LocalDate.now();
         LocalDate daquiDuasSemanas = hoje.plusWeeks(2);
 
         List<AlunoTreino> alunoTreinos = alunoTreinoRepository.findByDataVencimentoBetween(hoje, daquiDuasSemanas);
 
+        for (AlunoTreino alunoTreino : alunoTreinos) {
+            Pessoa alunoPessoa = alunoTreino.getAlunos();
+            TreinoExercicio treino = alunoTreino.getTreinosExercicios();
+            PersonalTrainer personal = treino.getTreinos().getPersonal();
+            Pessoa pessoaPersonal = personal;
 
-        for (AlunoTreino alunoTreino : alunoTreinos){
-            Pessoa pessoa = alunoTreino.getAlunos();
+            // Preferência de notificação
+            boolean alunoPrefereReceber = preferenciaNotificacaoRepository.existsByPessoaAndTipoAndAtivadaTrue(
+                    alunoPessoa, TipoPreferenciaEnum.TREINO_PROXIMO_VENCIMENTO);
 
-            boolean prefereReceber = preferenciaNotificacaoRepository.existsByPessoaAndTipoAndAtivadaTrue(
-                pessoa, TipoPreferenciaEnum.TREINO_PROXIMO_VENCIMENTO
-            );
+            boolean personalPrefereReceber = preferenciaNotificacaoRepository.existsByPessoaAndTipoAndAtivadaTrue(
+                    pessoaPersonal, TipoPreferenciaEnum.TREINO_PROXIMO_VENCIMENTO);
 
-            if (!prefereReceber) continue;
+            boolean existeNotificacaoAluno = notificacoesRepository.existsByAlunoIdAndTipoAndVisualizadaFalse(
+                    alunoTreino.getAlunos().getId(), TipoNotificacaoEnum.TREINO_PROXIMO_VENCIMENTO);
 
-            boolean notificacaoExiste = notificacoesRepository.existsByPessoaAndTipoAndTituloAndVisualizadaFalse(
-                    pessoa,
-                    TipoNotificacaoEnum.TREINO_PROXIMO_VENCIMENTO,
-                    "Treino do aluno está perto de vencer!"
-            );
+            boolean existeNotificacaoPersonal = notificacoesRepository.existsByPersonalIdAndTipoAndVisualizadaFalse(
+                    personal.getId(), TipoNotificacaoEnum.TREINO_PROXIMO_VENCIMENTO);
 
 
-            if (notificacaoExiste) continue;
+            // Notificação para o aluno
+            if (alunoPrefereReceber && !existeNotificacaoAluno) {
+                Notificacoes notAluno = new Notificacoes();
+                notAluno.setPessoa(alunoPessoa);
+                notAluno.setTipo(TipoNotificacaoEnum.TREINO_PROXIMO_VENCIMENTO);
+                notAluno.setTitulo("Seu treino está prestes a vencer!");
+                notAluno.setVisualizada(false);
+                notAluno.setDataCriacao(LocalDateTime.now());
+                notificacoesRepository.save(notAluno);
+            }
 
-            Notificacoes notificacao = new Notificacoes();
-            notificacao.setPessoa(pessoa);
-            notificacao.setTipo(TipoNotificacaoEnum.TREINO_PROXIMO_VENCIMENTO);
-            notificacao.setTitulo("Treino do aluno está perto de vencer!");
-            notificacao.setVisualizada(false);
-            notificacao.setDataCriacao(LocalDateTime.now());
-
-            notificacoesRepository.save(notificacao);
+            // Notificação para o personal
+            if (personalPrefereReceber && !existeNotificacaoPersonal) {
+                Notificacoes notPersonal = new Notificacoes();
+                notPersonal.setPessoa(pessoaPersonal);
+                notPersonal.setTipo(TipoNotificacaoEnum.TREINO_PROXIMO_VENCIMENTO);
+                notPersonal.setTitulo("Treino do aluno " + alunoPessoa.getNome() + " está prestes a vencer!");
+                notPersonal.setVisualizada(false);
+                notPersonal.setDataCriacao(LocalDateTime.now());
+                notificacoesRepository.save(notPersonal);
+            }
         }
     }
+
 
     public void notificarPersonaisTreinadores() {
         LocalDate hoje = LocalDate.now();
