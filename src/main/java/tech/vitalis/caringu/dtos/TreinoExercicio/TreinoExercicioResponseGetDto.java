@@ -18,6 +18,5 @@ public record TreinoExercicioResponseGetDto(
         LocalDateTime dataHoraCriacao,
         LocalDateTime dataHoraModificacao,
         OrigemTreinoExercicioEnum origemTreinoExercicio,
-        Boolean favorito,
         GrauDificuldadeEnum grauDificuldade
 ){}

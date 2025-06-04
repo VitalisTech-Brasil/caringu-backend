@@ -88,6 +88,17 @@ public class AnamneseMapper {
         );
     }
 
+    public AnamneseGetPerfilDetalhesDTO toResponsePerfilDetalhesDTOSemAnamnese(Aluno aluno) {
+        return new AnamneseGetPerfilDetalhesDTO(
+                alunoMapper.toResponseDTO(aluno),
+                null, null, null,
+                null, null, null,
+                null, null, null,
+                null, null, null,
+                null, null, null
+        );
+    }
+
     public void updateAnamneseFromDto(AnamneseRequestPatchDTO dto, Anamnese entity) {
         if (dto.objetivoTreino() != null) entity.setObjetivoTreino(dto.objetivoTreino());
         if (dto.lesao() != null) entity.setLesao(dto.lesao());

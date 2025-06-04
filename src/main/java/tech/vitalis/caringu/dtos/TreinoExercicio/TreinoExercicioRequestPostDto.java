@@ -26,7 +26,6 @@
                 LocalDateTime dataHoraModificacao,
                 @NotNull(message = "O Origem do Treino Exercício é obrigatório.")
                 OrigemTreinoExercicioEnum origemTreinoExercicio,
-                Boolean favorito,
                 @NotNull(message = "Grau de Dificuldade é obrigatório ")
                 GrauDificuldadeEnum grauDificuldade
         ) {

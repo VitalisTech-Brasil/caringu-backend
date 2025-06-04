@@ -13,14 +13,16 @@ public class Treino {
     private Integer id;
     private String nome;
     private String descricao;
+    private Boolean favorito;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "personal_id", nullable = false)
     private PersonalTrainer personal;
 
-    public Treino(Integer id, String nome, String descricao, PersonalTrainer personal) {
+    public Treino(Integer id, String nome, String descricao, Boolean favorito, PersonalTrainer personal) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
+        this.favorito = favorito;
         this.personal = personal;
     }
 
@@ -48,6 +50,14 @@ public class Treino {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public Boolean getFavorito() {
+        return favorito;
+    }
+
+    public void setFavorito(Boolean favorito) {
+        this.favorito = favorito;
     }
 
     public PersonalTrainer getPersonal() {

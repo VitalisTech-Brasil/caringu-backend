@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Treino.TreinoRequestUpdateDto;
 import tech.vitalis.caringu.dtos.Treino.TreinoResponseGetDTO;
 import tech.vitalis.caringu.dtos.Treino.TreinoRequestPostDTO;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioFavoritoRequestPatchDto;
 import tech.vitalis.caringu.service.TreinoService;
 
 import java.util.List;
@@ -54,11 +55,16 @@ public class TreinoController {
         return ResponseEntity.ok(treinoService.atualizar(id, treinoDto, personalId));
     }
 
+    @PatchMapping("/{treinoId}/favorito")
+    public ResponseEntity<Void> atualizarFavorito(@PathVariable Integer treinoId, @RequestBody TreinoExercicioFavoritoRequestPatchDto dto){
+        treinoService.atualizarFavorito(treinoId, dto.favorito());
+        return ResponseEntity.status(204).build();
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Remover Treino")
     public ResponseEntity<Void> removerTreino(@PathVariable Integer id){
         treinoService.removerComDesassociacao(id);
-        treinoService.remover(id);
         return ResponseEntity.noContent().build();
     }
 

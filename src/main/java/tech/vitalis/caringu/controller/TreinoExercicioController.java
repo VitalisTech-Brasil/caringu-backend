@@ -49,6 +49,18 @@ public class TreinoExercicioController {
         return ResponseEntity.ok(treinoExercicioService.buscarPorId(id));
     }
 
+    @GetMapping("/buscar-info-treino-edit/{personalId}/{treinoId}")
+    @Operation(summary = "Buscar informações para editar um treino e seus exercícios.")
+    public ResponseEntity<List<TreinoExercicioEditResponseGetDTO>> buscarInfosEditTreinoExercicio(@PathVariable Integer personalId, @PathVariable Integer treinoId) {
+        List<TreinoExercicioEditResponseGetDTO> infosEditTreinoExercicio = treinoExercicioService.buscarInfosEditTreinoExercicio(personalId, treinoId);
+
+        if (infosEditTreinoExercicio.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(infosEditTreinoExercicio);
+    }
+
     @PutMapping("/{id}/treino/{treinoId}/exercicio/{exercicioId}")
     @Operation(summary = "Atualizar o Treino Exercício")
     public ResponseEntity<TreinoExercicioResponseGetDto> atualizar(@PathVariable Integer id, @PathVariable Integer treinoId, @PathVariable Integer exercicioId, @RequestBody @Valid TreinoExercicioRequestUpdateDto treinoDto){
@@ -91,10 +103,10 @@ public class TreinoExercicioController {
         return ResponseEntity.ok(dtos);
     }
 
-    @PatchMapping("/{id}/favorito")
-    public ResponseEntity<Void> atualizarFavorito(@PathVariable Integer id, @RequestBody TreinoExercicioFavoritoRequestPatchDto dto){
-        treinoExercicioService.atualizarFavorito(id, dto.favorito());
-        return ResponseEntity.status(204).build();
-    }
+//    @PatchMapping("/{id}/favorito")
+//    public ResponseEntity<Void> atualizarFavorito(@PathVariable Integer id, @RequestBody TreinoExercicioFavoritoRequestPatchDto dto){
+//        treinoExercicioService.atualizarFavorito(id, dto.favorito());
+//        return ResponseEntity.status(204).build();
+//    }
 
 }

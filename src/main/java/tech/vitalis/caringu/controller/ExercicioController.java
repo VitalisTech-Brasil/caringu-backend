@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioFavoritoRequestPatchDto;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioRequestPostDTO;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioResponseGetDTO;
-import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioFavoritoRequestPatchDto;
+import tech.vitalis.caringu.dtos.Exercicio.ExercicioResponseTotalExercicioOrigemDTO;
 import tech.vitalis.caringu.service.ExercicioService;
 import java.util.List;
 
@@ -30,10 +30,24 @@ public class ExercicioController {
         return ResponseEntity.status(201).body(exercicioCriado);
     }
 
+
     @GetMapping("/{id}")
     @Operation(summary = "Buscar exercício por ID")
     public ResponseEntity<ExercicioResponseGetDTO> buscarPorId(@PathVariable Integer id) {
         return ResponseEntity.ok(exercicioService.buscarPorId(id));
+
+    }
+
+    @GetMapping("/kpi/total-por-origem")
+    @Operation(summary = "Buscar total de exercícios por origem (BIBLIOTECA, PERSONAL)")
+    public ResponseEntity<List<ExercicioResponseTotalExercicioOrigemDTO>> buscarTotalExercicioOrigem() {
+        List<ExercicioResponseTotalExercicioOrigemDTO> listaExercicios = exercicioService.buscarTotalExercicioOrigem();
+
+        if (listaExercicios.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(listaExercicios);
     }
 
     @GetMapping

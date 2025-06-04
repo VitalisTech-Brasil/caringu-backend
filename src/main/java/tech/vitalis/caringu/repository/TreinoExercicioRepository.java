@@ -4,7 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioEditResponseGetDTO;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoDTO;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoModeloCruQuerySqlDTO;
 import tech.vitalis.caringu.entity.Treino;
 import tech.vitalis.caringu.entity.TreinoExercicio;
 
@@ -14,27 +16,40 @@ import java.util.List;
 public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio, Integer> {
 
     @Query("""
-    SELECT new tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoDTO(
-        te.id,
-        t.id,
-        t.nome,
+    SELECT new tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoModeloCruQuerySqlDTO(
+        e.nome AS nome_exercicio,
+        e.id AS exercicio_id,
+        t.id AS treino_id,
+        t.nome AS nomeTreino,
         te.grauDificuldade,
-        te.favorito,
-        te.origemTreinoExercicio,
-        0
+        te.origemTreinoExercicio
     )
     FROM TreinoExercicio te
     JOIN te.treinos t
+    JOIN te.exercicio e
     WHERE t.personal.id = :personalId
 """)
-    List<TreinoExercicioResumoDTO> findResumosSemQuantidade(@Param("personalId") Integer personalId);
+    List<TreinoExercicioResumoModeloCruQuerySqlDTO> buscarTreinosExerciciosPorPersonal(@Param("personalId") Integer personalId);
 
     @Query("""
-    SELECT te.treinos.id, COUNT(te)
-    FROM TreinoExercicio te
-    GROUP BY te.treinos.id
+    SELECT new tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioEditResponseGetDTO(
+        t.nome AS nomeTreino, t.descricao AS descricaoTreino, t.personal.id,
+        
+        te.id AS idTreinoExercicio, te.treinos.id, te.exercicio.id, te.carga,
+        te.repeticoes, te.series, te.descanso, te.dataHoraCriacao,
+        te.dataHoraModificacao, te.origemTreinoExercicio,
+        t.favorito AS favoritoTreino, te.grauDificuldade,
+        
+        e.nome AS nomeExercicio, e.grupoMuscular, e.urlVideo,
+        e.observacoes, e.favorito AS favoritoExercicio, e.origem AS origemExercicio
+    )
+    FROM Treino t
+    JOIN TreinoExercicio te ON t.id = te.treinos.id
+    JOIN Exercicio e ON e.id = te.exercicio.id
+    WHERE t.personal.id = :personalId AND t.id = :treinoId
 """)
-    List<Object[]> countExerciciosPorTreino();
+    List<TreinoExercicioEditResponseGetDTO> buscarInfosEditTreinoExercicio(@Param("personalId") Integer personalId,
+                                                                           @Param("treinoId") Integer treinoId);
 
     boolean existsByTreinosAndExercicio_Id(Treino treinos, Integer exercicioId);
 

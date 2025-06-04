@@ -32,13 +32,11 @@ public class TreinoExercicio {
     @Column(name = "origem", nullable = false)
     private OrigemTreinoExercicioEnum origemTreinoExercicio;
 
-    private Boolean favorito;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "grau_dificuldade", nullable = false)
     private GrauDificuldadeEnum grauDificuldade;
 
-    public TreinoExercicio(Integer id, Treino treinos, Exercicio exercicio, Double carga, Integer repeticoes, Integer series, Integer descanso, LocalDateTime dataHoraCriacao, LocalDateTime dataHoraModificacao, OrigemTreinoExercicioEnum origemTreinoExercicio, Boolean favorito, GrauDificuldadeEnum grauDificuldade) {
+    public TreinoExercicio(Integer id, Treino treinos, Exercicio exercicio, Double carga, Integer repeticoes, Integer series, Integer descanso, LocalDateTime dataHoraCriacao, LocalDateTime dataHoraModificacao, OrigemTreinoExercicioEnum origemTreinoExercicio, GrauDificuldadeEnum grauDificuldade) {
         this.id = id;
         this.treinos = treinos;
         this.exercicio = exercicio;
@@ -49,7 +47,6 @@ public class TreinoExercicio {
         this.dataHoraCriacao = dataHoraCriacao;
         this.dataHoraModificacao = dataHoraModificacao;
         this.origemTreinoExercicio = origemTreinoExercicio;
-        this.favorito = favorito;
         this.grauDificuldade = grauDificuldade;
     }
 
@@ -133,14 +130,6 @@ public class TreinoExercicio {
 
     public void setOrigemTreinoExercicio(OrigemTreinoExercicioEnum origemTreinoExercicio) {
         this.origemTreinoExercicio = origemTreinoExercicio;
-    }
-
-    public Boolean getFavorito() {
-        return favorito;
-    }
-
-    public void setFavorito(Boolean favorito) {
-        this.favorito = favorito;
     }
 
     public GrauDificuldadeEnum getGrauDificuldade() {

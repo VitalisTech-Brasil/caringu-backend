@@ -102,8 +102,8 @@ public class AlunoService {
         return alunoMapper.toResponseDTO(aluno);
     }
 
-    public AlunoResponseGetDTO atualizar(Integer id, Aluno novoAluno) {
-        Aluno alunoExistente = buscarAlunoOuLancarExcecao(id);
+    public AlunoResponseGetDTO atualizar(Integer alunoId, Aluno novoAluno) {
+        Aluno alunoExistente = buscarAlunoOuLancarExcecao(alunoId);
 
         validarSenha(novoAluno.getSenha());
 
@@ -122,8 +122,8 @@ public class AlunoService {
         return alunoMapper.toResponseDTO(alunoExistente);
     }
 
-    public AlunoResponsePatchDadosFisicosDTO atualizarDadosFisicos(Integer id, AlunoRequestPatchDadosFisicosDTO dto) {
-        Aluno aluno = buscarAlunoOuLancarExcecao(id);
+    public AlunoResponsePatchDadosFisicosDTO atualizarDadosFisicos(Integer alunoId, AlunoRequestPatchDadosFisicosDTO dto) {
+        Aluno aluno = buscarAlunoOuLancarExcecao(alunoId);
 
         if (dto.peso() != null) {
             aluno.setPeso(dto.peso());
@@ -142,8 +142,8 @@ public class AlunoService {
         return alunoMapper.toResponseDadosFisicosDTO(aluno);
     }
 
-    public AlunoResponsePatchDTO atualizarParcial(Integer id, AlunoRequestPatchDTO dto) {
-        Aluno aluno = buscarAlunoOuLancarExcecao(id);
+    public AlunoResponsePatchDTO atualizarParcial(Integer alunoId, AlunoRequestPatchDTO dto) {
+        Aluno aluno = buscarAlunoOuLancarExcecao(alunoId);
 
         Optional<String> nome = Optional.ofNullable(dto.nome());
         Optional<String> email = Optional.ofNullable(dto.email());
@@ -211,8 +211,8 @@ public class AlunoService {
         validarEnums(enums);
     }
 
-    public Aluno buscarAlunoOuLancarExcecao(Integer id) {
-        return alunoRepository.findById(id)
-                .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno não encontrado com ID: " + id));
+    public Aluno buscarAlunoOuLancarExcecao(Integer alunoId) {
+        return alunoRepository.findById(alunoId)
+                .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno não encontrado com ID: " + alunoId));
     }
 }
