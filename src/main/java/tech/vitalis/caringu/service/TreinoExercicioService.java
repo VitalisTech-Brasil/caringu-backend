@@ -89,6 +89,7 @@ public class TreinoExercicioService {
                                     primeiroItem.nomeTreino(),
                                     primeiroItem.grauDificuldade(),
                                     primeiroItem.origemTreinoExercicio(),
+                                    primeiroItem.favorito(),
                                     listaDeExercicioPorTreino.size()
                             );
                         }

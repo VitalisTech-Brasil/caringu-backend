@@ -22,7 +22,8 @@ public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio
         t.id AS treino_id,
         t.nome AS nomeTreino,
         te.grauDificuldade,
-        te.origemTreinoExercicio
+        te.origemTreinoExercicio,
+        t.favorito
     )
     FROM TreinoExercicio te
     JOIN te.treinos t
