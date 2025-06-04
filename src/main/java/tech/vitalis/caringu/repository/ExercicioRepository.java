@@ -13,7 +13,7 @@ public interface ExercicioRepository  extends JpaRepository<Exercicio, Integer> 
 
     @Query("""
         SELECT new tech.vitalis.caringu.dtos.Exercicio.ExercicioResponseTotalExercicioOrigemDTO(
-           COUNT(e) AS totalExercicio,
+           COUNT(e),
            e.origem
         )
         FROM Exercicio e
