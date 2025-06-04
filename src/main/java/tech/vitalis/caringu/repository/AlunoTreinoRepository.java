@@ -26,26 +26,39 @@ public interface AlunoTreinoRepository extends JpaRepository<AlunoTreino, Intege
 
 
     @Query("SELECT DISTINCT new tech.vitalis.caringu.dtos.Notificacoes.NotificacaoTreinoPersonalDTO(" +
-            "pt.id, pt.cref, a.id, at.dataVencimento) " +
-            "FROM AlunoTreino at " +
-            "JOIN at.alunos a " +
+            "pt.id, pePersonal.nome, a.id, peAluno.nome, t.nome, n.titulo, ata.dataVencimento, n.dataCriacao) " +
+            "FROM AlunoTreino ata " +
+            "JOIN ata.alunos a " +
             "JOIN PlanoContratado pc ON pc.aluno.id = a.id " +
             "JOIN pc.plano p " +
             "JOIN p.personalTrainer pt " +
-            "WHERE at.dataVencimento BETWEEN CURRENT_DATE AND :dataLimite " +
+            "JOIN Pessoa pePersonal ON pePersonal.id = pt.id " +
+            "JOIN ata.treinosExercicios te " +
+            "JOIN te.treinos t " +
+            "JOIN Pessoa peAluno ON peAluno.id = a.id " +
+            "LEFT JOIN Notificacoes n ON n.pessoa.id = peAluno.id " +
+            "WHERE ata.dataVencimento BETWEEN CURRENT_DATE AND :dataLimite " +
+            "AND n.titulo IS NOT NULL " +
             "AND pc.status = 'ATIVO'")
     List<NotificacaoTreinoPersonalDTO> findTreinosVencendo(@Param("dataLimite") LocalDate dataLimite);
 
+
     @Query("SELECT DISTINCT new tech.vitalis.caringu.dtos.Notificacoes.NotificacaoTreinoPersonalDTO(" +
-            "pt.id, pt.cref, a.id, at.dataVencimento) " +
-            "FROM AlunoTreino at " +
-            "JOIN at.alunos a " +
+            "pt.id, pePersonal.nome, a.id, peAluno.nome, t.nome, n.titulo, ata.dataVencimento, n.dataCriacao) " +
+            "FROM AlunoTreino ata " +
+            "JOIN ata.alunos a " +
             "JOIN PlanoContratado pc ON pc.aluno.id = a.id " +
             "JOIN pc.plano p " +
             "JOIN p.personalTrainer pt " +
-            "WHERE at.dataVencimento BETWEEN CURRENT_DATE AND :dataLimite " +
+            "JOIN Pessoa pePersonal ON pePersonal.id = pt.id " +
+            "JOIN ata.treinosExercicios te " +
+            "JOIN te.treinos t " +
+            "JOIN Pessoa peAluno ON peAluno.id = a.id " +
+            "LEFT JOIN Notificacoes n ON n.pessoa.id = peAluno.id " +
+            "WHERE ata.dataVencimento BETWEEN CURRENT_DATE AND :dataLimite " +
+            "AND n.titulo IS NOT NULL " +
             "AND p.personalTrainer.id = :personalId " +
             "AND pc.status = 'ATIVO'")
     List<NotificacaoTreinoPersonalDTO> findTreinosVencendoPorPersonal(@Param("dataLimite") LocalDate dataLimite,
-                                                           @Param("personalId") Integer personalId);
+                                                                      @Param("personalId") Integer personalId);
 }
