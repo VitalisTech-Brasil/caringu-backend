@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioRequestPostDTO;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioResponseGetDTO;
-import tech.vitalis.caringu.entity.TreinoExercicio;
+import tech.vitalis.caringu.dtos.Exercicio.ExercicioResponseTotalExercicioOrigemDTO;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.mapper.ExercicioMapper;
 import tech.vitalis.caringu.entity.Exercicio;
@@ -48,6 +48,10 @@ public class ExercicioService {
         Exercicio exercicio = exercicioRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Exercício com ID " + id + " não encontrado"));
         return exercicioMapper.toResponseDTO(exercicio);
+    }
+
+    public List<ExercicioResponseTotalExercicioOrigemDTO> buscarTotalExercicioOrigem() {
+        return exercicioRepository.buscarTotalExercicioOrigem();
     }
 
     public List<ExercicioResponseGetDTO> listarTodos() {
