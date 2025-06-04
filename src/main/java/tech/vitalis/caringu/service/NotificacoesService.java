@@ -154,7 +154,7 @@ public class NotificacoesService {
                 ));
 
         List<Notificacoes> notificacoes = notificacoesRepository
-                .findByPessoaAndVisualizadaFalse(pessoa);
+                .findByPessoaOrderByVisualizadaAscDataCriacaoDesc(pessoa);
 
         if (notificacoes.isEmpty()) {
             throw new ApiExceptions.ResourceNotFoundException(
@@ -174,7 +174,7 @@ public class NotificacoesService {
                         "Pessoa com o ID " + pessoaId + " não foi encontrada."
                 ));
 
-        List<Notificacoes> notificacoes = notificacoesRepository.findByPessoaAndVisualizadaFalse(pessoa);
+        List<Notificacoes> notificacoes = notificacoesRepository.findByPessoaOrderByVisualizadaAscDataCriacaoDesc(pessoa);
 
         if (notificacoes.isEmpty()){
             throw new ApiExceptions.ResourceNotFoundException(
