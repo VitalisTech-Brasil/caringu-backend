@@ -2,6 +2,7 @@ package tech.vitalis.caringu.mapper;
 
 import org.springframework.stereotype.Component;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioRequestPostDTO;
+import tech.vitalis.caringu.dtos.Exercicio.ExercicioRequestPostFuncionalDTO;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioResponseGetDTO;
 import tech.vitalis.caringu.entity.Exercicio;
 
@@ -18,6 +19,17 @@ public class ExercicioMapper {
         exercicio.setObservacoes(dto.observacoes());
         exercicio.setFavorito(dto.favorito());
         exercicio.setOrigem(dto.origem());
+        return exercicio;
+    }
+
+    public Exercicio toEntity(ExercicioRequestPostFuncionalDTO dto){
+        if (dto == null) return null;
+
+        Exercicio exercicio = new Exercicio();
+        exercicio.setNome(dto.nome());
+        exercicio.setGrupoMuscular(dto.grupoMuscular());
+        exercicio.setUrlVideo(dto.urlVideo());
+        exercicio.setObservacoes(dto.observacoes());
         return exercicio;
     }
 
