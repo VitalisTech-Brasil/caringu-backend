@@ -15,6 +15,7 @@ import tech.vitalis.caringu.enums.Aluno.NivelExperienciaEnum;
 import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
 import tech.vitalis.caringu.exception.Aluno.AlunoNaoEncontradoException;
 import tech.vitalis.caringu.exception.Anamnese.AnamneseNaoEncontradaException;
+import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
 import tech.vitalis.caringu.exception.Pessoa.PessoaNaoEncontradaException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
@@ -214,5 +215,31 @@ public class AlunoService {
     public Aluno buscarAlunoOuLancarExcecao(Integer alunoId) {
         return alunoRepository.findById(alunoId)
                 .orElseThrow(() -> new AlunoNaoEncontradoException("Aluno não encontrado com ID: " + alunoId));
+    }
+
+    public AlunoResponseGetDTO buscarAlunoPorEmail(String email) {
+        Pessoa pessoa = pessoaRepository.findByEmailContainsIgnoreCase(email)
+                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Aluno não encontrado com EMAIL: " + email));
+
+        if (pessoa instanceof Aluno aluno) {
+            return alunoMapper.toResponseDTO(aluno);
+        }
+
+        throw new ApiExceptions.ResourceNotFoundException("Pessoa encontrada com EMAIL: " + email + " não é um aluno.");
+    }
+
+    public List<AlunoResponseGetDTO> buscarAlunosPorEmail(String email) {
+        List<Pessoa> pessoas = pessoaRepository.findByEmailContainingIgnoreCase(email)
+                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Aluno não encontrado com EMAIL: " + email));
+        List<AlunoResponseGetDTO> listaRespostaAlunos = new ArrayList<>();
+
+        for (Pessoa pessoa : pessoas) {
+            if (pessoa instanceof Aluno aluno) {
+                AlunoResponseGetDTO alunoDto = alunoMapper.toResponseDTO(aluno);
+                listaRespostaAlunos.add(alunoDto);
+            }
+        }
+
+        return listaRespostaAlunos;
     }
 }
