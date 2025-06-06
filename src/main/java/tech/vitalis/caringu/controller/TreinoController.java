@@ -20,6 +20,7 @@ public class TreinoController {
 
     private final TreinoService treinoService;
 
+
     public TreinoController(TreinoService treinoService) {
         this.treinoService = treinoService;
     }
@@ -47,6 +48,13 @@ public class TreinoController {
     public ResponseEntity<Integer> buscarTreinosCriados(@PathVariable Integer idPersonal) {
         Integer quantidadeTreinosCriados = treinoService.obterQuantidadeTreinosCriados(idPersonal);
         return ResponseEntity.status(200).body(quantidadeTreinosCriados);
+    }
+
+    @GetMapping("/buscar-varios-treinos/{nome}")
+    @Operation(summary = "Buscar treinos por nome")
+    public ResponseEntity<List<TreinoResponseGetDTO>> buscarTreinoPorNome(@PathVariable String nome){
+        List<TreinoResponseGetDTO> treinos = treinoService.buscarTreinoPorNome(nome);
+        return ResponseEntity.status(200).body(treinos);
     }
 
     @PutMapping("/{id}/personal/{personalId}")
