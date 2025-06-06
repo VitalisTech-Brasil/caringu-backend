@@ -48,6 +48,23 @@ public class AlunoController {
         return ResponseEntity.ok(dados);
     }
 
+    @GetMapping("/buscar-aluno/{email}")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "Buscar aluno por email")
+    public ResponseEntity<AlunoResponseGetDTO> buscarAlunoPorEmail(@PathVariable String email){
+        AlunoResponseGetDTO aluno = service.buscarAlunoPorEmail(email);
+        return ResponseEntity.ok(aluno);
+    }
+
+    @GetMapping("/buscar-varios-alunos/{email}")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "Buscar alunos por email")
+    public ResponseEntity<List<AlunoResponseGetDTO>> buscarAlunosPorEmail(@PathVariable String email){
+        List<AlunoResponseGetDTO> alunos = service.buscarAlunosPorEmail(email);
+
+        return ResponseEntity.status(200).body(alunos);
+    }
+
     @PostMapping
     @Operation(summary = "Cadastrar aluno")
     public ResponseEntity<AlunoResponseGetDTO> cadastrar(@Valid @RequestBody AlunoRequestPostDTO cadastroDTO) {
