@@ -6,6 +6,7 @@ import tech.vitalis.caringu.dtos.Treino.TreinoRequestPostDTO;
 import tech.vitalis.caringu.dtos.Treino.TreinoRequestUpdateDto;
 import tech.vitalis.caringu.dtos.Treino.TreinoResponseGetDTO;
 import tech.vitalis.caringu.entity.PersonalTrainer;
+import tech.vitalis.caringu.entity.Pessoa;
 import tech.vitalis.caringu.entity.Treino;
 import tech.vitalis.caringu.entity.TreinoExercicio;
 import tech.vitalis.caringu.exception.ApiExceptions;
@@ -13,6 +14,7 @@ import tech.vitalis.caringu.mapper.TreinoMapper;
 import tech.vitalis.caringu.repository.PersonalTrainerRepository;
 import tech.vitalis.caringu.repository.TreinoRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -108,6 +110,20 @@ public class TreinoService {
 
         favoritoTreino.setFavorito(favorito);
 
+    }
+
+    public List<TreinoResponseGetDTO> buscarTreinoPorNome(String nome){
+        List<Treino> treinos = treinoRepository.findByNomeContainingIgnoreCase(nome)
+                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Treino não encontrado com NOME: " + nome));
+
+        List<TreinoResponseGetDTO> listaTreinos = new ArrayList<>();
+
+        for (Treino treino : treinos){
+            TreinoResponseGetDTO treinoDto = treinoMapper.toResponseDTO(treino);
+            listaTreinos.add(treinoDto);
+        }
+
+        return listaTreinos;
     }
 
 }

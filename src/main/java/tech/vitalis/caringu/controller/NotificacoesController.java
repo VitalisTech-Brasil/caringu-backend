@@ -1,13 +1,12 @@
 package tech.vitalis.caringu.controller;
 
-import com.azure.core.annotation.Put;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Notificacoes.*;
-import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioFavoritoRequestPatchDto;
+import tech.vitalis.caringu.service.NotificacaoPlanoVencimentoService;
 import tech.vitalis.caringu.service.NotificacaoTreinoVencimentoService;
 import tech.vitalis.caringu.service.NotificacoesService;
 
@@ -20,11 +19,13 @@ import java.util.List;
 public class NotificacoesController {
 
     private final NotificacoesService notificacoesService;
-    private final NotificacaoTreinoVencimentoService notificacaoVencimentoService;
+    private final NotificacaoTreinoVencimentoService notificacaoTreinoVencimentoService;
+    private final NotificacaoPlanoVencimentoService notificacaoPlanoVencimentoService;
 
-    public NotificacoesController(NotificacoesService notificacoesService, NotificacaoTreinoVencimentoService notificacaoVencimentoService) {
+    public NotificacoesController(NotificacoesService notificacoesService, NotificacaoTreinoVencimentoService notificacaoTreinoVencimentoService, NotificacaoPlanoVencimentoService notificacaoPlanoVencimentoService) {
         this.notificacoesService = notificacoesService;
-        this.notificacaoVencimentoService = notificacaoVencimentoService;
+        this.notificacaoTreinoVencimentoService = notificacaoTreinoVencimentoService;
+        this.notificacaoPlanoVencimentoService = notificacaoPlanoVencimentoService;
     }
 
     @PostMapping
@@ -71,13 +72,19 @@ public class NotificacoesController {
     @GetMapping("/treinos-vencendo")
     public List<NotificacaoTreinoPersonalDTO> listarTreinosVencendo() {
         LocalDate limite = LocalDate.now().plusWeeks(2);
-        return notificacaoVencimentoService.buscarTreinosVencendo(limite);
+        return notificacaoTreinoVencimentoService.buscarTreinosVencendo(limite);
     }
 
     @GetMapping("/treinos-vencendo/{personalId}")
     public List<NotificacaoTreinoPersonalDTO> listarTreinosVencendoPorPersonal(@PathVariable Integer personalId) {
         LocalDate limite = LocalDate.now().plusWeeks(2);
-        return notificacaoVencimentoService.buscarTreinosVencendoPorPersonal(limite, personalId);
+        return notificacaoTreinoVencimentoService.buscarTreinosVencendoPorPersonal(limite, personalId);
+    }
+
+    @GetMapping("/planos-vencendo/{personalId}")
+    public List<NotificacaoPlanoVencimentoDto> buscarNotificacoesPlanoVencimentoPorPersonal(@PathVariable Integer personalId){
+        LocalDate limite = LocalDate.now().plusWeeks(2);
+        return notificacaoPlanoVencimentoService.buscarNotificacoesPlanoVencimentoPorPersonal(limite, personalId);
     }
       
    @PatchMapping("/{id}/visualizada")
@@ -89,8 +96,15 @@ public class NotificacoesController {
 
     @GetMapping("/testar/notificacoes")
     public ResponseEntity<String> testarNotificacoesManual() {
-        notificacaoVencimentoService.enviarNotificacoesTreinosVencendo();
-        notificacaoVencimentoService.notificarPersonaisTreinadores();
+        notificacaoTreinoVencimentoService.enviarNotificacoesTreinosVencendo();
+        notificacaoTreinoVencimentoService.notificarPersonaisTreinadores();
+        return ResponseEntity.ok("Notificações enviadas com sucesso!");
+    }
+
+    @GetMapping("/testar/notificacoes-plano")
+    public ResponseEntity<String> testarNotificacoesManualPlano() {
+        notificacaoPlanoVencimentoService.enviarNotificacoesPlanoVencimento();
+        notificacaoPlanoVencimentoService.notificarPersonais();
         return ResponseEntity.ok("Notificações enviadas com sucesso!");
     }
 
@@ -114,5 +128,4 @@ public class NotificacoesController {
         notificacoesService.marcarTodasComoVisualizadasPorPessoaId(pessoaId);
         return ResponseEntity.status(204).build();
     }
-
 }
