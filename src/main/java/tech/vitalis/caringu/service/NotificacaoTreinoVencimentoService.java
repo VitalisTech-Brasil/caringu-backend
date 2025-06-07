@@ -80,7 +80,7 @@ public class NotificacaoTreinoVencimentoService {
                 Notificacoes notPersonal = new Notificacoes();
                 notPersonal.setPessoa(pessoaPersonal);
                 notPersonal.setTipo(TipoNotificacaoEnum.TREINO_PROXIMO_VENCIMENTO);
-                notPersonal.setTitulo("Aviso: o treino \"" + nomeTreino + "\" do aluno " + alunoPessoa.getNome() + " vencerá em breve (Data: " + dataVencimento.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ")");
+                notPersonal.setTitulo("O treino " + nomeTreino + " do aluno " + alunoPessoa.getNome() + " vencerá em breve (" + dataVencimento.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ")");
                 notPersonal.setVisualizada(false);
                 notPersonal.setDataCriacao(LocalDateTime.now());
                 notificacoesRepository.save(notPersonal);

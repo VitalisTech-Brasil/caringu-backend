@@ -68,7 +68,7 @@ public class NotificacaoPlanoVencimentoService {
                 Notificacoes notPersonal = new Notificacoes();
                 notPersonal.setPessoa(personal);
                 notPersonal.setTipo(TipoNotificacaoEnum.PLANO_PROXIMO_VENCIMENTO);
-                notPersonal.setTitulo("Aviso: o plano \"" + plano.getNome() + "\" do aluno " + alunoPessoa.getNome() + " vencerá em breve (Data: " + planoContratado.getDataFim().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ")");
+                notPersonal.setTitulo("O plano " + plano.getNome() + " do(a) aluno(a) " + alunoPessoa.getNome() + " vencerá em breve (" + planoContratado.getDataFim().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ")");
                 notPersonal.setVisualizada(false);
                 notPersonal.setDataCriacao(LocalDateTime.now());
                 notificacoesRepository.save(notPersonal);
