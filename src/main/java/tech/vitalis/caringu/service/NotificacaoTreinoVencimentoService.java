@@ -48,11 +48,14 @@ public class NotificacaoTreinoVencimentoService {
             LocalDate dataVencimento = alunoTreino.getDataVencimento();
 
             // Preferência de notificação
+            /*
             boolean alunoPrefereReceber = preferenciaNotificacaoRepository.existsByPessoaAndTipoAndAtivadaTrue(
                     alunoPessoa, TipoPreferenciaEnum.TREINO_PROXIMO_VENCIMENTO);
 
             boolean personalPrefereReceber = preferenciaNotificacaoRepository.existsByPessoaAndTipoAndAtivadaTrue(
                     pessoaPersonal, TipoPreferenciaEnum.TREINO_PROXIMO_VENCIMENTO);
+
+             */
 
             boolean existeNotificacaoAluno = notificacoesRepository.existsByAlunoIdAndTipoAndVisualizadaFalse(
                     alunoTreino.getAlunos().getId(), TipoNotificacaoEnum.TREINO_PROXIMO_VENCIMENTO);
@@ -62,7 +65,7 @@ public class NotificacaoTreinoVencimentoService {
 
 
             // Notificação para o aluno
-            if (alunoPrefereReceber && !existeNotificacaoAluno) {
+            if (!existeNotificacaoAluno) {
                 Notificacoes notAluno = new Notificacoes();
                 notAluno.setPessoa(alunoPessoa);
                 notAluno.setTipo(TipoNotificacaoEnum.TREINO_PROXIMO_VENCIMENTO);
@@ -73,7 +76,7 @@ public class NotificacaoTreinoVencimentoService {
             }
 
             // Notificação para o personal
-            if (personalPrefereReceber && !existeNotificacaoPersonal) {
+            if (!existeNotificacaoPersonal) {
                 Notificacoes notPersonal = new Notificacoes();
                 notPersonal.setPessoa(pessoaPersonal);
                 notPersonal.setTipo(TipoNotificacaoEnum.TREINO_PROXIMO_VENCIMENTO);

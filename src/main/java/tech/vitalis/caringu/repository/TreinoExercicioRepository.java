@@ -32,6 +32,26 @@ public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio
 """)
     List<TreinoExercicioResumoModeloCruQuerySqlDTO> buscarTreinosExerciciosPorPersonal(@Param("personalId") Integer personalId);
 
+
+    @Query("""
+    SELECT new tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoModeloCruQuerySqlDTO(
+        e.nome AS nome_exercicio,
+        e.id AS exercicio_id,
+        t.id AS treino_id,
+        t.nome AS nomeTreino,
+        te.grauDificuldade,
+        te.origemTreinoExercicio,
+        t.favorito
+    )
+    FROM TreinoExercicio te
+    JOIN te.treinos t
+    JOIN te.exercicio e
+    JOIN AlunoTreino at ON at.id = te.id
+    JOIN Aluno a ON a.id = at.id
+    WHERE a.id = :alunoId
+""")
+    List<TreinoExercicioResumoModeloCruQuerySqlDTO> buscarTreinosExerciciosPorAluno(@Param("alunoId") Integer alunoId);
+
     @Query("""
     SELECT new tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioEditResponseGetDTO(
         t.nome AS nomeTreino, t.descricao AS descricaoTreino, t.personal.id,
