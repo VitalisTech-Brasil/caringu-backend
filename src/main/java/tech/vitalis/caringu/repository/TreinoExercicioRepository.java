@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import tech.vitalis.caringu.dtos.TreinoExercicio.ListaExercicioPorTreinoResponseDTO;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioEditResponseGetDTO;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoModeloCruQuerySqlDTO;
 import tech.vitalis.caringu.entity.Treino;
@@ -29,6 +30,17 @@ public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio
     WHERE t.personal.id = :personalId
 """)
     List<TreinoExercicioResumoModeloCruQuerySqlDTO> buscarTreinosExerciciosPorPersonal(@Param("personalId") Integer personalId);
+
+    @Query("""
+    SELECT new tech.vitalis.caringu.dtos.TreinoExercicio.ListaExercicioPorTreinoResponseDTO(
+        te.id, te.treinos.id,
+        te.exercicio.id, e.nome
+    )
+    FROM TreinoExercicio te
+    JOIN te.exercicio e
+    WHERE te.treinos.id = :treinoId
+""")
+    List<ListaExercicioPorTreinoResponseDTO> buscarExerciciosPorTreino(@Param("treinoId") Integer treinoId);
 
     @Query("""
     SELECT new tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioEditResponseGetDTO(
