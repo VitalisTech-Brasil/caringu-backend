@@ -4,8 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import tech.vitalis.caringu.dtos.TreinoExercicio.ListaExercicioPorTreinoResponseDTO;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioEditResponseGetDTO;
-import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoDTO;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoModeloCruQuerySqlDTO;
 import tech.vitalis.caringu.entity.Treino;
 import tech.vitalis.caringu.entity.TreinoExercicio;
@@ -53,6 +53,18 @@ public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio
     List<TreinoExercicioResumoModeloCruQuerySqlDTO> buscarTreinosExerciciosPorAluno(@Param("alunoId") Integer alunoId);
 
     @Query("""
+    SELECT new tech.vitalis.caringu.dtos.TreinoExercicio.ListaExercicioPorTreinoResponseDTO(
+        MIN(te.id), MIN(te.exercicio.id), e.nome, t.nome
+    )
+    FROM TreinoExercicio te
+    JOIN te.exercicio e
+    JOIN te.treinos t
+    WHERE te.treinos.id = :treinoId
+    GROUP BY e.nome, t.nome
+""")
+    List<ListaExercicioPorTreinoResponseDTO> buscarExerciciosPorTreino(@Param("treinoId") Integer treinoId);
+
+    @Query("""
     SELECT new tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioEditResponseGetDTO(
         t.nome AS nomeTreino, t.descricao AS descricaoTreino, t.personal.id,
         
@@ -79,4 +91,6 @@ public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio
     List<TreinoExercicio> findByTreinos_Id(Integer treinosId);
 
     List<TreinoExercicio> findAllByTreinos_Id(Integer treinoId);
+
+    List<TreinoExercicio> findAllByExercicioId(Integer id);
 }

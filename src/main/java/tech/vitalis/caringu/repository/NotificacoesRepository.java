@@ -42,6 +42,7 @@ public interface NotificacoesRepository extends JpaRepository<Notificacoes, Inte
 
     List<Notificacoes> findByPessoaAndTipoAndVisualizadaFalse(Pessoa pessoa, TipoNotificacaoEnum tipoNotificacaoEnum);
 
+    List<Notificacoes> findByPessoaOrderByVisualizadaAscDataCriacaoDesc(Pessoa pessoa);
     List<Notificacoes> findByPessoaAndVisualizadaFalse(Pessoa pessoa);
 
 }

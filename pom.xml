@@ -47,6 +47,12 @@
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.threeten</groupId>
+            <artifactId>threeten-extra</artifactId>
+            <version>1.8.0</version>
+        </dependency>
+
         <!-- Banco de Dados -->
         <dependency>
             <groupId>com.h2database</groupId>

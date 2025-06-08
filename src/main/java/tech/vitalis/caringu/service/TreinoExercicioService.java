@@ -96,6 +96,11 @@ public class TreinoExercicioService {
                 ).toList();
     }
 
+    public List<ListaExercicioPorTreinoResponseDTO> buscarExerciciosPorTreino(Integer treinoId) {
+        List<ListaExercicioPorTreinoResponseDTO> listaExerciciosPorTreino = treinoExercicioRepository.buscarExerciciosPorTreino(treinoId);
+
+        return listaExerciciosPorTreino;
+    }
 
     public List<TreinoExercicioResumoDTO> listarPorAluno(Integer alunoId) {
         List<TreinoExercicioResumoModeloCruQuerySqlDTO> listaComValoresNaoTratados = treinoExercicioRepository.buscarTreinosExerciciosPorAluno(alunoId);
@@ -117,7 +122,6 @@ public class TreinoExercicioService {
                 })
                 .toList();
     }
-
 
     public List<TreinoExercicioResponseGetDto> listarTodos() {
         return treinoExercicioRepository.findAll()

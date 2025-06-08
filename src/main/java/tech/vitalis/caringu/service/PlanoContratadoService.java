@@ -61,7 +61,10 @@ public class PlanoContratadoService {
                 Notificacoes notificacao = new Notificacoes();
                 notificacao.setPessoa(personal);
                 notificacao.setTipo(TipoNotificacaoEnum.PAGAMENTO_REALIZADO);
-                notificacao.setTitulo("Novo plano aguardando confirmação de pagamento");
+
+                String nomeAluno = planoContratado.getAluno().getNome();
+
+                notificacao.setTitulo("%s confirmou pagamento do plano '%s' e está aguardando confirmação de pagamento".formatted(nomeAluno, plano.getNome()));
                 notificacao.setDataCriacao(LocalDateTime.now());
 
                 notificacoesRepository.save(notificacao);
