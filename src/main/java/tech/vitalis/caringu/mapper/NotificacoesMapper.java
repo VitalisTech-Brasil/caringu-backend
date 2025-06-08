@@ -34,7 +34,7 @@ public class NotificacoesMapper {
           pessoaMapper.toDTO(notificacoes.getPessoa()),
           notificacoes.getTipo(),
           notificacoes.getTitulo(),
-          notificacoes.isVisualizada(),
+          notificacoes.getVisualizada(),
           notificacoes.getDataCriacao()
         );
     }

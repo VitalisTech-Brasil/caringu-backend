@@ -188,6 +188,4 @@ public class NotificacoesService {
 
         notificacoesRepository.saveAll(notificacoes);
     }
-
-
 }

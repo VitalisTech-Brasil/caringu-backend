@@ -11,6 +11,7 @@ import tech.vitalis.caringu.repository.PreferenciaNotificacaoRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,13 +42,20 @@ public class NotificacaoTreinoVencimentoService {
             TreinoExercicio treino = alunoTreino.getTreinosExercicios();
             PersonalTrainer personal = treino.getTreinos().getPersonal();
             Pessoa pessoaPersonal = personal;
+            Treino treinoObj = treino.getTreinos();
+            String nomeTreino = treinoObj.getNome();
+
+            LocalDate dataVencimento = alunoTreino.getDataVencimento();
 
             // Preferência de notificação
+            /*
             boolean alunoPrefereReceber = preferenciaNotificacaoRepository.existsByPessoaAndTipoAndAtivadaTrue(
                     alunoPessoa, TipoPreferenciaEnum.TREINO_PROXIMO_VENCIMENTO);
 
             boolean personalPrefereReceber = preferenciaNotificacaoRepository.existsByPessoaAndTipoAndAtivadaTrue(
                     pessoaPersonal, TipoPreferenciaEnum.TREINO_PROXIMO_VENCIMENTO);
+
+             */
 
             boolean existeNotificacaoAluno = notificacoesRepository.existsByAlunoIdAndTipoAndVisualizadaFalse(
                     alunoTreino.getAlunos().getId(), TipoNotificacaoEnum.TREINO_PROXIMO_VENCIMENTO);
@@ -57,22 +65,22 @@ public class NotificacaoTreinoVencimentoService {
 
 
             // Notificação para o aluno
-            if (alunoPrefereReceber && !existeNotificacaoAluno) {
+            if (!existeNotificacaoAluno) {
                 Notificacoes notAluno = new Notificacoes();
                 notAluno.setPessoa(alunoPessoa);
                 notAluno.setTipo(TipoNotificacaoEnum.TREINO_PROXIMO_VENCIMENTO);
-                notAluno.setTitulo("Seu treino está prestes a vencer!");
+                notAluno.setTitulo("Lembrete: o treino \"" + nomeTreino + "\" vencerá em breve (Data: " + dataVencimento.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ")");
                 notAluno.setVisualizada(false);
                 notAluno.setDataCriacao(LocalDateTime.now());
                 notificacoesRepository.save(notAluno);
             }
 
             // Notificação para o personal
-            if (personalPrefereReceber && !existeNotificacaoPersonal) {
+            if (!existeNotificacaoPersonal) {
                 Notificacoes notPersonal = new Notificacoes();
                 notPersonal.setPessoa(pessoaPersonal);
                 notPersonal.setTipo(TipoNotificacaoEnum.TREINO_PROXIMO_VENCIMENTO);
-                notPersonal.setTitulo("Treino do aluno " + alunoPessoa.getNome() + " está prestes a vencer!");
+                notPersonal.setTitulo("O treino " + nomeTreino + " do aluno " + alunoPessoa.getNome() + " vencerá em breve (" + dataVencimento.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ")");
                 notPersonal.setVisualizada(false);
                 notPersonal.setDataCriacao(LocalDateTime.now());
                 notificacoesRepository.save(notPersonal);
@@ -129,9 +137,7 @@ public class NotificacaoTreinoVencimentoService {
         return alunoTreinoRepository.findTreinosVencendo(dataLimite);
     }
 
-
     public List<NotificacaoTreinoPersonalDTO> buscarTreinosVencendoPorPersonal(LocalDate dataLimite, Integer personalId) {
         return alunoTreinoRepository.findTreinosVencendoPorPersonal(dataLimite, personalId);
     }
-
 }

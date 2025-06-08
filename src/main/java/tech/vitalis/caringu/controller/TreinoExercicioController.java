@@ -33,7 +33,13 @@ public class TreinoExercicioController {
     @GetMapping("/personal/{personalId}")
     public ResponseEntity<List<TreinoExercicioResumoDTO>> listarPorPersonal(@PathVariable Integer personalId) {
         List<TreinoExercicioResumoDTO> treinosExerciciosResumo = treinoExercicioService.listarPorPersonal(personalId);
+        return ResponseEntity.ok(treinosExerciciosResumo);
+    }
 
+    @GetMapping("/aluno/{alunoId}")
+    @Operation(summary = "Buscar todos os Treino Exercício do ALuno")
+    public ResponseEntity<List<TreinoExercicioResumoDTO>> listarPorALuno(@PathVariable Integer alunoId) {
+        List<TreinoExercicioResumoDTO> treinosExerciciosResumo = treinoExercicioService.listarPorAluno(alunoId);
         return ResponseEntity.ok(treinosExerciciosResumo);
     }
 

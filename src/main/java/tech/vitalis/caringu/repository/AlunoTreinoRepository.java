@@ -24,9 +24,8 @@ public interface AlunoTreinoRepository extends JpaRepository<AlunoTreino, Intege
 
     List<AlunoTreino> findByDataVencimentoBetween(LocalDate hoje, LocalDate daquiDuasSemanas);
 
-
     @Query("SELECT DISTINCT new tech.vitalis.caringu.dtos.Notificacoes.NotificacaoTreinoPersonalDTO(" +
-            "pt.id, pePersonal.nome, a.id, peAluno.nome, t.nome, n.titulo, ata.dataVencimento, n.dataCriacao) " +
+            "pt.id, pePersonal.nome, a.id, peAluno.nome, t.nome, n.titulo, ata.dataVencimento, n.dataCriacao, n.visualizada) " +
             "FROM AlunoTreino ata " +
             "JOIN ata.alunos a " +
             "JOIN PlanoContratado pc ON pc.aluno.id = a.id " +
@@ -38,13 +37,13 @@ public interface AlunoTreinoRepository extends JpaRepository<AlunoTreino, Intege
             "JOIN Pessoa peAluno ON peAluno.id = a.id " +
             "LEFT JOIN Notificacoes n ON n.pessoa.id = peAluno.id " +
             "WHERE ata.dataVencimento BETWEEN CURRENT_DATE AND :dataLimite " +
-            "AND n.titulo IS NOT NULL " +
+            "AND n.titulo IS NULL " +
             "AND pc.status = 'ATIVO'")
     List<NotificacaoTreinoPersonalDTO> findTreinosVencendo(@Param("dataLimite") LocalDate dataLimite);
 
 
     @Query("SELECT DISTINCT new tech.vitalis.caringu.dtos.Notificacoes.NotificacaoTreinoPersonalDTO(" +
-            "pt.id, pePersonal.nome, a.id, peAluno.nome, t.nome, n.titulo, ata.dataVencimento, n.dataCriacao) " +
+            "pt.id, pePersonal.nome, a.id, peAluno.nome, t.nome, n.titulo, ata.dataVencimento, n.dataCriacao, n.visualizada) " +
             "FROM AlunoTreino ata " +
             "JOIN ata.alunos a " +
             "JOIN PlanoContratado pc ON pc.aluno.id = a.id " +
@@ -56,7 +55,7 @@ public interface AlunoTreinoRepository extends JpaRepository<AlunoTreino, Intege
             "JOIN Pessoa peAluno ON peAluno.id = a.id " +
             "LEFT JOIN Notificacoes n ON n.pessoa.id = peAluno.id " +
             "WHERE ata.dataVencimento BETWEEN CURRENT_DATE AND :dataLimite " +
-            "AND n.titulo IS NOT NULL " +
+            "AND n.titulo IS NULL " +
             "AND p.personalTrainer.id = :personalId " +
             "AND pc.status = 'ATIVO'")
     List<NotificacaoTreinoPersonalDTO> findTreinosVencendoPorPersonal(@Param("dataLimite") LocalDate dataLimite,

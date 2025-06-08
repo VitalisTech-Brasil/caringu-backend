@@ -89,6 +89,7 @@ public class TreinoExercicioService {
                                     primeiroItem.nomeTreino(),
                                     primeiroItem.grauDificuldade(),
                                     primeiroItem.origemTreinoExercicio(),
+                                    primeiroItem.favorito(),
                                     listaDeExercicioPorTreino.size()
                             );
                         }
@@ -99,6 +100,27 @@ public class TreinoExercicioService {
         List<ListaExercicioPorTreinoResponseDTO> listaExerciciosPorTreino = treinoExercicioRepository.buscarExerciciosPorTreino(treinoId);
 
         return listaExerciciosPorTreino;
+    }
+
+    public List<TreinoExercicioResumoDTO> listarPorAluno(Integer alunoId) {
+        List<TreinoExercicioResumoModeloCruQuerySqlDTO> listaComValoresNaoTratados = treinoExercicioRepository.buscarTreinosExerciciosPorAluno(alunoId);
+
+        Map<Integer, List<TreinoExercicioResumoModeloCruQuerySqlDTO>> agrupadoPorTreinoId = listaComValoresNaoTratados.stream()
+                .collect(Collectors.groupingBy(TreinoExercicioResumoModeloCruQuerySqlDTO::treinoId));
+
+        return agrupadoPorTreinoId.values().stream()
+                .map(listaDeExercicioPorTreino -> {
+                    TreinoExercicioResumoModeloCruQuerySqlDTO primeiroItem = listaDeExercicioPorTreino.getFirst();
+                    return new TreinoExercicioResumoDTO(
+                            primeiroItem.treinoId(),
+                            primeiroItem.nomeTreino(),
+                            primeiroItem.grauDificuldade(),
+                            primeiroItem.origemTreinoExercicio(),
+                            primeiroItem.favorito(),
+                            listaDeExercicioPorTreino.size()
+                    );
+                })
+                .toList();
     }
 
     public List<TreinoExercicioResponseGetDto> listarTodos() {

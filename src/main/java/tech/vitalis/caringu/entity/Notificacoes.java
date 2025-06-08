@@ -21,10 +21,10 @@ public class Notificacoes {
     @Column(name = "tipo", nullable = false)
     private TipoNotificacaoEnum tipo;
     private String titulo;
-    private boolean visualizada;
+    private Boolean visualizada;
     private LocalDateTime dataCriacao;
 
-    public Notificacoes(Integer id, Pessoa pessoa, TipoNotificacaoEnum tipo, String titulo, boolean visualizada, LocalDateTime dataCriacao) {
+    public Notificacoes(Integer id, Pessoa pessoa, TipoNotificacaoEnum tipo, String titulo, Boolean visualizada, LocalDateTime dataCriacao) {
         this.id = id;
         this.pessoa = pessoa;
         this.tipo = tipo;
@@ -67,11 +67,11 @@ public class Notificacoes {
         this.titulo = titulo;
     }
 
-    public boolean isVisualizada() {
+    public Boolean getVisualizada() {
         return visualizada;
     }
 
-    public void setVisualizada(boolean visualizada) {
+    public void setVisualizada(Boolean visualizada) {
         this.visualizada = visualizada;
     }
 
