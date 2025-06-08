@@ -18,6 +18,7 @@ import tech.vitalis.caringu.strategy.TreinoExercio.OrigemTreinoExercicioEnumVali
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static tech.vitalis.caringu.strategy.EnumValidador.validarEnums;
@@ -272,6 +273,16 @@ public class TreinoExercicioService {
                 treinoExerciciosParaSalvar.add(novoTreinoExercicio);
             }
         }
+        Set<Integer> novosIds = dto.exercicios().stream()
+                .map(TreinoExercicioRequestPostDto::exercicioId)
+                .collect(Collectors.toSet());
+
+        List<TreinoExercicio> paraRemover = treinoExerciciosExistentes.stream()
+                .filter(te -> !novosIds.contains(te.getExercicio().getId()))
+                .collect(Collectors.toList());
+
+        treinoExercicioRepository.deleteAll(paraRemover);
+
         List<TreinoExercicio> treinoExerciciosSalvos = treinoExercicioRepository.saveAll(treinoExerciciosParaSalvar);
 
         return treinoExerciciosSalvos.stream()
