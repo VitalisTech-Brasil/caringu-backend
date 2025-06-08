@@ -5,6 +5,13 @@ import org.springframework.stereotype.Repository;
 import tech.vitalis.caringu.entity.PersonalTrainerBairro;
 import tech.vitalis.caringu.id.PersonalTrainerBairroId;
 
+import java.util.Optional;
+
 @Repository
 public interface PersonalTrainerBairroRepository extends JpaRepository<PersonalTrainerBairro, PersonalTrainerBairroId> {
+
+    Optional<PersonalTrainerBairro> findByPersonalTrainerIdAndBairroId(Integer personalTrainerId, Integer bairroId);
+    boolean existsByPersonalTrainerIdAndBairroId(Integer personalTrainerId, Integer bairroId);
+    Optional<PersonalTrainerBairro> findFirstByPersonalTrainerId(Integer personalTrainerId);
+    void deleteByPersonalTrainerId(Integer personalTrainerId);
 }

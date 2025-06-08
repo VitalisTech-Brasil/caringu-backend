@@ -1,8 +1,8 @@
 package tech.vitalis.caringu.mapper;
 
 import org.springframework.stereotype.Component;
-import tech.vitalis.caringu.dtos.TreinoExericio.TreinoExercicioRequestPostDto;
-import tech.vitalis.caringu.dtos.TreinoExericio.TreinoExercicioResponseGetDto;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioRequestPostDto;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResponseGetDto;
 import tech.vitalis.caringu.entity.TreinoExercicio;
 
 @Component
@@ -26,7 +26,7 @@ public class TreinoExercicioMapper {
         treinoExercicio.setDescanso(dto.descanso());
         treinoExercicio.setDataHoraCriacao(dto.dataHoraCriacao());
         treinoExercicio.setDataHoraModificacao(dto.dataHoraModificacao());
-        treinoExercicio.setFavorito(dto.favorito());
+        treinoExercicio.setOrigemTreinoExercicio(dto.origemTreinoExercicio());
         treinoExercicio.setGrauDificuldade(dto.grauDificuldade());
 
         return treinoExercicio;
@@ -45,7 +45,7 @@ public class TreinoExercicioMapper {
                 treinoExercicio.getDescanso(),
                 treinoExercicio.getDataHoraCriacao(),
                 treinoExercicio.getDataHoraModificacao(),
-                treinoExercicio.getFavorito(),
+                treinoExercicio.getOrigemTreinoExercicio(),
                 treinoExercicio.getGrauDificuldade()
         );
     }

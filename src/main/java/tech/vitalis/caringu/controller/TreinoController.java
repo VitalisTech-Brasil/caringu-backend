@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Treino.TreinoRequestUpdateDto;
 import tech.vitalis.caringu.dtos.Treino.TreinoResponseGetDTO;
 import tech.vitalis.caringu.dtos.Treino.TreinoRequestPostDTO;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioFavoritoRequestPatchDto;
 import tech.vitalis.caringu.service.TreinoService;
 
 import java.util.List;
@@ -43,17 +44,35 @@ public class TreinoController {
         return ResponseEntity.ok(treinoService.buscarPorId(id));
     }
 
+    @GetMapping("/treinos-criados/{idPersonal}")
+    public ResponseEntity<Integer> buscarTreinosCriados(@PathVariable Integer idPersonal) {
+        Integer quantidadeTreinosCriados = treinoService.obterQuantidadeTreinosCriados(idPersonal);
+        return ResponseEntity.status(200).body(quantidadeTreinosCriados);
+    }
+
+    @GetMapping("/buscar-varios-treinos/{nome}")
+    @Operation(summary = "Buscar treinos por nome")
+    public ResponseEntity<List<TreinoResponseGetDTO>> buscarTreinoPorNome(@PathVariable String nome){
+        List<TreinoResponseGetDTO> treinos = treinoService.buscarTreinoPorNome(nome);
+        return ResponseEntity.status(200).body(treinos);
+    }
+
     @PutMapping("/{id}/personal/{personalId}")
     @Operation(summary = "Atualizar treino")
     public ResponseEntity<TreinoResponseGetDTO> atualizar(@PathVariable Integer id, @PathVariable Integer personalId, @RequestBody @Valid TreinoRequestUpdateDto treinoDto){
         return ResponseEntity.ok(treinoService.atualizar(id, treinoDto, personalId));
     }
 
+    @PatchMapping("/{treinoId}/favorito")
+    public ResponseEntity<Void> atualizarFavorito(@PathVariable Integer treinoId, @RequestBody TreinoExercicioFavoritoRequestPatchDto dto){
+        treinoService.atualizarFavorito(treinoId, dto.favorito());
+        return ResponseEntity.status(204).build();
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Remover Treino")
     public ResponseEntity<Void> removerTreino(@PathVariable Integer id){
         treinoService.removerComDesassociacao(id);
-        treinoService.remover(id);
         return ResponseEntity.noContent().build();
     }
 

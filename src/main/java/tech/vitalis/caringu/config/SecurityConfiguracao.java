@@ -48,17 +48,21 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/v3/api-docs/**"),
             new AntPathRequestMatcher("/actuator/*"),
             new AntPathRequestMatcher("/auth/login/**"),
+            new AntPathRequestMatcher("/auth/login/google", "POST"),
             new AntPathRequestMatcher("/personal-trainers", "POST"),
+            new AntPathRequestMatcher("/personal-trainers/disponiveis", "GET"),
+            new AntPathRequestMatcher("/personal-trainers/disponiveis/{personalId}", "GET"),
             new AntPathRequestMatcher("/alunos", "POST"),
             new AntPathRequestMatcher("/fale-conosco", "POST"),
             new AntPathRequestMatcher("/pessoas/verificacao-email", "GET"),
+            new AntPathRequestMatcher("/pessoas/fotos-perfil/{nomeArquivo}", "GET"),
             new AntPathRequestMatcher("/personal-trainers/verificacao-cref", "GET"),
+            new AntPathRequestMatcher("/especialidades", "GET"),
             new AntPathRequestMatcher("/docs", "GET"),
             new AntPathRequestMatcher("/h2-console/**"),
             new AntPathRequestMatcher("/h2-console/**/**"),
             new AntPathRequestMatcher("/error/**"),
             new AntPathRequestMatcher("/esqueci-senha/**")
-
     };
 
     @Bean

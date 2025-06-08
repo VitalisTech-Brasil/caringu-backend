@@ -1,16 +1,21 @@
 package tech.vitalis.caringu.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Treino.TreinoRequestPostDTO;
 import tech.vitalis.caringu.dtos.Treino.TreinoRequestUpdateDto;
 import tech.vitalis.caringu.dtos.Treino.TreinoResponseGetDTO;
 import tech.vitalis.caringu.entity.PersonalTrainer;
+import tech.vitalis.caringu.entity.Pessoa;
 import tech.vitalis.caringu.entity.Treino;
+import tech.vitalis.caringu.entity.TreinoExercicio;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.mapper.TreinoMapper;
 import tech.vitalis.caringu.repository.PersonalTrainerRepository;
+import tech.vitalis.caringu.repository.TreinoExercicioRepository;
 import tech.vitalis.caringu.repository.TreinoRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,11 +23,13 @@ import java.util.stream.Collectors;
 public class TreinoService {
 
     private final TreinoRepository treinoRepository;
+    private final TreinoExercicioRepository treinoExercicioRepository;
     private final TreinoMapper treinoMapper;
     private final PersonalTrainerRepository personalRepository;
 
-    public TreinoService(TreinoRepository treinoRepository, TreinoMapper treinoMapper, PersonalTrainerRepository personalRepository) {
+    public TreinoService(TreinoRepository treinoRepository, TreinoExercicioRepository treinoExercicioRepository, TreinoMapper treinoMapper, PersonalTrainerRepository personalRepository) {
         this.treinoRepository = treinoRepository;
+        this.treinoExercicioRepository = treinoExercicioRepository;
         this.treinoMapper = treinoMapper;
         this.personalRepository = personalRepository;
     }
@@ -46,6 +53,10 @@ public class TreinoService {
         Treino treino = treinoRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Treino com ID " + id + " não encontrado"));
         return treinoMapper.toResponseDTO(treino);
+    }
+
+    public Integer obterQuantidadeTreinosCriados(Integer personalId) {
+        return treinoRepository.countByPersonalId(personalId);
     }
 
     public List<TreinoResponseGetDTO> listarTodos(){
@@ -86,13 +97,45 @@ public class TreinoService {
         treinoRepository.save(treinoExistente); // salva o treino atualizado
     }
 
+    @Transactional
     public void removerComDesassociacao(Integer id) {
         Treino treino = treinoRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Treino com ID " + id + " não encontrado"));
 
-        treino.setPersonal(null);
-        treinoRepository.save(treino); // desassocia
-        treinoRepository.deleteById(id); // deleta
+        // Buscar todos os treinos_exercicios desse treino
+        List<TreinoExercicio> exercicios = treinoExercicioRepository.findByTreinosId(id);
+
+        for (TreinoExercicio ex : exercicios) {
+            ex.setTreinos(null); // desassociar
+            treinoExercicioRepository.save(ex);
+        }
+
+        treino.setPersonal(null); // opcional
+        treinoRepository.save(treino);
+        treinoRepository.delete(treino);
+    }
+
+    @Transactional
+    public void atualizarFavorito(Integer treinoId, boolean favorito) {
+        Treino favoritoTreino = treinoRepository.findById(treinoId)
+                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Treino não encontrado"));
+
+        favoritoTreino.setFavorito(favorito);
+
+    }
+
+    public List<TreinoResponseGetDTO> buscarTreinoPorNome(String nome){
+        List<Treino> treinos = treinoRepository.findByNomeContainingIgnoreCase(nome)
+                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Treino não encontrado com NOME: " + nome));
+
+        List<TreinoResponseGetDTO> listaTreinos = new ArrayList<>();
+
+        for (Treino treino : treinos){
+            TreinoResponseGetDTO treinoDto = treinoMapper.toResponseDTO(treino);
+            listaTreinos.add(treinoDto);
+        }
+
+        return listaTreinos;
     }
 
 }

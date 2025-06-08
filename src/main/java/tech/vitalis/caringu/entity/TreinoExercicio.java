@@ -2,6 +2,8 @@ package tech.vitalis.caringu.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import tech.vitalis.caringu.enums.TreinoExercicio.GrauDificuldadeEnum;
+import tech.vitalis.caringu.enums.TreinoExercicio.OrigemTreinoExercicioEnum;
 
 import java.time.LocalDateTime;
 
@@ -25,10 +27,16 @@ public class TreinoExercicio {
     private Integer descanso;
     private LocalDateTime dataHoraCriacao;
     private LocalDateTime dataHoraModificacao;
-    private Boolean favorito;
-    private String grauDificuldade;
 
-    public TreinoExercicio(Integer id, Treino treinos, Exercicio exercicio, Double carga, Integer repeticoes, Integer series, Integer descanso, LocalDateTime dataHoraCriacao, LocalDateTime dataHoraModificacao, Boolean favorito, String grauDificuldade) {
+    @Enumerated(EnumType.STRING)
+    @Column(name = "origem", nullable = false)
+    private OrigemTreinoExercicioEnum origemTreinoExercicio;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "grau_dificuldade", nullable = false)
+    private GrauDificuldadeEnum grauDificuldade;
+
+    public TreinoExercicio(Integer id, Treino treinos, Exercicio exercicio, Double carga, Integer repeticoes, Integer series, Integer descanso, LocalDateTime dataHoraCriacao, LocalDateTime dataHoraModificacao, OrigemTreinoExercicioEnum origemTreinoExercicio, GrauDificuldadeEnum grauDificuldade) {
         this.id = id;
         this.treinos = treinos;
         this.exercicio = exercicio;
@@ -38,7 +46,7 @@ public class TreinoExercicio {
         this.descanso = descanso;
         this.dataHoraCriacao = dataHoraCriacao;
         this.dataHoraModificacao = dataHoraModificacao;
-        this.favorito = favorito;
+        this.origemTreinoExercicio = origemTreinoExercicio;
         this.grauDificuldade = grauDificuldade;
     }
 
@@ -116,19 +124,20 @@ public class TreinoExercicio {
         this.dataHoraModificacao = dataHoraModificacao;
     }
 
-    public Boolean getFavorito() {
-        return favorito;
+    public OrigemTreinoExercicioEnum getOrigemTreinoExercicio() {
+        return origemTreinoExercicio;
     }
 
-    public void setFavorito(Boolean favorito) {
-        this.favorito = favorito;
+    public void setOrigemTreinoExercicio(OrigemTreinoExercicioEnum origemTreinoExercicio) {
+        this.origemTreinoExercicio = origemTreinoExercicio;
     }
 
-    public String getGrauDificuldade() {
+    public GrauDificuldadeEnum getGrauDificuldade() {
         return grauDificuldade;
     }
 
-    public void setGrauDificuldade(String grauDificuldade) {
+    public void setGrauDificuldade(GrauDificuldadeEnum grauDificuldade) {
         this.grauDificuldade = grauDificuldade;
     }
 }
+

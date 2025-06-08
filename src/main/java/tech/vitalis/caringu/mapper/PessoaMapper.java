@@ -1,7 +1,10 @@
 package tech.vitalis.caringu.mapper;
 
 import org.springframework.stereotype.Component;
+import tech.vitalis.caringu.dtos.PerfilAluno.AlunoGetPerfilDetalhesDTO;
+import tech.vitalis.caringu.dtos.PerfilAluno.PessoaGetPerfilDetalhesDTO;
 import tech.vitalis.caringu.dtos.Pessoa.PessoaRequestPostDTO;
+import tech.vitalis.caringu.dtos.Pessoa.PessoaResponseFotoPerfilGetDTO;
 import tech.vitalis.caringu.dtos.Pessoa.PessoaResponseGetDTO;
 import tech.vitalis.caringu.dtos.Pessoa.security.PessoaLoginDTO;
 import tech.vitalis.caringu.dtos.Pessoa.security.PessoaTokenDTO;
@@ -12,7 +15,7 @@ import tech.vitalis.caringu.entity.Pessoa;
 @Component
 public class PessoaMapper {
 
-    public static  Pessoa toEntity(PessoaRequestPostDTO dto) {
+    public Pessoa toEntity(PessoaRequestPostDTO dto) {
         Pessoa pessoa = new Pessoa();
 
         pessoa.setNome(dto.nome());
@@ -25,7 +28,7 @@ public class PessoaMapper {
         return pessoa;
     }
 
-    public static PessoaResponseGetDTO toDTO(Pessoa entity) {
+    public PessoaResponseGetDTO toDTO(Pessoa entity) {
         return new PessoaResponseGetDTO(
                 entity.getId(),
                 entity.getNome(),
@@ -38,7 +41,16 @@ public class PessoaMapper {
         );
     }
 
-    public static void updatePessoaFromDto(PessoaRequestPostDTO dto, Pessoa pessoa) {
+    public PessoaResponseFotoPerfilGetDTO toFotoPerfilDTO(Pessoa pessoa) {
+        return new PessoaResponseFotoPerfilGetDTO(
+                pessoa.getId(),
+                pessoa.getNome(),
+                pessoa.getEmail(),
+                pessoa.getUrlFotoPerfil()
+        );
+    }
+
+    public void updatePessoaFromDto(PessoaRequestPostDTO dto, Pessoa pessoa) {
         if (dto.nome() != null) {
             pessoa.setNome(dto.nome());
         }
@@ -60,6 +72,17 @@ public class PessoaMapper {
         if (dto.genero() != null) {
             pessoa.setGenero(dto.genero());
         }
+    }
+
+    public PessoaGetPerfilDetalhesDTO toResponsePerfilDetalhesDTO(Pessoa pessoa) {
+        return new PessoaGetPerfilDetalhesDTO(
+                pessoa.getNome(),
+                pessoa.getEmail(),
+                pessoa.getCelular(),
+                pessoa.getUrlFotoPerfil(),
+                pessoa.getDataNascimento(),
+                pessoa.getGenero()
+        );
     }
 
     public static Pessoa of(PessoaLoginDTO dto) {

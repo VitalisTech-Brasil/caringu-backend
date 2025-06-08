@@ -17,7 +17,7 @@ public record PersonalTrainerResponsePatchDTO(
         Optional<GeneroEnum> genero,
 
         Optional<String> cref,
-        Optional<List<String>> especialidade,
+        Optional<List<String>> especialidades,
         Optional<Integer> experiencia
 ) {
 }

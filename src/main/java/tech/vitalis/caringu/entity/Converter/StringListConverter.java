@@ -1,4 +1,4 @@
-package tech.vitalis.caringu.converter;
+package tech.vitalis.caringu.entity.Converter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

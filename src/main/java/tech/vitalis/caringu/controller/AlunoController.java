@@ -5,10 +5,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.vitalis.caringu.dtos.Aluno.AlunoRequestPatchDTO;
-import tech.vitalis.caringu.dtos.Aluno.AlunoRequestPostDTO;
-import tech.vitalis.caringu.dtos.Aluno.AlunoResponsePatchDTO;
-import tech.vitalis.caringu.dtos.Aluno.AlunoResponseGetDTO;
+import tech.vitalis.caringu.dtos.Aluno.*;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.mapper.AlunoMapper;
 import tech.vitalis.caringu.service.AlunoService;
@@ -20,9 +17,11 @@ import java.util.List;
 public class AlunoController {
 
     private final AlunoService service;
+    private final AlunoMapper mapper;
 
-    public AlunoController(AlunoService service) {
+    public AlunoController(AlunoService service, AlunoMapper mapper) {
         this.service = service;
+        this.mapper = mapper;
     }
 
     @GetMapping
@@ -42,36 +41,72 @@ public class AlunoController {
         return ResponseEntity.ok(aluno);
     }
 
+    @GetMapping("/detalhes/personal/{personalId}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<AlunoDetalhadoComTreinosDTO>> buscarPorPersonal(@PathVariable Integer personalId) {
+        var dados = service.buscarAlunosDetalhados(personalId);
+        return ResponseEntity.ok(dados);
+    }
+
+    @GetMapping("/buscar-aluno/{email}")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "Buscar aluno por email")
+    public ResponseEntity<AlunoResponseGetDTO> buscarAlunoPorEmail(@PathVariable String email){
+        AlunoResponseGetDTO aluno = service.buscarAlunoPorEmail(email);
+        return ResponseEntity.ok(aluno);
+    }
+
+    @GetMapping("/buscar-varios-alunos/{email}")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "Buscar alunos por email")
+    public ResponseEntity<List<AlunoResponseGetDTO>> buscarAlunosPorEmail(@PathVariable String email){
+        List<AlunoResponseGetDTO> alunos = service.buscarAlunosPorEmail(email);
+
+        return ResponseEntity.status(200).body(alunos);
+    }
+
     @PostMapping
     @Operation(summary = "Cadastrar aluno")
     public ResponseEntity<AlunoResponseGetDTO> cadastrar(@Valid @RequestBody AlunoRequestPostDTO cadastroDTO) {
-        Aluno aluno = AlunoMapper.toEntity(cadastroDTO);
+        Aluno aluno = mapper.toEntity(cadastroDTO);
         AlunoResponseGetDTO respostaDTO = service.cadastrar(aluno);
 
         return ResponseEntity.status(201).body(respostaDTO);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{alunoId}")
     @SecurityRequirement(name = "Bearer")
     @Operation(summary = "Atualizar aluno")
     public ResponseEntity<AlunoResponseGetDTO> atualizar(
-            @PathVariable Integer id,
+            @PathVariable Integer alunoId,
             @Valid @RequestBody AlunoRequestPostDTO dto) {
 
-        Aluno novoAluno = AlunoMapper.toEntity(dto);
-        AlunoResponseGetDTO atualizado = service.atualizar(id, novoAluno);
+        Aluno novoAluno = mapper.toEntity(dto);
+        AlunoResponseGetDTO atualizado = service.atualizar(alunoId, novoAluno);
         return ResponseEntity.ok(atualizado);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{alunoId}")
     @SecurityRequirement(name = "Bearer")
     @Operation(summary = "Atualizar aluno parcialmente")
     public ResponseEntity<AlunoResponsePatchDTO> atualizarParcial(
-            @PathVariable Integer id,
+            @PathVariable Integer alunoId,
             @Valid @RequestBody AlunoRequestPatchDTO atualizacoes) {
 
-        AlunoResponsePatchDTO atualizado = service.atualizarParcial(id, atualizacoes);
+        AlunoResponsePatchDTO atualizado = service.atualizarParcial(alunoId, atualizacoes);
         return ResponseEntity.ok(atualizado);
+    }
+
+    @PatchMapping("/{alunoId}/dados-fisicos")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "Atualizar apenas os dados físicos do aluno utilizados pela anamnese")
+    public ResponseEntity<AlunoResponsePatchDadosFisicosDTO> atualizarDadosFisicos(
+            @PathVariable Integer alunoId,
+            @Valid @RequestBody AlunoRequestPatchDadosFisicosDTO dto) {
+
+        AlunoResponsePatchDadosFisicosDTO atualizado = service.atualizarDadosFisicos(alunoId, dto);
+
+        return ResponseEntity.ok().body(atualizado);
     }
 
     @DeleteMapping("/{id}")

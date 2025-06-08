@@ -6,12 +6,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerRequestPatchDTO;
-import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerRequestPostDTO;
-import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerResponseGetDTO;
-import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerResponsePatchDTO;
+import tech.vitalis.caringu.dtos.PersonalTrainer.*;
+import tech.vitalis.caringu.dtos.PersonalTrainerBairro.AtualizarBairroDTO;
+import tech.vitalis.caringu.dtos.PersonalTrainerBairro.CriarBairroDTO;
+import tech.vitalis.caringu.dtos.PersonalTrainerBairro.PersonalTrainerComBairroCidadeResponseGetDTO;
 import tech.vitalis.caringu.entity.PersonalTrainer;
 import tech.vitalis.caringu.mapper.PersonalTrainerMapper;
 import tech.vitalis.caringu.service.PersonalTrainerService;
@@ -80,9 +81,21 @@ public class PersonalTrainerController {
                     )
             }
     )
-    public ResponseEntity<PersonalTrainerResponseGetDTO> buscarPorId(@PathVariable Integer id) {
-        PersonalTrainerResponseGetDTO personalTrainer = service.buscarPorId(id);
+    public ResponseEntity<PersonalTrainerComBairroCidadeResponseGetDTO> buscarPorId(@PathVariable Integer id) {
+        PersonalTrainerComBairroCidadeResponseGetDTO personalTrainer = service.buscarPersonalPorIdEBairroCidade(id);
         return ResponseEntity.ok(personalTrainer);
+    }
+
+    @GetMapping("/disponiveis")
+    public ResponseEntity<List<PersonalTrainerDisponivelResponseDTO>> listarPersonaisDisponiveis() {
+        List<PersonalTrainerDisponivelResponseDTO> lista = service.listarPersonaisDisponiveis();
+        return ResponseEntity.ok(lista);
+    }
+
+    @GetMapping("/disponiveis/{personalId}")
+    public ResponseEntity<PersonalTrainerDisponivelResponseDTO> buscarPersonalDisponivelPorId(@PathVariable Integer personalId) {
+        PersonalTrainerDisponivelResponseDTO personal = service.buscarPersonalDisponivelPorId(personalId);
+        return ResponseEntity.ok(personal);
     }
 
     @PostMapping
@@ -208,6 +221,26 @@ public class PersonalTrainerController {
         return ResponseEntity.ok(atualizado);
     }
 
+    @PatchMapping("/{id}/bairro")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> atualizarBairro(
+            @PathVariable Integer id,
+            @RequestBody AtualizarBairroDTO dto
+    ) {
+        service.atualizarBairro(id, dto);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/bairros")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> criarBairroEAssociar(
+            @PathVariable Integer id,
+            @RequestBody CriarBairroDTO dto
+    ) {
+        service.criarBairroEAssociar(id, dto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     @Operation(
@@ -233,10 +266,10 @@ public class PersonalTrainerController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{id}/especialidades/{especialidade}")
-    public ResponseEntity<Void> removerEspecialidade(@PathVariable Integer id, @PathVariable String especialidade) {
+    @DeleteMapping("/{id}/especialidades/{idEspecialidade}")
+    public ResponseEntity<Void> removerEspecialidade(@PathVariable Integer id, @PathVariable Integer idEspecialidade) {
         try {
-            service.removerEspecialidade(id, especialidade);
+            service.removerEspecialidade(id, idEspecialidade);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
