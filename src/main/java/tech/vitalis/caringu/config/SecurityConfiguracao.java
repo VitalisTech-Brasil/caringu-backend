@@ -48,7 +48,7 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/v3/api-docs/**"),
             new AntPathRequestMatcher("/actuator/*"),
             new AntPathRequestMatcher("/auth/login/**"),
-            new AntPathRequestMatcher("/auth/login/google/**"),
+            new AntPathRequestMatcher("/auth/login/google", "POST"),
             new AntPathRequestMatcher("/personal-trainers", "POST"),
             new AntPathRequestMatcher("/personal-trainers/disponiveis", "GET"),
             new AntPathRequestMatcher("/personal-trainers/disponiveis/{personalId}", "GET"),

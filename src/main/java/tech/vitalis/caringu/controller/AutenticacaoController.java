@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import tech.vitalis.caringu.config.GerenciadorTokenJwt;
 import tech.vitalis.caringu.dtos.Pessoa.security.PessoaLoginDTO;
 import tech.vitalis.caringu.dtos.Pessoa.security.PessoaTokenDTO;
+import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.entity.Pessoa;
 import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
 import tech.vitalis.caringu.mapper.PessoaMapper;
+import tech.vitalis.caringu.repository.AlunoRepository;
 import tech.vitalis.caringu.repository.PessoaRepository;
 import tech.vitalis.caringu.service.PessoaService;
 import tech.vitalis.caringu.service.SingleSignOn.GoogleTokenVerifierService;
@@ -41,7 +44,13 @@ public class AutenticacaoController {
     private GerenciadorTokenJwt jwtService;
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
     private PessoaService pessoaService;
+
+    @Autowired
+    private AlunoRepository alunoRepository;
 
     @PostMapping("/login")
     @Operation(
@@ -77,23 +86,28 @@ public class AutenticacaoController {
 
     @PostMapping("/login/google")
     public ResponseEntity<?> loginGoogle(@RequestBody Map<String, String> request) {
-        String token = request.get("token");
+        String code = request.get("code");
 
-        return tokenVerifier.verify(token)
+        return tokenVerifier.exchangeCodeForPayload(code)
                 .map(payload -> {
                     String email = payload.getEmail();
                     String nome = (String) payload.get("name");
 
                     Pessoa pessoa = pessoaRepository.findByEmail(email)
                             .orElseGet(() -> {
-                                Pessoa nova = new Pessoa();
-                                nova.setNome(nome);
-                                nova.setEmail(email);
-                                nova.setSenha("GOOGLE_AUTH");
-                                nova.setGenero(GeneroEnum.HOMEM_CISGENERO);
+                                Aluno aluno = new Aluno();
+                                aluno.setNome(nome);
+                                aluno.setEmail(email);
 
-                                nova.setDataCadastro(LocalDateTime.now());
-                                return pessoaRepository.save(nova);
+                                String senhaCriptografada = passwordEncoder.encode("123Ab@");
+                                aluno.setSenha(senhaCriptografada);
+
+                                aluno.setGenero(GeneroEnum.HOMEM_CISGENERO);
+                                aluno.setDataCadastro(LocalDateTime.now());
+
+                                alunoRepository.save(aluno);
+
+                                return aluno;
                             });
 
                     Authentication authentication = new UsernamePasswordAuthenticationToken(
