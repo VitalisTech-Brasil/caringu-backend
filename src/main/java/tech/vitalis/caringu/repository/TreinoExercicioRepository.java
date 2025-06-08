@@ -15,6 +15,8 @@ import java.util.List;
 @Repository
 public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio, Integer> {
 
+    List<TreinoExercicio> findByTreinosId(Integer treinoId);
+
     @Query("""
     SELECT new tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoModeloCruQuerySqlDTO(
         e.nome AS nome_exercicio,
