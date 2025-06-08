@@ -96,8 +96,8 @@ public class TreinoExercicioService {
                 ).toList();
     }
 
-    public List<ListaExercicioPorTreinoResponseDTO> buscarExerciciosPorTreino(Integer treinoId) {
-        List<ListaExercicioPorTreinoResponseDTO> listaExerciciosPorTreino = treinoExercicioRepository.buscarExerciciosPorTreino(treinoId);
+    public List<ListaExercicioPorTreinoResponseDTO> buscarExerciciosPorTreino(Integer treinoId, Integer alunoId) {
+        List<ListaExercicioPorTreinoResponseDTO> listaExerciciosPorTreino = treinoExercicioRepository.buscarExerciciosPorTreino(treinoId, alunoId);
 
         return listaExerciciosPorTreino;
     }
