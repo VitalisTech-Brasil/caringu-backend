@@ -1,14 +1,16 @@
 package tech.vitalis.caringu.service;
 
 import org.springframework.stereotype.Service;
-import tech.vitalis.caringu.dtos.TreinoFinalizado.AtualizarDataFimDTO;
-import tech.vitalis.caringu.dtos.TreinoFinalizado.TreinoIdentificacaoFinalizadoResponseDTO;
+import org.threeten.extra.YearWeek;
+import tech.vitalis.caringu.dtos.TreinoFinalizado.*;
 import tech.vitalis.caringu.entity.TreinoFinalizado;
 import tech.vitalis.caringu.exception.TreinoFinalizado.TreinoFinalizadoNaoEncontradoException;
 import tech.vitalis.caringu.repository.TreinoFinalizadoRepository;
 
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.time.Duration;
+import java.time.YearMonth;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TreinoFinalizadoService {
@@ -21,6 +23,64 @@ public class TreinoFinalizadoService {
 
     public List<TreinoIdentificacaoFinalizadoResponseDTO> listarPorPersonal(Integer personalId) {
         return repository.findAllTreinosByPersonalId(personalId);
+    }
+
+    public List<EvolucaoCargaDashboardResponseDTO> buscarEvolucaoCarga(Integer alunoId, Integer exercicioId) {
+        return repository.buscarEvolucaoCarga(exercicioId, alunoId);
+    }
+
+    public List<EvolucaoTreinoCumpridoResponseDTO> buscarEvolucaoTreinosCumpridosMensal(Integer alunoId, Integer exercicioId) {
+        return repository.buscarEvolucaoTreinosCumpridosMensal(alunoId, exercicioId);
+    }
+
+//    public HorasTreinadasMensalResponseDTO calcularHorasTreinadas(Integer alunoId, Integer exercicioId) {
+//        List<HorasTreinadasMensalDadosBrutosDTO> treinos = repository.buscarTreinosFinalizadosBrutos(alunoId, exercicioId);
+//
+//        Map<YearMonth, Double> horasPorMes = new HashMap<>();
+//
+//        Map<YearWeek, Double> horasPorSemana = new HashMap<>();
+//
+//        for (HorasTreinadasMensalDadosBrutosDTO treino : treinos) {
+//            if (treino.dataHorarioFim() == null) continue;
+//
+//            Duration duracao = Duration.between(treino.dataHorarioInicio(), treino.dataHorarioFim());
+//            double horas = duracao.toMinutes() / 60.0;
+//
+//            YearMonth ym = YearMonth.from(treino.dataHorarioInicio());
+//            horasPorMes.merge(ym, horas, Double::sum);
+//
+//            YearWeek yw = YearWeek.from(treino.dataHorarioInicio());
+//            horasPorSemana.merge(yw, horas, Double::sum);
+//        }
+//
+//        double totalHorasSemana = horasPorSemana.values().stream().mapToDouble(Double::doubleValue).sum();
+//        double mediaHorasPorSemana = horasPorSemana.size() > 0 ? totalHorasSemana / horasPorSemana.size() : 0;
+//
+//        List<HorasPorMesDTO> listaHorasPorMes = horasPorMes.entrySet().stream()
+//                .map(e -> new HorasPorMesDTO(e.getKey().getYear(), e.getKey().getMonthValue(), e.getValue()))
+//                .sorted(Comparator.comparing(HorasPorMesDTO::ano).thenComparing(HorasPorMesDTO::mes))
+//                .toList();
+//
+//        return new HorasTreinadasMensalResponseDTO(alunoId, exercicioId, mediaHorasPorSemana, listaHorasPorMes);
+//    }
+
+    public HorasTreinadasResponseDTO buscarHorasTreinadas(Integer alunoId, Integer exercicioId) {
+        List<Object[]> resultados = repository.buscarHorasAgrupadasPorAlunoExercicio(alunoId, exercicioId);
+
+        List<HorasTreinadasSemanaMesDTO> dados = resultados.stream()
+                .map(r -> new HorasTreinadasSemanaMesDTO(
+                        (Integer) r[0],
+                        (String) r[1],
+                        (Integer) r[2],
+                        (String) r[3],
+                        ((Number) r[4]).intValue(),
+                        ((Number) r[5]).intValue(),
+                        ((Number) r[6]).intValue(),
+                        ((Number) r[7]).doubleValue()
+                ))
+                .collect(Collectors.toList());
+
+        return new HorasTreinadasResponseDTO(alunoId, exercicioId, dados);
     }
 
     public void atualizarDataHorarioFim(Integer idTreinoFinalizado, AtualizarDataFimDTO dto) {

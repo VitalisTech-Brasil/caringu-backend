@@ -33,12 +33,13 @@ public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio
 
     @Query("""
     SELECT new tech.vitalis.caringu.dtos.TreinoExercicio.ListaExercicioPorTreinoResponseDTO(
-        te.id, te.treinos.id,
-        te.exercicio.id, e.nome
+        MIN(te.id), MIN(te.exercicio.id), e.nome, t.nome
     )
     FROM TreinoExercicio te
     JOIN te.exercicio e
+    JOIN te.treinos t
     WHERE te.treinos.id = :treinoId
+    GROUP BY e.nome, t.nome
 """)
     List<ListaExercicioPorTreinoResponseDTO> buscarExerciciosPorTreino(@Param("treinoId") Integer treinoId);
 
