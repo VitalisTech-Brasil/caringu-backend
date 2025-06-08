@@ -46,23 +46,32 @@ public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio
     FROM TreinoExercicio te
     JOIN te.treinos t
     JOIN te.exercicio e
-    JOIN AlunoTreino at ON at.id = te.id
-    JOIN Aluno a ON a.id = at.id
+    JOIN AlunoTreino at ON at.treinosExercicios.id = te.id
+    JOIN Aluno a ON a.id = at.alunos.id
     WHERE a.id = :alunoId
 """)
     List<TreinoExercicioResumoModeloCruQuerySqlDTO> buscarTreinosExerciciosPorAluno(@Param("alunoId") Integer alunoId);
 
     @Query("""
     SELECT new tech.vitalis.caringu.dtos.TreinoExercicio.ListaExercicioPorTreinoResponseDTO(
-        MIN(te.id), MIN(te.exercicio.id), e.nome, t.nome
+        MIN(te.id),
+        MIN(te.exercicio.id), 
+        e.nome, 
+        t.nome
     )
     FROM TreinoExercicio te
     JOIN te.exercicio e
     JOIN te.treinos t
-    WHERE te.treinos.id = :treinoId
+    JOIN AlunoTreino at ON at.treinosExercicios.id = te.id
+    WHERE 
+        te.treinos.id = :treinoId
+        AND at.alunos.id = :alunoId
     GROUP BY e.nome, t.nome
 """)
-    List<ListaExercicioPorTreinoResponseDTO> buscarExerciciosPorTreino(@Param("treinoId") Integer treinoId);
+    List<ListaExercicioPorTreinoResponseDTO> buscarExerciciosPorTreino(
+            @Param("treinoId") Integer treinoId,
+            @Param("alunoId") Integer alunoId
+    );
 
     @Query("""
     SELECT new tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioEditResponseGetDTO(
