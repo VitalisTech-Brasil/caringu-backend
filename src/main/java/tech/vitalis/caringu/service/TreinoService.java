@@ -12,6 +12,7 @@ import tech.vitalis.caringu.entity.TreinoExercicio;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.mapper.TreinoMapper;
 import tech.vitalis.caringu.repository.PersonalTrainerRepository;
+import tech.vitalis.caringu.repository.TreinoExercicioRepository;
 import tech.vitalis.caringu.repository.TreinoRepository;
 
 import java.util.ArrayList;
@@ -22,11 +23,13 @@ import java.util.stream.Collectors;
 public class TreinoService {
 
     private final TreinoRepository treinoRepository;
+    private final TreinoExercicioRepository treinoExercicioRepository;
     private final TreinoMapper treinoMapper;
     private final PersonalTrainerRepository personalRepository;
 
-    public TreinoService(TreinoRepository treinoRepository, TreinoMapper treinoMapper, PersonalTrainerRepository personalRepository) {
+    public TreinoService(TreinoRepository treinoRepository, TreinoExercicioRepository treinoExercicioRepository, TreinoMapper treinoMapper, PersonalTrainerRepository personalRepository) {
         this.treinoRepository = treinoRepository;
+        this.treinoExercicioRepository = treinoExercicioRepository;
         this.treinoMapper = treinoMapper;
         this.personalRepository = personalRepository;
     }
@@ -94,13 +97,22 @@ public class TreinoService {
         treinoRepository.save(treinoExistente); // salva o treino atualizado
     }
 
+    @Transactional
     public void removerComDesassociacao(Integer id) {
         Treino treino = treinoRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Treino com ID " + id + " não encontrado"));
 
-        treino.setPersonal(null);
-        treinoRepository.save(treino); // desassocia
-        treinoRepository.deleteById(id); // deleta
+        // Buscar todos os treinos_exercicios desse treino
+        List<TreinoExercicio> exercicios = treinoExercicioRepository.findByTreinosId(id);
+
+        for (TreinoExercicio ex : exercicios) {
+            ex.setTreinos(null); // desassociar
+            treinoExercicioRepository.save(ex);
+        }
+
+        treino.setPersonal(null); // opcional
+        treinoRepository.save(treino);
+        treinoRepository.delete(treino);
     }
 
     @Transactional
