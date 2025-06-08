@@ -59,6 +59,7 @@ public class AlunoMapper {
         return new AlunoDetalhadoComTreinosDTO(
                 dto.idAluno(),
                 dto.nomeAluno(),
+                dto.email(),
                 dto.celular(),
                 dto.urlFotoPerfil(),
                 dto.peso(),
@@ -118,6 +119,7 @@ public class AlunoMapper {
         return new AlunoDetalhadoComTreinosDTO(
                 base.idAluno(),
                 base.nomeAluno(),
+                base.email(),
                 base.celular(),
                 base.urlFotoPerfil(),
                 base.peso(),

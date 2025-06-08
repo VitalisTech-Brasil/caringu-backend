@@ -11,6 +11,7 @@ import java.util.List;
 public record AlunoDetalhadoComTreinosDTO(
         Integer idAluno,
         String nomeAluno,
+        String email,
         String celular,
         String urlFotoPerfil,
         Double peso,

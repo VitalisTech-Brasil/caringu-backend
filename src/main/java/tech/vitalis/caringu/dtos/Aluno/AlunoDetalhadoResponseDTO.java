@@ -11,6 +11,7 @@ public record AlunoDetalhadoResponseDTO(
         Double peso,
         Double altura,
         String nomeAluno,
+        String email,
         String celular,
         String urlFotoPerfil,
         NivelExperienciaEnum nivelExperiencia,
