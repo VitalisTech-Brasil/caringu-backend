@@ -98,12 +98,11 @@ public class AutenticacaoController {
                                 Aluno aluno = new Aluno();
                                 aluno.setNome(nome);
                                 aluno.setEmail(email);
+                                aluno.setGenero(GeneroEnum.HOMEM_CISGENERO);
+                                aluno.setDataCadastro(LocalDateTime.now());
 
                                 String senhaCriptografada = passwordEncoder.encode("123Ab@");
                                 aluno.setSenha(senhaCriptografada);
-
-                                aluno.setGenero(GeneroEnum.HOMEM_CISGENERO);
-                                aluno.setDataCadastro(LocalDateTime.now());
 
                                 alunoRepository.save(aluno);
 
