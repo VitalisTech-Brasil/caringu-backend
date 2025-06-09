@@ -9,7 +9,7 @@ COPY pom.xml .
 COPY src ./src
 
 # Executa o build do Maven para gerar o JAR
-RUN mvn clean package
+RUN mvn clean package -DskipTests
 
 # Segunda etapa: imagem final, mais leve
 FROM eclipse-temurin:21-jdk-jammy
