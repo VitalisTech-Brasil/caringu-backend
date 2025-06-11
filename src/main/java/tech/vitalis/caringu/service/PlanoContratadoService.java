@@ -64,7 +64,7 @@ public class PlanoContratadoService {
 
                 String nomeAluno = planoContratado.getAluno().getNome();
 
-                notificacao.setTitulo("%s confirmou pagamento do plano '%s' e está aguardando confirmação de pagamento".formatted(nomeAluno, plano.getNome()));
+                notificacao.setTitulo("Pagamento do plano '%s' confirmado por %s, aguardando validação.".formatted(plano.getNome(), nomeAluno));
                 notificacao.setDataCriacao(LocalDateTime.now());
 
                 notificacoesRepository.save(notificacao);

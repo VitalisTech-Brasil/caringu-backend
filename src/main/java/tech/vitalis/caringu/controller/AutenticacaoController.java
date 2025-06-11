@@ -92,6 +92,7 @@ public class AutenticacaoController {
                 .map(payload -> {
                     String email = payload.getEmail();
                     String nome = (String) payload.get("name");
+                    String fotoPerfil = (String) payload.get("picture");
 
                     Pessoa pessoa = pessoaRepository.findByEmail(email)
                             .orElseGet(() -> {
@@ -100,6 +101,7 @@ public class AutenticacaoController {
                                 aluno.setEmail(email);
                                 aluno.setGenero(GeneroEnum.HOMEM_CISGENERO);
                                 aluno.setDataCadastro(LocalDateTime.now());
+                                aluno.setUrlFotoPerfil(fotoPerfil);
 
                                 String senhaCriptografada = passwordEncoder.encode("123Ab@");
                                 aluno.setSenha(senhaCriptografada);
@@ -119,7 +121,8 @@ public class AutenticacaoController {
                             "token", appToken,
                             "pessoaId", pessoa.getId(),
                             "nome", pessoa.getNome(),
-                            "email", pessoa.getEmail()
+                            "email", pessoa.getEmail(),
+                            "urlFotoPerfil", pessoa.getUrlFotoPerfil()
                     ));
                 })
                 .orElse(ResponseEntity.status(401).body(Map.of("erro", "Token inválido do Google.")));
