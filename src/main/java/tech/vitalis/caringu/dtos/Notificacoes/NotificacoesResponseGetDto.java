@@ -10,7 +10,7 @@ public record NotificacoesResponseGetDto(
         PessoaResponseGetDTO pessoaId,
         TipoNotificacaoEnum tipo,
         String titulo,
-        boolean visualizada,
+        Boolean visualizada,
         LocalDateTime dataCriacao
 ) {
 }
