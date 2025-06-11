@@ -10,7 +10,6 @@ public record ExercicioRequestPostFuncionalDTO(
         String nome,
         @NotNull(message = "O grupo muscular é obrigatório")
         GrupoMuscularEnum grupoMuscular,
-        @NotBlank(message = "A url é obrigatório")
         String urlVideo,
         String observacoes
 ) {}
