@@ -1,6 +1,9 @@
 package tech.vitalis.caringu.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Aluno.*;
@@ -77,10 +80,33 @@ public class AlunoService {
         return listaRespostaAlunos;
     }
 
+    public Page<AlunoResponseGetDTO> listarPaginado(Pageable pageable){
+        Page<Aluno> page = alunoRepository.findAll(pageable);
+
+        return page.map(alunoMapper::toResponseDTO);
+    }
+
     public List<AlunoDetalhadoComTreinosDTO> buscarAlunosDetalhados(Integer personalId) {
         List<AlunoDetalhadoResponseDTO> dadosBrutos = alunoRepository.buscarDetalhesPorPersonal(personalId);
         return alunoMapper.consolidarPorAluno(dadosBrutos);
     }
+
+    public Page<AlunoDetalhadoComTreinosDTO> buscarAlunosDetalhadosPaginado(Integer personalId, Pageable pageable) {
+        // buscar tudo, sem paginação para pegar todos os registros (ou um número grande)
+        List<AlunoDetalhadoResponseDTO> dadosBrutos = alunoRepository.buscarDetalhesPorPersonal(personalId);
+
+        // consolidar agrupando treinos por aluno
+        List<AlunoDetalhadoComTreinosDTO> listaConsolidada = alunoMapper.consolidarPorAluno(dadosBrutos);
+
+        // paginar na lista consolidada em memória
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), listaConsolidada.size());
+
+        List<AlunoDetalhadoComTreinosDTO> subList = listaConsolidada.subList(start, end);
+
+        return new PageImpl<>(subList, pageable, listaConsolidada.size());
+    }
+
 
     public AlunoResponseGetDTO buscarPorId(Integer id) {
         Aluno aluno = buscarAlunoOuLancarExcecao(id);

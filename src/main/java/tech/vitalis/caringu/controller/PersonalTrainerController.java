@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,10 +53,12 @@ public class PersonalTrainerController {
                     )
             }
     )
-    public ResponseEntity<List<PersonalTrainerResponseGetDTO>> listar() {
-        List<PersonalTrainerResponseGetDTO> listaPersonalTrainers = service.listar();
-
-        return ResponseEntity.status(200).body(listaPersonalTrainers);
+    public ResponseEntity<Page<PersonalTrainerResponseGetDTO>> listar(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "4") int size
+    ) {
+        Page<PersonalTrainerResponseGetDTO> paginado = service.listarPaginado(PageRequest.of(page, size));
+        return ResponseEntity.ok(paginado);
     }
 
     @GetMapping("/{id}")

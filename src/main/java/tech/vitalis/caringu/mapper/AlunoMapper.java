@@ -55,6 +55,11 @@ public class AlunoMapper {
                 .toList();
     }
 
+    public AlunoDetalhadoComTreinosDTO toAlunoDetalhadoComTreinosDTO(AlunoDetalhadoResponseDTO dto) {
+        return mapParaDTOComTreinosBase(dto);
+    }
+
+
     private AlunoDetalhadoComTreinosDTO mapParaDTOComTreinosBase(AlunoDetalhadoResponseDTO dto) {
         return new AlunoDetalhadoComTreinosDTO(
                 dto.idAluno(),
