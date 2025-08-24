@@ -1,19 +1,15 @@
 package tech.vitalis.caringu.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import lombok.*;
 import tech.vitalis.caringu.enums.Exercicio.GrupoMuscularEnum;
 import tech.vitalis.caringu.enums.Exercicio.OrigemEnum;
 
 @Entity
 @Table(name = "exercicios")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Exercicio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
     private Integer id;
 
     @Column(nullable = false)

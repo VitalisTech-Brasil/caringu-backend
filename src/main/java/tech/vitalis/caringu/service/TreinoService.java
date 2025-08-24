@@ -6,7 +6,6 @@ import tech.vitalis.caringu.dtos.Treino.TreinoRequestPostDTO;
 import tech.vitalis.caringu.dtos.Treino.TreinoRequestUpdateDto;
 import tech.vitalis.caringu.dtos.Treino.TreinoResponseGetDTO;
 import tech.vitalis.caringu.entity.PersonalTrainer;
-import tech.vitalis.caringu.entity.Pessoa;
 import tech.vitalis.caringu.entity.Treino;
 import tech.vitalis.caringu.entity.TreinoExercicio;
 import tech.vitalis.caringu.exception.ApiExceptions;

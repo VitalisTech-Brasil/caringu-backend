@@ -1,19 +1,23 @@
 package tech.vitalis.caringu.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import tech.vitalis.caringu.enums.TreinoExercicio.GrauDificuldadeEnum;
+import tech.vitalis.caringu.enums.TreinoExercicio.OrigemTreinoExercicioEnum;
 
 @Entity
 @Table(name = "treinos")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Treino {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     private String nome;
+
     private String descricao;
+
     private Boolean favorito;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "personal_id", nullable = false)
     private PersonalTrainer personal;

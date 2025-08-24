@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Positive;
-import lombok.*;
+
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,14 +12,13 @@ import java.util.List;
 
 @Entity
 @Table(name = "alunos_treinos")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class AlunoTreino {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "alunos_id")
+    @JoinColumn(name = "aluno_id")
     private Aluno alunos;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "treinos_exercicios_id")
@@ -31,6 +30,7 @@ public class AlunoTreino {
     private List<String> diasSemana;
     // @Positive private Integer periodoAvaliacao;
     @Future
+    @Column(name = "data_vencimento")
     private LocalDate dataVencimento;
 
     /*

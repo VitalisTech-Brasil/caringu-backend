@@ -1,13 +1,9 @@
 package tech.vitalis.caringu.service;
 
-import jakarta.transaction.Transactional;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.TreinoExercicio.*;
 import tech.vitalis.caringu.entity.*;
-import tech.vitalis.caringu.enums.PreferenciaNotificacao.TipoPreferenciaEnum;
 import tech.vitalis.caringu.exception.ApiExceptions;
-import tech.vitalis.caringu.exception.PreferenciasNotificacao.PreferenciasNotificacaoNaoEncontradaException;
 import tech.vitalis.caringu.mapper.TreinoExercicioMapper;
 import tech.vitalis.caringu.repository.ExercicioRepository;
 import tech.vitalis.caringu.repository.TreinoExercicioRepository;

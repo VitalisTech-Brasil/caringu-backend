@@ -6,6 +6,7 @@
     import tech.vitalis.caringu.dtos.AlunosTreino.AlunoTreinoResponseGetDTO;
     import tech.vitalis.caringu.entity.Aluno;
     import tech.vitalis.caringu.entity.AlunoTreino;
+    import tech.vitalis.caringu.entity.AlunoTreinoExercicio;
     import tech.vitalis.caringu.entity.TreinoExercicio;
     import tech.vitalis.caringu.exception.ApiExceptions;
     import tech.vitalis.caringu.mapper.AlunoTreinoMapper;
@@ -14,7 +15,6 @@
     import tech.vitalis.caringu.repository.TreinoExercicioRepository;
 
     import java.time.LocalDate;
-    import java.time.LocalDateTime;
     import java.util.List;
     import java.util.stream.Collectors;
 

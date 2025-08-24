@@ -2,7 +2,6 @@ package tech.vitalis.caringu.mapper;
 
 import org.springframework.stereotype.Component;
 import tech.vitalis.caringu.dtos.AlunosTreino.AlunoTreinoRequestPostDTO;
-import tech.vitalis.caringu.dtos.AlunosTreino.AlunoTreinoRequestUpdateDTO;
 import tech.vitalis.caringu.dtos.AlunosTreino.AlunoTreinoResponseGetDTO;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.entity.AlunoTreino;

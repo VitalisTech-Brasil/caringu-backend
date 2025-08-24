@@ -1,7 +1,6 @@
 package tech.vitalis.caringu.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import tech.vitalis.caringu.enums.TreinoExercicio.GrauDificuldadeEnum;
 import tech.vitalis.caringu.enums.TreinoExercicio.OrigemTreinoExercicioEnum;
 
@@ -9,7 +8,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "treinos_exercicios")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class TreinoExercicio {
 
     @Id
