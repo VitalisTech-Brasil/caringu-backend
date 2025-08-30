@@ -3,12 +3,8 @@ package tech.vitalis.caringu.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.Positive;
-
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "alunos_treinos")
@@ -17,33 +13,24 @@ public class AlunoTreino {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "aluno_id")
     private Aluno alunos;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "treinos_exercicios_id")
-    private TreinoExercicio treinosExercicios;
-    //@FutureOrPresent private LocalDateTime dataHorarioInicio;
-    //@Future private LocalDateTime dataHorarioFim;
-    @Convert(converter = tech.vitalis.caringu.entity.Converter.StringListConverter.class)
-    @Column(columnDefinition = "json", nullable = false)
-    private List<String> diasSemana;
-    // @Positive private Integer periodoAvaliacao;
+
+    @FutureOrPresent
+    @Column(name = "data_inicio")
+    private LocalDate dataInicio;
+
     @Future
     @Column(name = "data_vencimento")
     private LocalDate dataVencimento;
 
-    /*
-    @OneToMany(mappedBy = "alunosTreino")
-    private List<Feedback> feedbacks; // Para acessar os feedbacks deste treino
-     */
-
-    public AlunoTreino(Integer id, Aluno alunos, TreinoExercicio treinosExercicios, List<String> diasSemana, LocalDate dataVencimento) {
-        this.id = id;
-        this.alunos = alunos;
-        this.treinosExercicios = treinosExercicios;
-        this.diasSemana = diasSemana;
+    public AlunoTreino(LocalDate dataVencimento, LocalDate dataInicio, Aluno alunos, Integer id) {
         this.dataVencimento = dataVencimento;
+        this.dataInicio = dataInicio;
+        this.alunos = alunos;
+        this.id = id;
     }
 
     public AlunoTreino() {}
@@ -64,20 +51,12 @@ public class AlunoTreino {
         this.alunos = alunos;
     }
 
-    public TreinoExercicio getTreinosExercicios() {
-        return treinosExercicios;
+    public LocalDate getDataInicio() {
+        return dataInicio;
     }
 
-    public void setTreinosExercicios(TreinoExercicio treinosExercicios) {
-        this.treinosExercicios = treinosExercicios;
-    }
-
-    public List<String> getDiasSemana() {
-        return diasSemana;
-    }
-
-    public void setDiasSemana(List<String> diasSemana) {
-        this.diasSemana = diasSemana;
+    public void setDataInicio(LocalDate dataInicio) {
+        this.dataInicio = dataInicio;
     }
 
     public LocalDate getDataVencimento() {
