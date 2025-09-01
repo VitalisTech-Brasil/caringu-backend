@@ -11,11 +11,11 @@ public class ExecucaoExercicio {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "sessao_treino_id", nullable = false)
+    @JoinColumn(name = "sessao_treino_id")
     private SessaoTreino sessaoTreino;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "alunos_treinos_exercicios_id", nullable = false)
+    @JoinColumn(name = "alunos_treinos_exercicios_id")
     private AlunoTreinoExercicio alunoTreinoExercicio;
 
     @Column(name = "carga_executada")
@@ -29,6 +29,8 @@ public class ExecucaoExercicio {
 
     @Column(name = "descanso_executado")
     private Integer descansoExecutado;
+
+    public ExecucaoExercicio() {}
 
     public ExecucaoExercicio(
             Integer id, SessaoTreino sessaoTreino,
@@ -44,8 +46,6 @@ public class ExecucaoExercicio {
         this.seriesExecutadas = seriesExecutadas;
         this.descansoExecutado = descansoExecutado;
     }
-
-    public ExecucaoExercicio() {}
 
     public Integer getId() {
         return id;

@@ -20,10 +20,10 @@ public class SchedulingConfig {
         this.notificacoesService = notificacoesService;
     }
 
-    @Scheduled(cron = "0 0 8,13,22 * * *")
-    public void verificarTreinosVencendo(){
-        logger.info("Executando verificarTreinosVencendo em {}", LocalDateTime.now());
-        notificacoesService.enviarNotificacoesTreinosVencendo();
-        notificacoesService.notificarPersonaisTreinadores();
-    }
+//    @Scheduled(cron = "0 0 8,13,22 * * *")
+//    public void verificarTreinosVencendo(){
+//        logger.info("Executando verificarTreinosVencendo em {}", LocalDateTime.now());
+//        notificacoesService.enviarNotificacoesTreinosVencendo();
+//        notificacoesService.notificarPersonaisTreinadores();
+//    }
 }

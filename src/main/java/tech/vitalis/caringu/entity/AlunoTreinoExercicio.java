@@ -13,16 +13,16 @@ public class AlunoTreinoExercicio {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "aluno_treino_id")
+    @JoinColumn(name = "alunos_treinos_id")
     private AlunoTreino alunoTreino;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "treino_id", nullable = false)
-    private Treino treino;
+    @JoinColumn(name = "exercicios_id")
+    private Exercicio exercicio;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "exercicio_id", nullable = false)
-    private Exercicio exercicio;
+    @JoinColumn(name = "treinos_id")
+    private Treino treino;
 
     @Column(nullable = false)
     private Double carga;
@@ -42,25 +42,29 @@ public class AlunoTreinoExercicio {
     @Column(name = "data_modificacao")
     private LocalDateTime dataModificacao;
 
+    @Column(name = "ic_model")
+    private Boolean icModel;
+
+    public AlunoTreinoExercicio() {}
+
     public AlunoTreinoExercicio(
-            Integer id, AlunoTreino alunoTreino, Treino treino,
-            Exercicio exercicio, Double carga, Integer repeticoes,
-            Integer series, Integer descanso,
-            String observacoesPersonalizadas, LocalDateTime dataModificacao
+            Integer id, AlunoTreino alunoTreino, Exercicio exercicio,
+            Treino treino, Double carga, Integer repeticoes,
+            Integer series, Integer descanso, String observacoesPersonalizadas,
+            LocalDateTime dataModificacao, Boolean icModel
     ) {
         this.id = id;
         this.alunoTreino = alunoTreino;
-        this.treino = treino;
         this.exercicio = exercicio;
+        this.treino = treino;
         this.carga = carga;
         this.repeticoes = repeticoes;
         this.series = series;
         this.descanso = descanso;
         this.observacoesPersonalizadas = observacoesPersonalizadas;
         this.dataModificacao = dataModificacao;
+        this.icModel = icModel;
     }
-
-    public AlunoTreinoExercicio() {}
 
     public Integer getId() {
         return id;
@@ -78,20 +82,20 @@ public class AlunoTreinoExercicio {
         this.alunoTreino = alunoTreino;
     }
 
-    public Treino getTreino() {
-        return treino;
-    }
-
-    public void setTreino(Treino treino) {
-        this.treino = treino;
-    }
-
     public Exercicio getExercicio() {
         return exercicio;
     }
 
     public void setExercicio(Exercicio exercicio) {
         this.exercicio = exercicio;
+    }
+
+    public Treino getTreino() {
+        return treino;
+    }
+
+    public void setTreino(Treino treino) {
+        this.treino = treino;
     }
 
     public Double getCarga() {
@@ -140,6 +144,14 @@ public class AlunoTreinoExercicio {
 
     public void setDataModificacao(LocalDateTime dataModificacao) {
         this.dataModificacao = dataModificacao;
+    }
+
+    public Boolean getIcModel() {
+        return icModel;
+    }
+
+    public void setIcModel(Boolean icModel) {
+        this.icModel = icModel;
     }
 }
 

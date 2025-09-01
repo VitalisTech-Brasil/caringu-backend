@@ -7,7 +7,7 @@ import tech.vitalis.caringu.enums.PeriodoEnum;
 
 import java.time.LocalDate;
 
-public record AlunoDetalhadoResponseDTO(
+public record AlunoDetalhadoRefactResponseDTO(
         Integer idAluno,
         Double peso,
         Double altura,

@@ -36,22 +36,22 @@ public class TreinoExercicioController {
         return ResponseEntity.ok(treinosExerciciosResumo);
     }
 
-    @GetMapping("/aluno/{alunoId}")
-    @Operation(summary = "Buscar todos os Treino Exercício do ALuno")
-    public ResponseEntity<List<TreinoExercicioResumoDTO>> listarPorALuno(@PathVariable Integer alunoId) {
-        List<TreinoExercicioResumoDTO> treinosExerciciosResumo = treinoExercicioService.listarPorAluno(alunoId);
-        return ResponseEntity.ok(treinosExerciciosResumo);
-    }
-
-    @GetMapping("/exercicios-por-treino/{treinoId}/{alunoId}")
-    public ResponseEntity<List<ListaExercicioPorTreinoResponseDTO>> buscarExerciciosPorTreino(
-            @PathVariable Integer treinoId,
-            @PathVariable Integer alunoId
-            ) {
-        List<ListaExercicioPorTreinoResponseDTO> treinosExerciciosResumo = treinoExercicioService.buscarExerciciosPorTreino(treinoId, alunoId);
-
-        return ResponseEntity.ok(treinosExerciciosResumo);
-    }
+//    @GetMapping("/aluno/{alunoId}")
+//    @Operation(summary = "Buscar todos os Treino Exercício do ALuno")
+//    public ResponseEntity<List<TreinoExercicioResumoDTO>> listarPorALuno(@PathVariable Integer alunoId) {
+//        List<TreinoExercicioResumoDTO> treinosExerciciosResumo = treinoExercicioService.listarPorAluno(alunoId);
+//        return ResponseEntity.ok(treinosExerciciosResumo);
+//    }
+//
+//    @GetMapping("/exercicios-por-treino/{treinoId}/{alunoId}")
+//    public ResponseEntity<List<ListaExercicioPorTreinoResponseDTO>> buscarExerciciosPorTreino(
+//            @PathVariable Integer treinoId,
+//            @PathVariable Integer alunoId
+//            ) {
+//        List<ListaExercicioPorTreinoResponseDTO> treinosExerciciosResumo = treinoExercicioService.buscarExerciciosPorTreino(treinoId, alunoId);
+//
+//        return ResponseEntity.ok(treinosExerciciosResumo);
+//    }
 
     @GetMapping
     @Operation(summary = "Buscar todos os Treino Exercício")

@@ -14,11 +14,8 @@ public class SessaoTreino {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "alunos_treinos_id", nullable = false)
+    @JoinColumn(name = "alunos_treinos_id")
     private AlunoTreino alunoTreino;
-
-    @Column(name = "data_horario_previsto", nullable = false)
-    private LocalDateTime dataHorarioPrevisto;
 
     @Column(name = "data_horario_inicio")
     private LocalDateTime dataHorarioInicio;
@@ -30,26 +27,19 @@ public class SessaoTreino {
     @Column(nullable = false)
     private StatusSessaoTreinoEnum status;
 
-    @Column(columnDefinition = "TEXT")
-    private String observacao;
+    public SessaoTreino() {}
 
     public SessaoTreino(
             Integer id, AlunoTreino alunoTreino,
-            LocalDateTime dataHorarioPrevisto,
             LocalDateTime dataHorarioInicio,
             LocalDateTime dataHorarioFim,
-            StatusSessaoTreinoEnum status,
-            String observacao) {
+            StatusSessaoTreinoEnum status) {
         this.id = id;
         this.alunoTreino = alunoTreino;
-        this.dataHorarioPrevisto = dataHorarioPrevisto;
         this.dataHorarioInicio = dataHorarioInicio;
         this.dataHorarioFim = dataHorarioFim;
         this.status = status;
-        this.observacao = observacao;
     }
-
-    public SessaoTreino() {}
 
     public Integer getId() {
         return id;
@@ -65,14 +55,6 @@ public class SessaoTreino {
 
     public void setAlunoTreino(AlunoTreino alunoTreino) {
         this.alunoTreino = alunoTreino;
-    }
-
-    public LocalDateTime getDataHorarioPrevisto() {
-        return dataHorarioPrevisto;
-    }
-
-    public void setDataHorarioPrevisto(LocalDateTime dataHorarioPrevisto) {
-        this.dataHorarioPrevisto = dataHorarioPrevisto;
     }
 
     public LocalDateTime getDataHorarioInicio() {
@@ -97,13 +79,5 @@ public class SessaoTreino {
 
     public void setStatus(StatusSessaoTreinoEnum status) {
         this.status = status;
-    }
-
-    public String getObservacao() {
-        return observacao;
-    }
-
-    public void setObservacao(String observacao) {
-        this.observacao = observacao;
     }
 }

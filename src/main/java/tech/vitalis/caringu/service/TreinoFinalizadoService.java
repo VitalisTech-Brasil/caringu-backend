@@ -1,15 +1,11 @@
 package tech.vitalis.caringu.service;
 
 import org.springframework.stereotype.Service;
-import org.threeten.extra.YearWeek;
-import tech.vitalis.caringu.dtos.TreinoFinalizado.*;
-import tech.vitalis.caringu.entity.TreinoFinalizado;
-import tech.vitalis.caringu.exception.TreinoFinalizado.TreinoFinalizadoNaoEncontradoException;
+import tech.vitalis.caringu.dtos.TreinoFinalizado.HorasTreinadasResponseDTO;
+import tech.vitalis.caringu.dtos.TreinoFinalizado.HorasTreinadasSemanaMesDTO;
 import tech.vitalis.caringu.repository.TreinoFinalizadoRepository;
 
-import java.time.Duration;
-import java.time.YearMonth;
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,17 +17,14 @@ public class TreinoFinalizadoService {
         this.repository = repository;
     }
 
-    public List<TreinoIdentificacaoFinalizadoResponseDTO> listarPorPersonal(Integer personalId) {
-        return repository.findAllTreinosByPersonalId(personalId);
-    }
 
-    public List<EvolucaoCargaDashboardResponseDTO> buscarEvolucaoCarga(Integer alunoId, Integer exercicioId) {
-        return repository.buscarEvolucaoCarga(exercicioId, alunoId);
-    }
-
-    public List<EvolucaoTreinoCumpridoResponseDTO> buscarEvolucaoTreinosCumpridosMensal(Integer alunoId, Integer exercicioId) {
-        return repository.buscarEvolucaoTreinosCumpridosMensal(alunoId, exercicioId);
-    }
+//    public List<EvolucaoCargaDashboardResponseDTO> buscarEvolucaoCarga(Integer alunoId, Integer exercicioId) {
+//        return repository.buscarEvolucaoCarga(exercicioId, alunoId);
+//    }
+//
+//    public List<EvolucaoTreinoCumpridoResponseDTO> buscarEvolucaoTreinosCumpridosMensal(Integer alunoId, Integer exercicioId) {
+//        return repository.buscarEvolucaoTreinosCumpridosMensal(alunoId, exercicioId);
+//    }
 
 //    public HorasTreinadasMensalResponseDTO calcularHorasTreinadas(Integer alunoId, Integer exercicioId) {
 //        List<HorasTreinadasMensalDadosBrutosDTO> treinos = repository.buscarTreinosFinalizadosBrutos(alunoId, exercicioId);
@@ -83,11 +76,11 @@ public class TreinoFinalizadoService {
         return new HorasTreinadasResponseDTO(alunoId, exercicioId, dados);
     }
 
-    public void atualizarDataHorarioFim(Integer idTreinoFinalizado, AtualizarDataFimDTO dto) {
-        TreinoFinalizado treino = repository.findById(idTreinoFinalizado)
-                .orElseThrow(() -> new TreinoFinalizadoNaoEncontradoException("Treino não encontrado com id: " + idTreinoFinalizado));
-
-        treino.setDataHorarioFim(dto.dataHorarioFim());
-        repository.save(treino);
-    }
+//    public void atualizarDataHorarioFim(Integer idTreinoFinalizado, AtualizarDataFimDTO dto) {
+//        TreinoFinalizado treino = repository.findById(idTreinoFinalizado)
+//                .orElseThrow(() -> new TreinoFinalizadoNaoEncontradoException("Treino não encontrado com id: " + idTreinoFinalizado));
+//
+//        treino.setDataHorarioFim(dto.dataHorarioFim());
+//        repository.save(treino);
+//    }
 }

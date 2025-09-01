@@ -76,25 +76,25 @@ public class NotificacaoPlanoVencimentoService {
         }
     }
 
-    public void notificarPersonais(){
-        LocalDate hoje = LocalDate.now();
-        LocalDate daquiDuasSemanas = hoje.plusWeeks(2);
-
-        List<NotificacaoPlanoVencimentoDto> notificacoes =
-                planoContratadoRepository.findNotificacoesPlanoVencimento(daquiDuasSemanas);
-
-        Map<Integer, List<NotificacaoPlanoVencimentoDto>> porPersonal = notificacoes.stream()
-                .collect(Collectors.groupingBy(NotificacaoPlanoVencimentoDto::personalTrainerId));
-
-        for (Map.Entry<Integer, List<NotificacaoPlanoVencimentoDto>> entry : porPersonal.entrySet()) {
-            Integer personalId = entry.getKey();
-            List<NotificacaoPlanoVencimentoDto> itens = entry.getValue();
-
-            String mensagem = montarMensagem(itens);
-
-            notificacaoEnviarService.enviarNotificacao(personalId, mensagem);
-        }
-    }
+//    public void notificarPersonais(){
+//        LocalDate hoje = LocalDate.now();
+//        LocalDate daquiDuasSemanas = hoje.plusWeeks(2);
+//
+//        List<NotificacaoPlanoVencimentoDto> notificacoes =
+//                planoContratadoRepository.findNotificacoesPlanoVencimento(daquiDuasSemanas);
+//
+//        Map<Integer, List<NotificacaoPlanoVencimentoDto>> porPersonal = notificacoes.stream()
+//                .collect(Collectors.groupingBy(NotificacaoPlanoVencimentoDto::personalTrainerId));
+//
+//        for (Map.Entry<Integer, List<NotificacaoPlanoVencimentoDto>> entry : porPersonal.entrySet()) {
+//            Integer personalId = entry.getKey();
+//            List<NotificacaoPlanoVencimentoDto> itens = entry.getValue();
+//
+//            String mensagem = montarMensagem(itens);
+//
+//            notificacaoEnviarService.enviarNotificacao(personalId, mensagem);
+//        }
+//    }
 
     private String montarMensagem(List<NotificacaoPlanoVencimentoDto> itens) {
         StringBuilder sb = new StringBuilder();
@@ -107,12 +107,12 @@ public class NotificacaoPlanoVencimentoService {
         return sb.toString();
     }
 
-    public List<NotificacaoPlanoVencimentoDto> buscarNotificacoesPlanoVencimento(LocalDate datalimite){
-        return planoContratadoRepository.findNotificacoesPlanoVencimento(datalimite);
-    }
-
-    public List<NotificacaoPlanoVencimentoDto> buscarNotificacoesPlanoVencimentoPorPersonal(LocalDate dataLimite, Integer personalId){
-        return planoContratadoRepository.findNotificacoesPlanoVencimentoPorPersonal(dataLimite,personalId);
-    }
+//    public List<NotificacaoPlanoVencimentoDto> buscarNotificacoesPlanoVencimento(LocalDate datalimite){
+//        return planoContratadoRepository.findNotificacoesPlanoVencimento(datalimite);
+//    }
+//
+//    public List<NotificacaoPlanoVencimentoDto> buscarNotificacoesPlanoVencimentoPorPersonal(LocalDate dataLimite, Integer personalId){
+//        return planoContratadoRepository.findNotificacoesPlanoVencimentoPorPersonal(dataLimite,personalId);
+//    }
 
 }

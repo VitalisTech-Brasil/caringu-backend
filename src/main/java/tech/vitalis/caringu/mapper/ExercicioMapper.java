@@ -38,6 +38,7 @@ public class ExercicioMapper {
 
         return new ExercicioResponseGetDTO(
                 exercicio.getId(),
+                exercicio.getPersonal() != null ? exercicio.getPersonal().getId() : null,
                 exercicio.getNome(),
                 exercicio.getGrupoMuscular(),
                 exercicio.getUrlVideo(),

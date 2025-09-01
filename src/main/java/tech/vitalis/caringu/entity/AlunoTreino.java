@@ -3,6 +3,7 @@ package tech.vitalis.caringu.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
+import tech.vitalis.caringu.enums.AlunoTreino.StatusAlunoTreino;
 
 import java.time.LocalDate;
 
@@ -15,7 +16,7 @@ public class AlunoTreino {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "aluno_id")
+    @JoinColumn(name = "alunos_id")
     private Aluno alunos;
 
     @FutureOrPresent
@@ -26,14 +27,24 @@ public class AlunoTreino {
     @Column(name = "data_vencimento")
     private LocalDate dataVencimento;
 
-    public AlunoTreino(LocalDate dataVencimento, LocalDate dataInicio, Aluno alunos, Integer id) {
-        this.dataVencimento = dataVencimento;
-        this.dataInicio = dataInicio;
-        this.alunos = alunos;
-        this.id = id;
-    }
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatusAlunoTreino status;
 
     public AlunoTreino() {}
+
+    public AlunoTreino(
+            Integer id, Aluno alunos,
+            LocalDate dataInicio,
+            LocalDate dataVencimento,
+            StatusAlunoTreino status
+    ) {
+        this.id = id;
+        this.alunos = alunos;
+        this.dataInicio = dataInicio;
+        this.dataVencimento = dataVencimento;
+        this.status = status;
+    }
 
     public Integer getId() {
         return id;
@@ -65,5 +76,13 @@ public class AlunoTreino {
 
     public void setDataVencimento(LocalDate dataVencimento) {
         this.dataVencimento = dataVencimento;
+    }
+
+    public StatusAlunoTreino getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusAlunoTreino status) {
+        this.status = status;
     }
 }

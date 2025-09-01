@@ -4,9 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import tech.vitalis.caringu.dtos.TreinoFinalizado.EvolucaoCargaDashboardResponseDTO;
-import tech.vitalis.caringu.dtos.TreinoFinalizado.EvolucaoTreinoCumpridoResponseDTO;
-import tech.vitalis.caringu.dtos.TreinoFinalizado.TreinoIdentificacaoFinalizadoResponseDTO;
 import tech.vitalis.caringu.entity.TreinoFinalizado;
 
 import java.util.List;
@@ -48,69 +45,69 @@ public interface TreinoFinalizadoRepository extends JpaRepository<TreinoFinaliza
 """)
     List<String> buscarHorariosFimTotal(@Param("alunoId") Integer alunoId);
 
-    @Query("""
-        SELECT new tech.vitalis.caringu.dtos.TreinoFinalizado.TreinoIdentificacaoFinalizadoResponseDTO(
-            tf.id,
-            tf.dataHorarioInicio,
-            tf.dataHorarioFim,
-            a.id,
-            a.nome,
-            a.urlFotoPerfil,
-            CASE WHEN tf.dataHorarioFim IS NOT NULL THEN true ELSE false END
-        )
-        FROM TreinoFinalizado tf
-        JOIN tf.alunoTreino at
-        JOIN at.alunos a
-        JOIN PlanoContratado pc ON pc.aluno.id = a.id
-        JOIN pc.plano pl
-        WHERE pc.status = 'ATIVO'
-        AND pl.personalTrainer.id = :personalId
-    """)
-    List<TreinoIdentificacaoFinalizadoResponseDTO> findAllTreinosByPersonalId(@Param("personalId") Integer personalId);
+//    @Query("""
+//        SELECT new tech.vitalis.caringu.dtos.TreinoFinalizado.TreinoIdentificacaoFinalizadoResponseDTO(
+//            tf.id,
+//            tf.dataHorarioInicio,
+//            tf.dataHorarioFim,
+//            a.id,
+//            a.nome,
+//            a.urlFotoPerfil,
+//            CASE WHEN tf.dataHorarioFim IS NOT NULL THEN true ELSE false END
+//        )
+//        FROM TreinoFinalizado tf
+//        JOIN tf.alunoTreino at
+//        JOIN at.alunos a
+//        JOIN PlanoContratado pc ON pc.aluno.id = a.id
+//        JOIN pc.plano pl
+//        WHERE pc.status = 'ATIVO'
+//        AND pl.personalTrainer.id = :personalId
+//    """)
+//    List<TreinoIdentificacaoFinalizadoResponseDTO> findAllTreinosByPersonalId(@Param("personalId") Integer personalId);
 
-    @Query("""
-        SELECT new tech.vitalis.caringu.dtos.TreinoFinalizado.EvolucaoCargaDashboardResponseDTO(
-          a.id, a.nome, a.peso, a.altura,
-          tf.dataHorarioInicio, tf.dataHorarioFim,
-          te.carga, ex.nome
-        )
-        FROM TreinoFinalizado tf
-        JOIN tf.alunoTreino at
-        JOIN at.treinosExercicios te
-        JOIN te.exercicio ex
-        JOIN at.alunos a
-        WHERE ex.id = :exercicioId AND a.id = :alunoId
-        ORDER BY a.nome, tf.dataHorarioInicio
-    """)
-    List<EvolucaoCargaDashboardResponseDTO> buscarEvolucaoCarga(@Param("exercicioId") Integer exercicioId, @Param("alunoId") Integer alunoId);
+//    @Query("""
+//        SELECT new tech.vitalis.caringu.dtos.TreinoFinalizado.EvolucaoCargaDashboardResponseDTO(
+//          a.id, a.nome, a.peso, a.altura,
+//          tf.dataHorarioInicio, tf.dataHorarioFim,
+//          te.carga, ex.nome
+//        )
+//        FROM TreinoFinalizado tf
+//        JOIN tf.alunoTreino at
+//        JOIN at.treinosExercicios te
+//        JOIN te.exercicio ex
+//        JOIN at.alunos a
+//        WHERE ex.id = :exercicioId AND a.id = :alunoId
+//        ORDER BY a.nome, tf.dataHorarioInicio
+//    """)
+//    List<EvolucaoCargaDashboardResponseDTO> buscarEvolucaoCarga(@Param("exercicioId") Integer exercicioId, @Param("alunoId") Integer alunoId);
 
-    @Query("""
-    SELECT new tech.vitalis.caringu.dtos.TreinoFinalizado.EvolucaoTreinoCumpridoResponseDTO(
-        a.id,
-        a.nome,
-        e.id,
-        e.nome,
-        YEAR(tf.dataHorarioInicio),
-        MONTH(tf.dataHorarioInicio),
-        COUNT(tf.id),
-        ana.frequenciaTreino
-    )
-    FROM Aluno a
-    LEFT JOIN Anamnese ana ON ana.aluno.id = a.id
-    JOIN AlunoTreino at ON at.alunos.id = a.id
-    JOIN TreinoExercicio te ON at.treinosExercicios.id = te.id
-    JOIN Exercicio e ON te.exercicio.id = e.id
-    JOIN TreinoFinalizado tf ON tf.alunoTreino.id = at.id
-    WHERE a.id = :alunoId
-      AND e.id = :exercicioId
-    GROUP BY 
-        a.id, a.nome, e.id, e.nome, YEAR(tf.dataHorarioInicio), MONTH(tf.dataHorarioInicio), ana.frequenciaTreino
-    ORDER BY YEAR(tf.dataHorarioInicio), MONTH(tf.dataHorarioInicio)
-""")
-    List<EvolucaoTreinoCumpridoResponseDTO> buscarEvolucaoTreinosCumpridosMensal(
-            @Param("alunoId") Integer alunoId,
-            @Param("exercicioId") Integer exercicioId
-    );
+//    @Query("""
+//    SELECT new tech.vitalis.caringu.dtos.TreinoFinalizado.EvolucaoTreinoCumpridoResponseDTO(
+//        a.id,
+//        a.nome,
+//        e.id,
+//        e.nome,
+//        YEAR(tf.dataHorarioInicio),
+//        MONTH(tf.dataHorarioInicio),
+//        COUNT(tf.id),
+//        ana.frequenciaTreino
+//    )
+//    FROM Aluno a
+//    LEFT JOIN Anamnese ana ON ana.aluno.id = a.id
+//    JOIN AlunoTreino at ON at.alunos.id = a.id
+//    JOIN TreinoExercicio te ON at.treinosExercicios.id = te.id
+//    JOIN Exercicio e ON te.exercicio.id = e.id
+//    JOIN TreinoFinalizado tf ON tf.alunoTreino.id = at.id
+//    WHERE a.id = :alunoId
+//      AND e.id = :exercicioId
+//    GROUP BY
+//        a.id, a.nome, e.id, e.nome, YEAR(tf.dataHorarioInicio), MONTH(tf.dataHorarioInicio), ana.frequenciaTreino
+//    ORDER BY YEAR(tf.dataHorarioInicio), MONTH(tf.dataHorarioInicio)
+//""")
+//    List<EvolucaoTreinoCumpridoResponseDTO> buscarEvolucaoTreinosCumpridosMensal(
+//            @Param("alunoId") Integer alunoId,
+//            @Param("exercicioId") Integer exercicioId
+//    );
 
     @Query(value = """
         SELECT 

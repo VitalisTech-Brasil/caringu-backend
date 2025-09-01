@@ -37,17 +37,21 @@ public class ExercicioService {
         this.exercicioMapper = exercicioMapper;
     }
 
-    public ExercicioResponseGetDTO cadastrar(ExercicioRequestPostDTO exercicioDto) {
-        validarEnums(Map.of(
-                new GrupoMuscularEnumValidator(), exercicioDto.grupoMuscular(),
-                new OrigemEnumValidator(), exercicioDto.origem()
-        ));
+    public List<ExercicioResponseGetDTO> listarExerciciosPorIdPersonal(Integer idPersonal) {
+        return exercicioRepository.findAllByPersonal_IdOrPersonalIsNull(idPersonal)
+                .stream()
+                .map(exercicioMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
 
-        Exercicio novoExercicio = exercicioMapper.toEntity(exercicioDto);
+    public ExercicioResponseGetDTO buscarPorId(Integer id) {
+        Exercicio exercicio = exercicioRepository.findById(id)
+                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Exercício com ID " + id + " não encontrado"));
+        return exercicioMapper.toResponseDTO(exercicio);
+    }
 
-        Exercicio exercicioSalvo = exercicioRepository.save(novoExercicio);
-
-        return exercicioMapper.toResponseDTO(exercicioSalvo);
+    public List<ExercicioResponseTotalExercicioOrigemDTO> buscarTotalExercicioOrigem(Integer idPersonal) {
+        return exercicioRepository.buscarTotalExercicioOrigem(idPersonal);
     }
 
     public ExercicioResponseGetDTO cadastrar(ExercicioRequestPostFuncionalDTO exercicioDto) {
@@ -63,42 +67,9 @@ public class ExercicioService {
         return exercicioMapper.toResponseDTO(exercicioSalvo);
     }
 
-    public ExercicioResponseGetDTO buscarPorId(Integer id) {
-        Exercicio exercicio = exercicioRepository.findById(id)
-                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Exercício com ID " + id + " não encontrado"));
-        return exercicioMapper.toResponseDTO(exercicio);
-    }
-
-    public List<ExercicioResponseTotalExercicioOrigemDTO> buscarTotalExercicioOrigem() {
-        return exercicioRepository.buscarTotalExercicioOrigem();
-    }
-
-    public List<ExercicioResponseGetDTO> listarTodos() {
-        return exercicioRepository.findAll()
-                .stream()
-                .map(exercicioMapper::toResponseDTO)
-                .collect(Collectors.toList());
-    }
-
-    public ExercicioResponseGetDTO atualizar(Integer id, ExercicioRequestPostDTO exercicioDto) {
-        Exercicio exercicioExistente = exercicioRepository.findById(id)
-                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Exercício com ID " + id + " não encontrado"));
-
-
-        exercicioExistente.setNome(exercicioDto.nome());
-        exercicioExistente.setGrupoMuscular(exercicioDto.grupoMuscular());
-        exercicioExistente.setUrlVideo(exercicioDto.urlVideo());
-        exercicioExistente.setObservacoes(exercicioDto.observacoes());
-        exercicioExistente.setFavorito(exercicioDto.favorito());
-        exercicioExistente.setOrigem(exercicioDto.origem());
-
-        Exercicio exercicioAtualizado = exercicioRepository.save(exercicioExistente);
-        return exercicioMapper.toResponseDTO(exercicioAtualizado);
-    }
-
-    public ExercicioResponseGetDTO atualizar(Integer id, ExercicioRequestPostFuncionalDTO exercicioDto) {
-        Exercicio exercicioExistente = exercicioRepository.findById(id)
-                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Exercício com ID " + id + " não encontrado"));
+    public ExercicioResponseGetDTO atualizar(Integer idExercicio, ExercicioRequestPostFuncionalDTO exercicioDto) {
+        Exercicio exercicioExistente = exercicioRepository.findById(idExercicio)
+                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Exercício com ID " + idExercicio + " não encontrado"));
 
 
         exercicioExistente.setNome(exercicioDto.nome());
@@ -134,6 +105,14 @@ public class ExercicioService {
     }
 
     @Transactional
+    public void atualizarFavorito(Integer id, boolean favorito){
+        Exercicio exercicioFavorito = exercicioRepository.findById(id)
+                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Exercicio não encontrado"));
+
+        exercicioFavorito.setFavorito(favorito);
+    }
+
+    @Transactional
     public void remover(Integer id) {
 
         if (!exercicioRepository.existsById(id)) {
@@ -147,13 +126,5 @@ public class ExercicioService {
         }
 
         exercicioRepository.deleteById(id);
-    }
-
-    @Transactional
-    public void atualizarFavorito(Integer id, boolean favorito){
-        Exercicio exercicioFavorito = exercicioRepository.findById(id)
-                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Exercicio não encontrado"));
-
-        exercicioFavorito.setFavorito(favorito);
     }
 }

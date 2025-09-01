@@ -6,7 +6,6 @@
     import tech.vitalis.caringu.dtos.AlunosTreino.AlunoTreinoResponseGetDTO;
     import tech.vitalis.caringu.entity.Aluno;
     import tech.vitalis.caringu.entity.AlunoTreino;
-    import tech.vitalis.caringu.entity.AlunoTreinoExercicio;
     import tech.vitalis.caringu.entity.TreinoExercicio;
     import tech.vitalis.caringu.exception.ApiExceptions;
     import tech.vitalis.caringu.mapper.AlunoTreinoMapper;
@@ -33,68 +32,68 @@
             this.alunoTreinoMapper = alunoTreinoMapper;
         }
 
-        public AlunoTreinoResponseGetDTO cadastrar(AlunoTreinoRequestPostDTO alunoTreinoDTO){
-            // Verifica se o aluno existe
-            Aluno alunoExistente = alunoRepository.findById(alunoTreinoDTO.alunosId())
-                    .orElseThrow(() -> new ApiExceptions.BadRequestException(
-                            String.format("Aluno com o ID %d não encontrado.", alunoTreinoDTO.alunosId())
-                    ));
+//        public AlunoTreinoResponseGetDTO cadastrar(AlunoTreinoRequestPostDTO alunoTreinoDTO){
+//            // Verifica se o aluno existe
+//            Aluno alunoExistente = alunoRepository.findById(alunoTreinoDTO.alunosId())
+//                    .orElseThrow(() -> new ApiExceptions.BadRequestException(
+//                            String.format("Aluno com o ID %d não encontrado.", alunoTreinoDTO.alunosId())
+//                    ));
+//
+//            // Verifica se o treino exercício existe
+//            TreinoExercicio treinoExercicioExistente = treinoExercicioRepository.findById(alunoTreinoDTO.treinosExerciciosId())
+//                    .orElseThrow(() -> new ApiExceptions.BadRequestException(
+//                            String.format("Treino Exercício com o ID %d não encontrado.", alunoTreinoDTO.treinosExerciciosId())
+//                    ));
+//
+//            AlunoTreino alunoTreino = alunoTreinoMapper.toEntity(alunoTreinoDTO);
+//            alunoTreino.setAlunos(alunoExistente); // Associa o aluno
+//            alunoTreino.setTreinosExercicios(treinoExercicioExistente); // Associa o treino exercício
+//
+//            AlunoTreino alunoTreinoSalvo = alunoTreinoRepository.save(alunoTreino);
+//
+//            return alunoTreinoMapper.toResponseDTO(alunoTreinoSalvo);
+//        }
 
-            // Verifica se o treino exercício existe
-            TreinoExercicio treinoExercicioExistente = treinoExercicioRepository.findById(alunoTreinoDTO.treinosExerciciosId())
-                    .orElseThrow(() -> new ApiExceptions.BadRequestException(
-                            String.format("Treino Exercício com o ID %d não encontrado.", alunoTreinoDTO.treinosExerciciosId())
-                    ));
-
-            AlunoTreino alunoTreino = alunoTreinoMapper.toEntity(alunoTreinoDTO);
-            alunoTreino.setAlunos(alunoExistente); // Associa o aluno
-            alunoTreino.setTreinosExercicios(treinoExercicioExistente); // Associa o treino exercício
-
-            AlunoTreino alunoTreinoSalvo = alunoTreinoRepository.save(alunoTreino);
-
-            return alunoTreinoMapper.toResponseDTO(alunoTreinoSalvo);
-        }
-
-        public List<AlunoTreinoResponseGetDTO> listarTodos(){
-            return alunoTreinoRepository.findAll()
-                    .stream()
-                    .map(alunoTreinoMapper::toResponseDTO)
-                    .collect(Collectors.toList());
-        }
-
-        public AlunoTreinoResponseGetDTO buscarPorId(Integer id){
-            AlunoTreino alunoTreino = alunoTreinoRepository.findById(id)
-                    .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Aluno Treino com ID " + id + " não encontrado"));
-
-            return alunoTreinoMapper.toResponseDTO(alunoTreino);
-        }
+//        public List<AlunoTreinoResponseGetDTO> listarTodos(){
+//            return alunoTreinoRepository.findAll()
+//                    .stream()
+//                    .map(alunoTreinoMapper::toResponseDTO)
+//                    .collect(Collectors.toList());
+//        }
+//
+//        public AlunoTreinoResponseGetDTO buscarPorId(Integer id){
+//            AlunoTreino alunoTreino = alunoTreinoRepository.findById(id)
+//                    .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Aluno Treino com ID " + id + " não encontrado"));
+//
+//            return alunoTreinoMapper.toResponseDTO(alunoTreino);
+//        }
 
         public Integer contarTreinosProximosVencimento(Integer personalId, int dias) {
             LocalDate dataLimite = LocalDate.now().plusDays(dias);
             return alunoTreinoRepository.countTreinosProximosVencimento(personalId, dataLimite);
         }
 
-        public AlunoTreinoResponseGetDTO atualizar(Integer id, AlunoTreinoRequestUpdateDTO treinoDTO, Integer alunosId, Integer treinosExerciciosId){
-            AlunoTreino alunoTreinoExistente = alunoTreinoRepository.findById(id)
-                    .orElseThrow(() -> new ApiExceptions.BadRequestException("Aluno Treino com o ID " + id + " não encontrado."));
-
-            Aluno alunoExistente = alunoRepository.findById(alunosId) // Mudando id para alunosId
-                    .orElseThrow(() -> new ApiExceptions.BadRequestException("Aluno com o ID " + alunosId + " não encontrado."));
-
-            TreinoExercicio treinoExercicioExistente = treinoExercicioRepository.findById(treinosExerciciosId)
-                    .orElseThrow(() -> new ApiExceptions.BadRequestException("Treino Exercício com o ID " + treinosExerciciosId + " não encontrado."));
-
-            alunoTreinoExistente.setAlunos(alunoExistente);
-            alunoTreinoExistente.setTreinosExercicios(treinoExercicioExistente);
-//            alunoTreinoExistente.setDataHorarioInicio(treinoDTO.dataHorarioInicio());
-//            alunoTreinoExistente.setDataHorarioFim(treinoDTO.dataHorarioFim());
-            alunoTreinoExistente.setDiasSemana(treinoDTO.diasSemana());
-//            alunoTreinoExistente.setPeriodoAvaliacao(treinoDTO.periodoAvaliacao());
-            alunoTreinoExistente.setDataVencimento(treinoDTO.dataVencimento());
-
-            AlunoTreino alunoTreino = alunoTreinoRepository.save(alunoTreinoExistente);
-            return alunoTreinoMapper.toResponseDTO(alunoTreino);
-        }
+//        public AlunoTreinoResponseGetDTO atualizar(Integer id, AlunoTreinoRequestUpdateDTO treinoDTO, Integer alunosId, Integer treinosExerciciosId){
+//            AlunoTreino alunoTreinoExistente = alunoTreinoRepository.findById(id)
+//                    .orElseThrow(() -> new ApiExceptions.BadRequestException("Aluno Treino com o ID " + id + " não encontrado."));
+//
+//            Aluno alunoExistente = alunoRepository.findById(alunosId) // Mudando id para alunosId
+//                    .orElseThrow(() -> new ApiExceptions.BadRequestException("Aluno com o ID " + alunosId + " não encontrado."));
+//
+//            TreinoExercicio treinoExercicioExistente = treinoExercicioRepository.findById(treinosExerciciosId)
+//                    .orElseThrow(() -> new ApiExceptions.BadRequestException("Treino Exercício com o ID " + treinosExerciciosId + " não encontrado."));
+//
+//            alunoTreinoExistente.setAlunos(alunoExistente);
+//            alunoTreinoExistente.setTreinosExercicios(treinoExercicioExistente);
+////            alunoTreinoExistente.setDataHorarioInicio(treinoDTO.dataHorarioInicio());
+////            alunoTreinoExistente.setDataHorarioFim(treinoDTO.dataHorarioFim());
+//            alunoTreinoExistente.setDiasSemana(treinoDTO.diasSemana());
+////            alunoTreinoExistente.setPeriodoAvaliacao(treinoDTO.periodoAvaliacao());
+//            alunoTreinoExistente.setDataVencimento(treinoDTO.dataVencimento());
+//
+//            AlunoTreino alunoTreino = alunoTreinoRepository.save(alunoTreinoExistente);
+//            return alunoTreinoMapper.toResponseDTO(alunoTreino);
+//        }
 
         public void remover(Integer id){
             AlunoTreino alunoTreinoExistente = alunoTreinoRepository.findById(id)
@@ -110,14 +109,14 @@
             alunoTreinoRepository.deleteById(id);
         }
 
-        public void removerAssociacaoComTreino(Integer id){
-            AlunoTreino alunoTreinoExistente = alunoTreinoRepository.findById(id)
-                    .orElseThrow(() -> new ApiExceptions.BadRequestException("Aluno Treino com o ID " + id + " não encontrado."));
-
-
-            alunoTreinoExistente.setTreinosExercicios(null);
-            alunoTreinoRepository.save(alunoTreinoExistente);
-        }
+//        public void removerAssociacaoComTreino(Integer id){
+//            AlunoTreino alunoTreinoExistente = alunoTreinoRepository.findById(id)
+//                    .orElseThrow(() -> new ApiExceptions.BadRequestException("Aluno Treino com o ID " + id + " não encontrado."));
+//
+//
+//            alunoTreinoExistente.setTreinosExercicios(null);
+//            alunoTreinoRepository.save(alunoTreinoExistente);
+//        }
 
         public void removerAssociacaoComAluno(Integer id){
             AlunoTreino alunoTreinoExistente = alunoTreinoRepository.findById(id)
@@ -128,12 +127,12 @@
             alunoTreinoRepository.save(alunoTreinoExistente);
         }
 
-        public void removerAssociacao(Integer id) {
-            AlunoTreino alunoTreinoExistente = alunoTreinoRepository.findById(id)
-                    .orElseThrow(() -> new ApiExceptions.BadRequestException("Aluno Treino com o ID " + id + " não encontrado."));
-
-            alunoTreinoExistente.setTreinosExercicios(null);
-            alunoTreinoExistente.setAlunos(null);
-            alunoTreinoRepository.save(alunoTreinoExistente); // desassocia
-        }
+//        public void removerAssociacao(Integer id) {
+//            AlunoTreino alunoTreinoExistente = alunoTreinoRepository.findById(id)
+//                    .orElseThrow(() -> new ApiExceptions.BadRequestException("Aluno Treino com o ID " + id + " não encontrado."));
+//
+//            alunoTreinoExistente.setTreinosExercicios(null);
+//            alunoTreinoExistente.setAlunos(null);
+//            alunoTreinoRepository.save(alunoTreinoExistente); // desassocia
+//        }
     }
