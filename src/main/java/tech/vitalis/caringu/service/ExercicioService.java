@@ -7,18 +7,20 @@ import tech.vitalis.caringu.dtos.Exercicio.ExercicioRequestPostDTO;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioRequestPostFuncionalDTO;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioResponseGetDTO;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioResponseTotalExercicioOrigemDTO;
-import tech.vitalis.caringu.entity.TreinoExercicio;
+import tech.vitalis.caringu.entity.AlunoTreinoExercicio;
+import tech.vitalis.caringu.entity.Exercicio;
+import tech.vitalis.caringu.entity.PersonalTrainer;
 import tech.vitalis.caringu.enums.Exercicio.OrigemEnum;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.mapper.ExercicioMapper;
-import tech.vitalis.caringu.entity.Exercicio;
+import tech.vitalis.caringu.repository.AlunoTreinoExercicioRepository;
 import tech.vitalis.caringu.repository.ExercicioRepository;
-import tech.vitalis.caringu.repository.TreinoExercicioRepository;
+import tech.vitalis.caringu.repository.PersonalTrainerRepository;
 import tech.vitalis.caringu.strategy.Exercicio.GrupoMuscularEnumValidator;
-import tech.vitalis.caringu.strategy.Exercicio.OrigemEnumValidator;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static tech.vitalis.caringu.strategy.EnumValidador.validarEnums;
@@ -26,13 +28,18 @@ import static tech.vitalis.caringu.strategy.EnumValidador.validarEnums;
 @Service
 public class ExercicioService {
 
-    private final TreinoExercicioRepository treinoExercicioRepository;
+    private final AlunoTreinoExercicioRepository alunoTreinoExercicioRepository;
+    private final PersonalTrainerRepository personalTrainerRepository;
     private final ExercicioRepository exercicioRepository;
     private final ExercicioMapper exercicioMapper;
 
     @Autowired
-    public ExercicioService(TreinoExercicioRepository treinoExercicioRepository, ExercicioRepository exercicioRepository, ExercicioMapper exercicioMapper) {
-        this.treinoExercicioRepository = treinoExercicioRepository;
+    public ExercicioService(
+            AlunoTreinoExercicioRepository alunoTreinoExercicioRepository, PersonalTrainerRepository personalTrainerRepository,
+            ExercicioRepository exercicioRepository, ExercicioMapper exercicioMapper
+    ) {
+        this.alunoTreinoExercicioRepository = alunoTreinoExercicioRepository;
+        this.personalTrainerRepository = personalTrainerRepository;
         this.exercicioRepository = exercicioRepository;
         this.exercicioMapper = exercicioMapper;
     }
@@ -60,6 +67,9 @@ public class ExercicioService {
         ));
 
         Exercicio novoExercicio = exercicioMapper.toEntity(exercicioDto);
+
+        Optional<PersonalTrainer> personalExistente = personalTrainerRepository.findById(exercicioDto.idPersonal());
+        personalExistente.ifPresent(novoExercicio::setPersonal);
         novoExercicio.setOrigem(OrigemEnum.PERSONAL);
 
         Exercicio exercicioSalvo = exercicioRepository.save(novoExercicio);
@@ -105,7 +115,7 @@ public class ExercicioService {
     }
 
     @Transactional
-    public void atualizarFavorito(Integer id, boolean favorito){
+    public void atualizarFavorito(Integer id, boolean favorito) {
         Exercicio exercicioFavorito = exercicioRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Exercicio não encontrado"));
 
@@ -119,10 +129,10 @@ public class ExercicioService {
             throw new ApiExceptions.ResourceNotFoundException("Exercício com ID " + id + " não encontrado");
         }
 
-        List<TreinoExercicio> treinos = treinoExercicioRepository.findAllByExercicioId(id);
+        List<AlunoTreinoExercicio> alunoTreinoExercicios = alunoTreinoExercicioRepository.findAllByExercicioId(id);
 
-        for (TreinoExercicio treino : treinos) {
-            treino.setExercicio(null);
+        for (AlunoTreinoExercicio alunoTreinoExercicio : alunoTreinoExercicios) {
+            alunoTreinoExercicio.setExercicio(null);
         }
 
         exercicioRepository.deleteById(id);
