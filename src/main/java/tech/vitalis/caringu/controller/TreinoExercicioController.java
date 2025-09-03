@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.TreinoExercicio.*;
+import tech.vitalis.caringu.service.AlunoTreinoExercicioService;
 import tech.vitalis.caringu.service.TreinoExercicioService;
 
 import java.util.List;
@@ -16,9 +17,14 @@ import java.util.List;
 public class TreinoExercicioController {
 
     private final TreinoExercicioService treinoExercicioService;
+    private final AlunoTreinoExercicioService alunoTreinoExercicioService;
 
-    public TreinoExercicioController(TreinoExercicioService treinoExercicioService) {
+    public TreinoExercicioController(
+            TreinoExercicioService treinoExercicioService,
+            AlunoTreinoExercicioService alunoTreinoExercicioService
+    ) {
         this.treinoExercicioService = treinoExercicioService;
+        this.alunoTreinoExercicioService = alunoTreinoExercicioService;
     }
 
     /*
@@ -36,12 +42,12 @@ public class TreinoExercicioController {
         return ResponseEntity.ok(treinosExerciciosResumo);
     }
 
-//    @GetMapping("/aluno/{alunoId}")
-//    @Operation(summary = "Buscar todos os Treino Exercício do ALuno")
-//    public ResponseEntity<List<TreinoExercicioResumoDTO>> listarPorALuno(@PathVariable Integer alunoId) {
-//        List<TreinoExercicioResumoDTO> treinosExerciciosResumo = treinoExercicioService.listarPorAluno(alunoId);
-//        return ResponseEntity.ok(treinosExerciciosResumo);
-//    }
+    @GetMapping("/aluno/{alunoId}")
+    @Operation(summary = "Buscar todos os Treino Exercício do ALuno")
+    public ResponseEntity<List<TreinoExercicioResumoDTO>> listarPorALuno(@PathVariable Integer alunoId) {
+        List<TreinoExercicioResumoDTO> treinosExerciciosResumo = treinoExercicioService.listarPorAluno(alunoId);
+        return ResponseEntity.ok(treinosExerciciosResumo);
+    }
 //
 //    @GetMapping("/exercicios-por-treino/{treinoId}/{alunoId}")
 //    public ResponseEntity<List<ListaExercicioPorTreinoResponseDTO>> buscarExerciciosPorTreino(
