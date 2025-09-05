@@ -2,11 +2,16 @@ package tech.vitalis.caringu.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioRequestPostDTO;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioRequestPostFuncionalDTO;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioResponseGetDTO;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioResponseTotalExercicioOrigemDTO;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoDTO;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoModeloCruQuerySqlDTO;
 import tech.vitalis.caringu.entity.AlunoTreinoExercicio;
 import tech.vitalis.caringu.entity.Exercicio;
 import tech.vitalis.caringu.entity.PersonalTrainer;
@@ -51,6 +56,10 @@ public class ExercicioService {
                 .collect(Collectors.toList());
     }
 
+    public Page<ExercicioResponseGetDTO> paginarExerciciosPorIdPersonal(Integer idPersonal, Pageable pageable) {
+        return exercicioRepository.findAllByPersonal_IdOrPersonalIsNull(idPersonal, pageable)
+                .map(exercicioMapper::toResponseDTO);
+    }
     public ExercicioResponseGetDTO buscarPorId(Integer id) {
         Exercicio exercicio = exercicioRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Exercício com ID " + id + " não encontrado"));

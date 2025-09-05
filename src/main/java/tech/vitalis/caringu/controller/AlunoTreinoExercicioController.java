@@ -21,18 +21,18 @@ public class AlunoTreinoExercicioController {
     }
 
     @GetMapping("/aluno/{alunoId}")
-    @Operation(summary = "Buscar todos os Treino Exercício do ALuno")
+    @Operation(summary = "Buscar todos os Treino Exercício do Aluno")
     public ResponseEntity<List<TreinoExercicioResumoDTO>> listarPorAluno(@PathVariable Integer alunoId) {
         List<TreinoExercicioResumoDTO> treinosExerciciosResumo = alunoTreinoExercicioService.listarPorAluno(alunoId);
         return ResponseEntity.ok(treinosExerciciosResumo);
     }
 
     @GetMapping("/aluno-paginado/{alunoId}")
-    @Operation(summary = "Buscar todos os Treino Exercício do ALuno")
+    @Operation(summary = "Buscar todos os Treino Exercício do Aluno")
     public ResponseEntity<Page<TreinoExercicioResumoDTO>> paginarPorAluno(
             @PathVariable Integer alunoId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "4") int size
+            @RequestParam(defaultValue = "2") int size
     ) {
         Page<TreinoExercicioResumoDTO> treinosExerciciosResumo = alunoTreinoExercicioService.paginarPorAluno(alunoId, PageRequest.of(page, size));
         return ResponseEntity.ok(treinosExerciciosResumo);

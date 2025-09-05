@@ -3,9 +3,12 @@ package tech.vitalis.caringu.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Exercicio.*;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoDTO;
 import tech.vitalis.caringu.service.ExercicioService;
 
 import java.util.List;
@@ -21,10 +24,24 @@ public class ExercicioController {
         this.exercicioService = exercicioService;
     }
 
+
+    // Esse endpoint vai ser usado pra listar os exercícios do personal (na tela de Gerenciar Treinos -> Criar Treinos -> Personalizar Exercícios
     @GetMapping("/por-personal/{idPersonal}")
     @Operation(summary = "Listar exercícios por ID Personal")
     public ResponseEntity<List<ExercicioResponseGetDTO>> listarExerciciosPorIdPersonal(@PathVariable Integer idPersonal) {
         return ResponseEntity.ok(exercicioService.listarExerciciosPorIdPersonal(idPersonal));
+    }
+
+    // Esse endpoint vai ser usado para listar os exercícios do Personal com ID X de forma paginada
+    @GetMapping("/por-personal-paginado/{idPersonal}")
+    @Operation(summary = "Listar exercícios por ID Personal")
+    public ResponseEntity<Page<ExercicioResponseGetDTO>> paginarExerciciosPorIdPersonal(
+            @PathVariable Integer idPersonal,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size
+    ) {
+        Page<ExercicioResponseGetDTO> treinosExerciciosResumo = exercicioService.paginarExerciciosPorIdPersonal(idPersonal, PageRequest.of(page, size));
+        return ResponseEntity.ok(treinosExerciciosResumo);
     }
 
     @GetMapping("/{id}")
