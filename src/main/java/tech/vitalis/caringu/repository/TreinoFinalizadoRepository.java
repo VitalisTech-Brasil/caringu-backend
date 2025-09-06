@@ -66,20 +66,32 @@ public interface TreinoFinalizadoRepository extends JpaRepository<TreinoFinaliza
 //    List<TreinoIdentificacaoFinalizadoResponseDTO> findAllTreinosByPersonalId(@Param("personalId") Integer personalId);
 
 //    @Query("""
-//        SELECT new tech.vitalis.caringu.dtos.TreinoFinalizado.EvolucaoCargaDashboardResponseDTO(
-//          a.id, a.nome, a.peso, a.altura,
-//          tf.dataHorarioInicio, tf.dataHorarioFim,
-//          te.carga, ex.nome
-//        )
-//        FROM TreinoFinalizado tf
-//        JOIN tf.alunoTreino at
-//        JOIN at.treinosExercicios te
-//        JOIN te.exercicio ex
-//        JOIN at.alunos a
-//        WHERE ex.id = :exercicioId AND a.id = :alunoId
-//        ORDER BY a.nome, tf.dataHorarioInicio
-//    """)
-//    List<EvolucaoCargaDashboardResponseDTO> buscarEvolucaoCarga(@Param("exercicioId") Integer exercicioId, @Param("alunoId") Integer alunoId);
+//    SELECT new tech.vitalis.caringu.dtos.TreinoFinalizado.EvolucaoCargaDashboardResponseDTO(
+//        a.id,
+//        p.nome,
+//        a.peso,
+//        a.altura,
+//        st.dataHorarioInicio,
+//        st.dataHorarioFim,
+//        ee.cargaExecutada,
+//        ex.nome
+//    )
+//    FROM SessaoTreino st
+//    JOIN AlunoTreino at ON st.alunoTreino.id = at.id
+//    JOIN ExecucaoExercicio ee ON st.id = ee.sessaoTreino.id
+//    JOIN AlunoTreinoExercicio ate ON ate.id = ee.alunoTreinoExercicio.id
+//    JOIN Exercicio ex ON ate.exercicio.id = ex.id
+//    JOIN Aluno a ON at.alunos.id = a.id
+//    JOIN Pessoa p ON a.id = p.id
+//    WHERE ex.id = :idExercicio
+//      AND a.id = :idAluno
+//      AND st.status = 'REALIZADO'
+//    ORDER BY p.nome, st.dataHorarioInicio
+//""")
+//    List<EvolucaoCargaDashboardResponseDTO> buscarEvolucaoCarga(
+//            @Param("idExercicio") Integer idExercicio,
+//            @Param("idAluno") Integer idAluno
+//    );
 
 //    @Query("""
 //    SELECT new tech.vitalis.caringu.dtos.TreinoFinalizado.EvolucaoTreinoCumpridoResponseDTO(
@@ -109,35 +121,36 @@ public interface TreinoFinalizadoRepository extends JpaRepository<TreinoFinaliza
 //            @Param("exercicioId") Integer exercicioId
 //    );
 
-    @Query(value = """
-        SELECT 
-            a.id AS idAluno,
-            p.nome AS nomeAluno,
-            ex.id AS idExercicio,
-            ex.nome AS nomeExercicio,
-            YEAR(tf.data_horario_inicio) AS ano,
-            MONTH(tf.data_horario_inicio) AS mes,
-            YEARWEEK(tf.data_horario_inicio, 1) AS anoSemana,
-            ROUND(SUM(TIMESTAMPDIFF(MINUTE, tf.data_horario_inicio, tf.data_horario_fim)) / 60, 2) AS horasTreinadas
-        FROM treinos_finalizados tf
-        JOIN alunos_treinos at ON tf.alunos_treinos_id = at.id
-        JOIN treinos_exercicios te ON at.treinos_exercicios_id = te.id
-        JOIN exercicios ex ON te.exercicio_id = ex.id
-        JOIN alunos a ON at.alunos_id = a.id
-        JOIN pessoas p ON a.id = p.id
-        WHERE tf.data_horario_inicio <= NOW()
-          AND ex.id = :exercicioId
-          AND a.id = :alunoId
-        GROUP BY 
-            a.id, 
-            ex.id, 
-            YEAR(tf.data_horario_inicio), 
-            MONTH(tf.data_horario_inicio), 
-            YEARWEEK(tf.data_horario_inicio, 1)
-        ORDER BY ano, mes, anoSemana
-        """, nativeQuery = true)
-    List<Object[]> buscarHorasAgrupadasPorAlunoExercicio(
-            @Param("alunoId") Integer alunoId,
-            @Param("exercicioId") Integer exercicioId
-    );
+//    @Query(value = """
+//            SELECT\s
+//            a.id AS idAluno,
+//            p.nome AS nomeAluno,
+//            ex.id AS idExercicio,
+//            ex.nome AS nomeExercicio,
+//            YEAR(st.data_horario_inicio) AS ano,
+//            MONTH(st.data_horario_inicio) AS mes,
+//            YEARWEEK(st.data_horario_inicio, 1) AS anoSemana,
+//            ROUND(SUM(TIMESTAMPDIFF(MINUTE, st.data_horario_inicio, st.data_horario_fim)) / 60, 2) AS horasTreinadas
+//        FROM sessao_treinos st
+//        JOIN alunos_treinos at ON st.alunos_treinos_id = at.id
+//        JOIN alunos_treinos_exercicios ate ON ate.aluno_treino_id = at.id
+//        JOIN exercicios ex ON ate.exercicio_id = ex.id
+//        JOIN alunos a ON at.aluno_id = a.id
+//        JOIN pessoas p ON a.id = p.id
+//        WHERE st.data_horario_inicio <= NOW()
+//          AND ex.id = ?\s
+//          AND a.id = ?\s
+//          AND st.status = 'REALIZADO'
+//        GROUP BY\s
+//            a.id,\s
+//            ex.id,\s
+//            YEAR(st.data_horario_inicio),\s
+//            MONTH(st.data_horario_inicio),\s
+//            YEARWEEK(st.data_horario_inicio, 1)
+//        ORDER BY ano, mes, anoSemana;
+//        """, nativeQuery = true)
+//    List<Object[]> buscarHorasAgrupadasPorAlunoExercicio(
+//            @Param("alunoId") Integer alunoId,
+//            @Param("exercicioId") Integer exercicioId
+//    );
 }

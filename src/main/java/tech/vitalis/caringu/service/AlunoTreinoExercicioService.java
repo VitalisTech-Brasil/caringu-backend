@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import tech.vitalis.caringu.dtos.AlunosTreinoExercicio.ExerciciosPorTreinoResponseDTO;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoDTO;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoModeloCruQuerySqlDTO;
 import tech.vitalis.caringu.mapper.AlunoTreinoExercicioMapper;
@@ -71,5 +72,10 @@ public class AlunoTreinoExercicioService {
         List<TreinoExercicioResumoDTO> sublista = (start > end) ? List.of() : listaResumida.subList(start, end);
 
         return new PageImpl<>(sublista, pageable, listaResumida.size());
+    }
+
+    public List<ExerciciosPorTreinoResponseDTO> buscarExerciciosPorTreino(Integer treinoId, Integer alunoId) {
+
+        return alunoTreinoExercicioRepository.buscarExerciciosPorTreino(treinoId, alunoId);
     }
 }

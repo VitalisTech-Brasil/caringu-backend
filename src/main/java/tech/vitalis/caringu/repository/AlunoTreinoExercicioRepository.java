@@ -3,6 +3,8 @@ package tech.vitalis.caringu.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import tech.vitalis.caringu.dtos.AlunosTreinoExercicio.ExerciciosPorTreinoResponseDTO;
+import tech.vitalis.caringu.dtos.TreinoExercicio.ListaExercicioPorTreinoResponseDTO;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoModeloCruQuerySqlDTO;
 import tech.vitalis.caringu.entity.AlunoTreinoExercicio;
 
@@ -29,4 +31,24 @@ public interface AlunoTreinoExercicioRepository extends JpaRepository<AlunoTrein
                 where at.alunos.id = 6
             """)
     List<TreinoExercicioResumoModeloCruQuerySqlDTO> buscarTreinosExerciciosPorAluno(@Param("alunoId") Integer alunoId);
+
+    @Query("""
+    SELECT new tech.vitalis.caringu.dtos.AlunosTreinoExercicio.ExerciciosPorTreinoResponseDTO(
+        ate.id,
+        e.id,
+        e.nome,
+        t.nome
+    )
+    FROM AlunoTreinoExercicio ate
+    JOIN ate.exercicio e
+    JOIN ate.treino t
+    JOIN ate.alunoTreino at
+    JOIN at.alunos a
+    WHERE a.id = :alunoId
+      AND t.id = :treinoId
+""")
+    List<ExerciciosPorTreinoResponseDTO> buscarExerciciosPorTreino(
+            @Param("treinoId") Integer treinoId,
+            @Param("alunoId") Integer alunoId
+    );
 }

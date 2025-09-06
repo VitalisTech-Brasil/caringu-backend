@@ -1,4 +1,6 @@
-package tech.vitalis.caringu.dtos.TreinoFinalizado;
+package tech.vitalis.caringu.dtos.SessaoTreino;
+
+import tech.vitalis.caringu.dtos.SessaoTreino.HorasTreinadasSemanaMesDTO;
 
 import java.util.List;
 

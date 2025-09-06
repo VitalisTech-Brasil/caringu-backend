@@ -48,7 +48,7 @@ public class TreinoExercicioController {
         List<TreinoExercicioResumoDTO> treinosExerciciosResumo = treinoExercicioService.listarPorAluno(alunoId);
         return ResponseEntity.ok(treinosExerciciosResumo);
     }
-//
+
 //    @GetMapping("/exercicios-por-treino/{treinoId}/{alunoId}")
 //    public ResponseEntity<List<ListaExercicioPorTreinoResponseDTO>> buscarExerciciosPorTreino(
 //            @PathVariable Integer treinoId,

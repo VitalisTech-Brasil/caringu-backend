@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.vitalis.caringu.dtos.AlunosTreinoExercicio.ExerciciosPorTreinoResponseDTO;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoDTO;
 import tech.vitalis.caringu.service.AlunoTreinoExercicioService;
 
@@ -35,6 +36,16 @@ public class AlunoTreinoExercicioController {
             @RequestParam(defaultValue = "2") int size
     ) {
         Page<TreinoExercicioResumoDTO> treinosExerciciosResumo = alunoTreinoExercicioService.paginarPorAluno(alunoId, PageRequest.of(page, size));
+        return ResponseEntity.ok(treinosExerciciosResumo);
+    }
+
+    @GetMapping("/exercicios-por-treino/{treinoId}/{alunoId}")
+    public ResponseEntity<List<ExerciciosPorTreinoResponseDTO>> buscarExerciciosPorTreino(
+            @PathVariable Integer treinoId,
+            @PathVariable Integer alunoId
+    ) {
+        List<ExerciciosPorTreinoResponseDTO> treinosExerciciosResumo = alunoTreinoExercicioService.buscarExerciciosPorTreino(treinoId, alunoId);
+
         return ResponseEntity.ok(treinosExerciciosResumo);
     }
 }

@@ -1,12 +1,7 @@
 package tech.vitalis.caringu.service;
 
 import org.springframework.stereotype.Service;
-import tech.vitalis.caringu.dtos.TreinoFinalizado.HorasTreinadasResponseDTO;
-import tech.vitalis.caringu.dtos.TreinoFinalizado.HorasTreinadasSemanaMesDTO;
 import tech.vitalis.caringu.repository.TreinoFinalizadoRepository;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class TreinoFinalizadoService {
@@ -21,7 +16,7 @@ public class TreinoFinalizadoService {
 //    public List<EvolucaoCargaDashboardResponseDTO> buscarEvolucaoCarga(Integer alunoId, Integer exercicioId) {
 //        return repository.buscarEvolucaoCarga(exercicioId, alunoId);
 //    }
-//
+
 //    public List<EvolucaoTreinoCumpridoResponseDTO> buscarEvolucaoTreinosCumpridosMensal(Integer alunoId, Integer exercicioId) {
 //        return repository.buscarEvolucaoTreinosCumpridosMensal(alunoId, exercicioId);
 //    }
@@ -57,24 +52,24 @@ public class TreinoFinalizadoService {
 //        return new HorasTreinadasMensalResponseDTO(alunoId, exercicioId, mediaHorasPorSemana, listaHorasPorMes);
 //    }
 
-    public HorasTreinadasResponseDTO buscarHorasTreinadas(Integer alunoId, Integer exercicioId) {
-        List<Object[]> resultados = repository.buscarHorasAgrupadasPorAlunoExercicio(alunoId, exercicioId);
-
-        List<HorasTreinadasSemanaMesDTO> dados = resultados.stream()
-                .map(r -> new HorasTreinadasSemanaMesDTO(
-                        (Integer) r[0],
-                        (String) r[1],
-                        (Integer) r[2],
-                        (String) r[3],
-                        ((Number) r[4]).intValue(),
-                        ((Number) r[5]).intValue(),
-                        ((Number) r[6]).intValue(),
-                        ((Number) r[7]).doubleValue()
-                ))
-                .collect(Collectors.toList());
-
-        return new HorasTreinadasResponseDTO(alunoId, exercicioId, dados);
-    }
+//    public HorasTreinadasResponseDTO buscarHorasTreinadas(Integer alunoId, Integer exercicioId) {
+//        List<Object[]> resultados = repository.buscarHorasAgrupadasPorAlunoExercicio(alunoId, exercicioId);
+//
+//        List<HorasTreinadasSemanaMesDTO> dados = resultados.stream()
+//                .map(r -> new HorasTreinadasSemanaMesDTO(
+//                        (Integer) r[0],
+//                        (String) r[1],
+//                        (Integer) r[2],
+//                        (String) r[3],
+//                        ((Number) r[4]).intValue(),
+//                        ((Number) r[5]).intValue(),
+//                        ((Number) r[6]).intValue(),
+//                        ((Number) r[7]).doubleValue()
+//                ))
+//                .collect(Collectors.toList());
+//
+//        return new HorasTreinadasResponseDTO(alunoId, exercicioId, dados);
+//    }
 
 //    public void atualizarDataHorarioFim(Integer idTreinoFinalizado, AtualizarDataFimDTO dto) {
 //        TreinoFinalizado treino = repository.findById(idTreinoFinalizado)

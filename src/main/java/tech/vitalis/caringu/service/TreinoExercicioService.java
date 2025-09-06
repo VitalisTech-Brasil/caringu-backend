@@ -94,11 +94,10 @@ public class TreinoExercicioService {
     }
 
 //    public List<ListaExercicioPorTreinoResponseDTO> buscarExerciciosPorTreino(Integer treinoId, Integer alunoId) {
-//        List<ListaExercicioPorTreinoResponseDTO> listaExerciciosPorTreino = treinoExercicioRepository.buscarExerciciosPorTreino(treinoId, alunoId);
 //
-//        return listaExerciciosPorTreino;
+//        return treinoExercicioRepository.buscarExerciciosPorTreino(treinoId, alunoId);
 //    }
-//
+
     public List<TreinoExercicioResumoDTO> listarPorAluno(Integer alunoId) {
         List<TreinoExercicioResumoModeloCruQuerySqlDTO> listaComValoresNaoTratados = treinoExercicioRepository.buscarTreinosExerciciosPorAluno(alunoId);
 
