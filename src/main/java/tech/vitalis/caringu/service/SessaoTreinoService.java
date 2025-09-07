@@ -63,7 +63,6 @@ public class SessaoTreinoService {
         SessaoTreino sessaoTreino = sessaoTreinoRepository.findById(idSessaoTreino)
                 .orElseThrow(() -> new SessaoTreinoNaoEncontradoException("Sessão treino com id %d não encontrado.".formatted(idSessaoTreino)));
 
-
         validarEnums(Map.of(
                 new StatusSessaoTreinoValidationStrategy(), novoStatus
         ));

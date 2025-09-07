@@ -24,6 +24,18 @@ public class ExercicioController {
         this.exercicioService = exercicioService;
     }
 
+    @GetMapping
+    @Operation(summary = "Listar todos os exercícios")
+    public ResponseEntity<List<ExercicioResponseGetDTO>> listarExerciciosPorIdPersonal() {
+        return ResponseEntity.ok(exercicioService.listarExerciciosPorIdPersonal());
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Buscar exercício por ID")
+    public ResponseEntity<ExercicioResponseGetDTO> buscarPorId(@PathVariable Integer id) {
+        return ResponseEntity.ok(exercicioService.buscarPorId(id));
+
+    }
 
     // Esse endpoint vai ser usado pra listar os exercícios do personal (na tela de Gerenciar Treinos -> Criar Treinos -> Personalizar Exercícios
     @GetMapping("/por-personal/{idPersonal}")
@@ -42,13 +54,6 @@ public class ExercicioController {
     ) {
         Page<ExercicioResponseGetDTO> treinosExerciciosResumo = exercicioService.paginarExerciciosPorIdPersonal(idPersonal, PageRequest.of(page, size));
         return ResponseEntity.ok(treinosExerciciosResumo);
-    }
-
-    @GetMapping("/{id}")
-    @Operation(summary = "Buscar exercício por ID")
-    public ResponseEntity<ExercicioResponseGetDTO> buscarPorId(@PathVariable Integer id) {
-        return ResponseEntity.ok(exercicioService.buscarPorId(id));
-
     }
 
     @GetMapping("/kpi/total-por-origem/{idPersonal}")

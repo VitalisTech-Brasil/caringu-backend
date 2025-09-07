@@ -33,6 +33,8 @@ import tech.vitalis.caringu.exception.PlanoContratado.PlanoContratadoNaoEncontra
 import tech.vitalis.caringu.exception.PreferenciasNotificacao.PreferenciasNotificacaoJaExisteException;
 import tech.vitalis.caringu.exception.PreferenciasNotificacao.PreferenciasNotificacaoNaoEncontradaException;
 import tech.vitalis.caringu.exception.SessaoTreino.SessaoTreinoNaoEncontradoException;
+import tech.vitalis.caringu.exception.generics.IdsRequisicaoIncompativeisException;
+import tech.vitalis.caringu.exception.Treino.TreinoNaoEncontradoException;
 import tech.vitalis.caringu.exception.TreinoFinalizado.TreinoFinalizadoNaoEncontradoException;
 
 import java.time.LocalDate;
@@ -76,7 +78,18 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
     }
 
+    @ExceptionHandler(TreinoNaoEncontradoException.class)
+    public ResponseEntity<Map<String, Object>> handleTreinoNaoEncontrado(TreinoNaoEncontradoException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(IdsRequisicaoIncompativeisException.class)
+    public ResponseEntity<Map<String, Object>> handleIdsRequisicaoIncompativeisException(IdsRequisicaoIncompativeisException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.BAD_REQUEST, "Not Found", ex.getMessage(), request);
+    }
+
     @ExceptionHandler(PersonalNaoEncontradoException.class)
+
     public ResponseEntity<Map<String, Object>> handlePersonalNaoEncontrado(PersonalNaoEncontradoException ex, WebRequest request) {
         return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
     }

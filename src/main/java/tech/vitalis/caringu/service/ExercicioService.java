@@ -49,6 +49,19 @@ public class ExercicioService {
         this.exercicioMapper = exercicioMapper;
     }
 
+    public List<ExercicioResponseGetDTO> listarExerciciosPorIdPersonal() {
+        return exercicioRepository.findAll()
+                .stream()
+                .map(exercicioMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public ExercicioResponseGetDTO buscarPorId(Integer id) {
+        Exercicio exercicio = exercicioRepository.findById(id)
+                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Exercício com ID " + id + " não encontrado"));
+        return exercicioMapper.toResponseDTO(exercicio);
+    }
+
     public List<ExercicioResponseGetDTO> listarExerciciosPorIdPersonal(Integer idPersonal) {
         return exercicioRepository.findAllByPersonal_IdOrPersonalIsNull(idPersonal)
                 .stream()
@@ -59,11 +72,6 @@ public class ExercicioService {
     public Page<ExercicioResponseGetDTO> paginarExerciciosPorIdPersonal(Integer idPersonal, Pageable pageable) {
         return exercicioRepository.findAllByPersonal_IdOrPersonalIsNull(idPersonal, pageable)
                 .map(exercicioMapper::toResponseDTO);
-    }
-    public ExercicioResponseGetDTO buscarPorId(Integer id) {
-        Exercicio exercicio = exercicioRepository.findById(id)
-                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Exercício com ID " + id + " não encontrado"));
-        return exercicioMapper.toResponseDTO(exercicio);
     }
 
     public List<ExercicioResponseTotalExercicioOrigemDTO> buscarTotalExercicioOrigem(Integer idPersonal) {
