@@ -88,6 +88,10 @@ public class PlanoContratadoService {
             }
         }
 
+        if (novoStatus.equals(StatusEnum.CANCELADO)) {
+            planoContratado.setDataFim(LocalDate.now());
+        }
+
         planoContratado.setStatus(novoStatus);
         planoContratadoRepository.save(planoContratado);
     }

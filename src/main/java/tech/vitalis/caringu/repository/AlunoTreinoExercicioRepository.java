@@ -50,7 +50,7 @@ public interface AlunoTreinoExercicioRepository extends JpaRepository<AlunoTrein
                 join Treino t ON ate.treino.id = t.id
                 join Exercicio e ON ate.exercicio.id = e.id
                 join AlunoTreino at ON ate.alunoTreino.id = at.id
-                where at.alunos.id = 6
+                where at.alunos.id = :alunoId
             """)
     List<TreinoExercicioResumoModeloCruQuerySqlDTO> buscarTreinosExerciciosPorAluno(@Param("alunoId") Integer alunoId);
 

@@ -1,17 +1,14 @@
 package tech.vitalis.caringu.service;
 
 import org.springframework.stereotype.Service;
-import tech.vitalis.caringu.dtos.SessaoTreino.SessaoAulasAgendadasResponseDTO;
-import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoCargaDashboardResponseDTO;
-import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoTreinoCumpridoResponseDTO;
-import tech.vitalis.caringu.dtos.SessaoTreino.HorasTreinadasResponseDTO;
-import tech.vitalis.caringu.dtos.SessaoTreino.HorasTreinadasSemanaMesDTO;
+import tech.vitalis.caringu.dtos.SessaoTreino.*;
 import tech.vitalis.caringu.entity.SessaoTreino;
 import tech.vitalis.caringu.enums.SessaoTreino.StatusSessaoTreinoEnum;
 import tech.vitalis.caringu.exception.SessaoTreino.SessaoTreinoNaoEncontradoException;
 import tech.vitalis.caringu.repository.SessaoTreinoRepository;
 import tech.vitalis.caringu.strategy.SessaoTreino.StatusSessaoTreinoValidationStrategy;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -66,6 +63,14 @@ public class SessaoTreinoService {
         validarEnums(Map.of(
                 new StatusSessaoTreinoValidationStrategy(), novoStatus
         ));
+
+        if (novoStatus.equals(StatusSessaoTreinoEnum.REALIZADO)) {
+            sessaoTreino.setDataHorarioFim(LocalDateTime.now());
+        }
+
+        if (novoStatus.equals(StatusSessaoTreinoEnum.AGENDADO)) {
+            sessaoTreino.setDataHorarioFim(null);
+        }
 
         sessaoTreino.setStatus(novoStatus);
         sessaoTreinoRepository.save(sessaoTreino);
