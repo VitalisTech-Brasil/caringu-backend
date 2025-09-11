@@ -20,8 +20,10 @@ import tech.vitalis.caringu.mapper.AlunoMapper;
 import tech.vitalis.caringu.repository.AlunoRepository;
 import tech.vitalis.caringu.repository.PessoaRepository;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -239,10 +241,14 @@ class AlunoServiceTest {
     void buscarAlunosDetalhados_DeveRetornarDTOsDetalhados() {
         Integer personalId = 1;
 
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+        LocalDate endOfWeek = today.with(DayOfWeek.SUNDAY);
+
         List<AlunoDetalhadoResponseDTO> dadosBrutos = List.of(
                 mock(AlunoDetalhadoResponseDTO.class)
         );
-        when(alunoRepository.buscarDetalhesPorPersonal(personalId)).thenReturn(dadosBrutos);
+        when(alunoRepository.buscarDetalhesPorPersonal(personalId, startOfWeek.atStartOfDay(), endOfWeek.atTime(LocalTime.MAX))).thenReturn(dadosBrutos);
 
         List<AlunoDetalhadoComTreinosDTO> listaConsolidada = List.of(
                 mock(AlunoDetalhadoComTreinosDTO.class)
@@ -253,7 +259,7 @@ class AlunoServiceTest {
 
         assertNotNull(resultado);
         assertEquals(1, resultado.size());
-        verify(alunoRepository).buscarDetalhesPorPersonal(personalId);
+        verify(alunoRepository).buscarDetalhesPorPersonal(personalId, startOfWeek.atStartOfDay(), endOfWeek.atTime(LocalTime.MAX));
         verify(alunoMapper).consolidarPorAluno(dadosBrutos);
     }
 

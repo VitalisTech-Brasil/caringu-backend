@@ -6,6 +6,7 @@ import tech.vitalis.caringu.dtos.PerfilAluno.AlunoGetPerfilDetalhesDTO;
 import tech.vitalis.caringu.dtos.PerfilAluno.PessoaGetPerfilDetalhesDTO;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.enums.PeriodoEnum;
+import tech.vitalis.caringu.repository.SessaoTreinoRepository;
 import tech.vitalis.caringu.repository.TreinoFinalizadoRepository;
 
 import java.time.LocalDate;
@@ -17,10 +18,10 @@ import java.util.stream.Collectors;
 @Component
 public class AlunoMapper {
 
-    private final TreinoFinalizadoRepository treinoFinalizadoRepository;
+    private final SessaoTreinoRepository sessaoTreinoRepository;
 
-    public AlunoMapper(TreinoFinalizadoRepository treinoFinalizadoRepository) {
-        this.treinoFinalizadoRepository = treinoFinalizadoRepository;
+    public AlunoMapper(SessaoTreinoRepository sessaoTreinoRepository) {
+        this.sessaoTreinoRepository = sessaoTreinoRepository;
     }
 
     public Aluno toEntity(AlunoRequestPostDTO cadastroDTO) {
@@ -102,10 +103,10 @@ public class AlunoMapper {
         AlunoDetalhadoComTreinosDTO base = duplicados.getFirst(); // os dados são iguais entre os duplicados
 
         // Horários e contagens agregadas por aluno (não por treino)
-        List<String> horariosInicioSemana = treinoFinalizadoRepository.buscarHorariosInicioSemana(base.idAluno());
-        List<String> horariosFimSemana = treinoFinalizadoRepository.buscarHorariosFimSemana(base.idAluno());
-        List<String> horariosInicioTotal = treinoFinalizadoRepository.buscarHorariosInicioTotal(base.idAluno());
-        List<String> horariosFimTotal = treinoFinalizadoRepository.buscarHorariosFimTotal(base.idAluno());
+        List<String> horariosInicioSemana = sessaoTreinoRepository.buscarHorariosInicioSemana(base.idAluno());
+        List<String> horariosFimSemana = sessaoTreinoRepository.buscarHorariosFimSemana(base.idAluno());
+        List<String> horariosInicioTotal = sessaoTreinoRepository.buscarHorariosInicioTotal(base.idAluno());
+        List<String> horariosFimTotal = sessaoTreinoRepository.buscarHorariosFimTotal(base.idAluno());
 
         Long treinosSemana = duplicados.stream().mapToLong(AlunoDetalhadoComTreinosDTO::treinosSemana).sum();
         Long treinosTotal = duplicados.stream().mapToLong(AlunoDetalhadoComTreinosDTO::treinosTotal).sum();

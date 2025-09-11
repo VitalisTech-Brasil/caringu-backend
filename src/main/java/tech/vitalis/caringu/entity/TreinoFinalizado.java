@@ -1,15 +1,10 @@
 package tech.vitalis.caringu.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.FutureOrPresent;
-import lombok.EqualsAndHashCode;
-
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "treinos_finalizados")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class TreinoFinalizado {
 
     @Id

@@ -2,7 +2,6 @@ package tech.vitalis.caringu.mapper;
 
 import org.springframework.stereotype.Component;
 import tech.vitalis.caringu.dtos.TreinoFinalizado.TreinoFinalizadoRequestPostDTO;
-import tech.vitalis.caringu.dtos.TreinoFinalizado.TreinoFinalizadoResponseGetDTO;
 import tech.vitalis.caringu.entity.TreinoFinalizado;
 
 @Component
@@ -23,14 +22,14 @@ public class TreinoFinalizadoMapper {
         return treinoFinalizado;
     }
 
-    public TreinoFinalizadoResponseGetDTO toResponseDTO(TreinoFinalizado treinoFinalizado){
-        if (treinoFinalizado == null) return null;
-
-        return new TreinoFinalizadoResponseGetDTO(
-                treinoFinalizado.getId(),
-                treinoFinalizado.getDataHorarioInicio(),
-                treinoFinalizado.getDataHorarioFim(),
-                alunoTreinoMapper.toResponseDTO(treinoFinalizado.getAlunoTreino())
-        );
-    }
+//    public TreinoFinalizadoResponseGetDTO toResponseDTO(TreinoFinalizado treinoFinalizado){
+//        if (treinoFinalizado == null) return null;
+//
+//        return new TreinoFinalizadoResponseGetDTO(
+//                treinoFinalizado.getId(),
+//                treinoFinalizado.getDataHorarioInicio(),
+//                treinoFinalizado.getDataHorarioFim(),
+//                alunoTreinoMapper.toResponseDTO(treinoFinalizado.getAlunoTreino())
+//        );
+//    }
 }

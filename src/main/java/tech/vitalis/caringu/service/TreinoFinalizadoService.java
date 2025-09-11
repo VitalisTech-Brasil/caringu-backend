@@ -1,16 +1,7 @@
 package tech.vitalis.caringu.service;
 
 import org.springframework.stereotype.Service;
-import org.threeten.extra.YearWeek;
-import tech.vitalis.caringu.dtos.TreinoFinalizado.*;
-import tech.vitalis.caringu.entity.TreinoFinalizado;
-import tech.vitalis.caringu.exception.TreinoFinalizado.TreinoFinalizadoNaoEncontradoException;
 import tech.vitalis.caringu.repository.TreinoFinalizadoRepository;
-
-import java.time.Duration;
-import java.time.YearMonth;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class TreinoFinalizadoService {
@@ -21,17 +12,14 @@ public class TreinoFinalizadoService {
         this.repository = repository;
     }
 
-    public List<TreinoIdentificacaoFinalizadoResponseDTO> listarPorPersonal(Integer personalId) {
-        return repository.findAllTreinosByPersonalId(personalId);
-    }
 
-    public List<EvolucaoCargaDashboardResponseDTO> buscarEvolucaoCarga(Integer alunoId, Integer exercicioId) {
-        return repository.buscarEvolucaoCarga(exercicioId, alunoId);
-    }
+//    public List<EvolucaoCargaDashboardResponseDTO> buscarEvolucaoCarga(Integer alunoId, Integer exercicioId) {
+//        return repository.buscarEvolucaoCarga(exercicioId, alunoId);
+//    }
 
-    public List<EvolucaoTreinoCumpridoResponseDTO> buscarEvolucaoTreinosCumpridosMensal(Integer alunoId, Integer exercicioId) {
-        return repository.buscarEvolucaoTreinosCumpridosMensal(alunoId, exercicioId);
-    }
+//    public List<EvolucaoTreinoCumpridoResponseDTO> buscarEvolucaoTreinosCumpridosMensal(Integer alunoId, Integer exercicioId) {
+//        return repository.buscarEvolucaoTreinosCumpridosMensal(alunoId, exercicioId);
+//    }
 
 //    public HorasTreinadasMensalResponseDTO calcularHorasTreinadas(Integer alunoId, Integer exercicioId) {
 //        List<HorasTreinadasMensalDadosBrutosDTO> treinos = repository.buscarTreinosFinalizadosBrutos(alunoId, exercicioId);
@@ -64,30 +52,30 @@ public class TreinoFinalizadoService {
 //        return new HorasTreinadasMensalResponseDTO(alunoId, exercicioId, mediaHorasPorSemana, listaHorasPorMes);
 //    }
 
-    public HorasTreinadasResponseDTO buscarHorasTreinadas(Integer alunoId, Integer exercicioId) {
-        List<Object[]> resultados = repository.buscarHorasAgrupadasPorAlunoExercicio(alunoId, exercicioId);
+//    public HorasTreinadasResponseDTO buscarHorasTreinadas(Integer alunoId, Integer exercicioId) {
+//        List<Object[]> resultados = repository.buscarHorasAgrupadasPorAlunoExercicio(alunoId, exercicioId);
+//
+//        List<HorasTreinadasSemanaMesDTO> dados = resultados.stream()
+//                .map(r -> new HorasTreinadasSemanaMesDTO(
+//                        (Integer) r[0],
+//                        (String) r[1],
+//                        (Integer) r[2],
+//                        (String) r[3],
+//                        ((Number) r[4]).intValue(),
+//                        ((Number) r[5]).intValue(),
+//                        ((Number) r[6]).intValue(),
+//                        ((Number) r[7]).doubleValue()
+//                ))
+//                .collect(Collectors.toList());
+//
+//        return new HorasTreinadasResponseDTO(alunoId, exercicioId, dados);
+//    }
 
-        List<HorasTreinadasSemanaMesDTO> dados = resultados.stream()
-                .map(r -> new HorasTreinadasSemanaMesDTO(
-                        (Integer) r[0],
-                        (String) r[1],
-                        (Integer) r[2],
-                        (String) r[3],
-                        ((Number) r[4]).intValue(),
-                        ((Number) r[5]).intValue(),
-                        ((Number) r[6]).intValue(),
-                        ((Number) r[7]).doubleValue()
-                ))
-                .collect(Collectors.toList());
-
-        return new HorasTreinadasResponseDTO(alunoId, exercicioId, dados);
-    }
-
-    public void atualizarDataHorarioFim(Integer idTreinoFinalizado, AtualizarDataFimDTO dto) {
-        TreinoFinalizado treino = repository.findById(idTreinoFinalizado)
-                .orElseThrow(() -> new TreinoFinalizadoNaoEncontradoException("Treino não encontrado com id: " + idTreinoFinalizado));
-
-        treino.setDataHorarioFim(dto.dataHorarioFim());
-        repository.save(treino);
-    }
+//    public void atualizarDataHorarioFim(Integer idTreinoFinalizado, AtualizarDataFimDTO dto) {
+//        TreinoFinalizado treino = repository.findById(idTreinoFinalizado)
+//                .orElseThrow(() -> new TreinoFinalizadoNaoEncontradoException("Treino não encontrado com id: " + idTreinoFinalizado));
+//
+//        treino.setDataHorarioFim(dto.dataHorarioFim());
+//        repository.save(treino);
+//    }
 }

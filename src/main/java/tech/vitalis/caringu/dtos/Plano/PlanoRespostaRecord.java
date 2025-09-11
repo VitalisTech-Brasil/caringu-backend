@@ -19,11 +19,11 @@ public record PlanoRespostaRecord(
         PeriodoEnum periodo,
 
         @Positive
-        @NotNull
+        @NotNull(message = "O campo quantidadeAulas não pode estar nulo.")
         Integer quantidadeAulas,
 
         @Positive
-        @NotNull
+        @NotNull(message = "O campo valorAulas não pode estar nulo.")
         Double valorAulas
 ) {
     public Double getValorPlano() {

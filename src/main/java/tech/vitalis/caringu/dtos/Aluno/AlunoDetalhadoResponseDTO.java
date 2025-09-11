@@ -6,6 +6,7 @@ import tech.vitalis.caringu.enums.Anamnese.FrequenciaTreinoEnum;
 import tech.vitalis.caringu.enums.PeriodoEnum;
 
 import java.time.LocalDate;
+
 public record AlunoDetalhadoResponseDTO(
         Integer idAluno,
         Double peso,

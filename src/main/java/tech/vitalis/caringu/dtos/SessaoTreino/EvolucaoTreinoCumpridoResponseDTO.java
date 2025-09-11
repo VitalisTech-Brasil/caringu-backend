@@ -1,4 +1,4 @@
-package tech.vitalis.caringu.dtos.TreinoFinalizado;
+package tech.vitalis.caringu.dtos.SessaoTreino;
 
 import tech.vitalis.caringu.enums.Anamnese.FrequenciaTreinoEnum;
 

@@ -1,8 +1,6 @@
 package tech.vitalis.caringu.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import lombok.*;
 import tech.vitalis.caringu.enums.PeriodoEnum;
 
 @Entity
