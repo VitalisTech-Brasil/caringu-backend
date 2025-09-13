@@ -92,8 +92,9 @@ public interface SessaoTreinoRepository extends JpaRepository<SessaoTreino, Inte
     )
     FROM SessaoTreino st
     JOIN AlunoTreino at ON st.alunoTreino.id = at.id
-    JOIN ExecucaoExercicio ee ON st.id = ee.sessaoTreino.id
-    JOIN AlunoTreinoExercicio ate ON ate.id = ee.alunoTreinoExercicio.id
+    JOIN SessaoTreinoExercicio ste ON ste.sessaoTreino.id = st.id
+    JOIN AlunoTreinoExercicio ate ON ate.id = ste.alunoTreinoExercicio.id
+    JOIN ExecucaoExercicio ee ON ee.sessaoTreinoExercicio.id = ste.id
     JOIN Exercicio ex ON ate.exercicio.id = ex.id
     JOIN Aluno a ON at.alunos.id = a.id
     WHERE ex.id = :idExercicio
@@ -119,11 +120,11 @@ public interface SessaoTreinoRepository extends JpaRepository<SessaoTreino, Inte
     )
     FROM Aluno a
     LEFT JOIN Anamnese ana ON ana.aluno.id = a.id
-    
     JOIN AlunoTreino at ON at.alunos.id = a.id
-    JOIN AlunoTreinoExercicio ate ON ate.alunoTreino.id = at.id
-    JOIN Exercicio ex ON ate.exercicio.id = ex.id
     JOIN SessaoTreino st ON st.alunoTreino.id = at.id
+    JOIN SessaoTreinoExercicio ste ON ste.sessaoTreino.id = st.id
+    JOIN AlunoTreinoExercicio ate ON ate.id = ste.alunoTreinoExercicio.id
+    JOIN Exercicio ex ON ate.exercicio.id = ex.id
     WHERE a.id = :alunoId
       AND ex.id = :exercicioId
       AND st.status = 'REALIZADO'
@@ -148,7 +149,8 @@ public interface SessaoTreinoRepository extends JpaRepository<SessaoTreino, Inte
             ROUND(SUM(TIMESTAMPDIFF(MINUTE, st.data_horario_inicio, st.data_horario_fim)) / 60, 2) AS horasTreinadas
         FROM sessao_treinos st
         JOIN alunos_treinos at ON st.alunos_treinos_id = at.id
-        JOIN alunos_treinos_exercicios ate ON ate.alunos_treinos_id = at.id
+        JOIN sessao_treinos_exercicios ste ON ste.sessao_treinos_id = st.id
+        JOIN alunos_treinos_exercicios ate ON ate.id = ste.alunos_treinos_exercicios_id
         JOIN exercicios ex ON ate.exercicios_id = ex.id
         JOIN alunos a ON at.alunos_id = a.id
         JOIN pessoas p ON a.id = p.id

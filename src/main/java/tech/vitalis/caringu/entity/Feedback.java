@@ -11,20 +11,22 @@ import java.time.LocalDateTime;
 public class Feedback {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @NotBlank
-    private String titulo;
-    @NotNull
-    private LocalDateTime dataCriacao;
-    @ManyToOne
-    @JoinColumn(name = "alunos_treino_id")
-    private AlunoTreino alunosTreino;
 
-    public Feedback(Integer id, String titulo, LocalDateTime dataCriacao, AlunoTreino alunosTreino) {
+    private String titulo;
+
+    private LocalDateTime dataCriacao;
+
+    @ManyToOne
+    @JoinColumn(name = "sessao_treino_id")
+    private SessaoTreino sessaoTreino;
+
+    public Feedback(Integer id, String titulo, LocalDateTime dataCriacao, SessaoTreino sessaoTreino) {
         this.id = id;
         this.titulo = titulo;
         this.dataCriacao = dataCriacao;
-        this.alunosTreino = alunosTreino;
+        this.sessaoTreino = sessaoTreino;
     }
 
     public Feedback() {}
@@ -53,11 +55,11 @@ public class Feedback {
         this.dataCriacao = dataCriacao;
     }
 
-    public AlunoTreino getAlunosTreino() {
-        return alunosTreino;
+    public SessaoTreino getSessaoTreino() {
+        return sessaoTreino;
     }
 
-    public void setAlunosTreino(AlunoTreino alunosTreino) {
-        this.alunosTreino = alunosTreino;
+    public void setSessaoTreino(SessaoTreino sessaoTreino) {
+        this.sessaoTreino = sessaoTreino;
     }
 }

@@ -11,12 +11,8 @@ public class ExecucaoExercicio {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "sessao_treino_id")
-    private SessaoTreino sessaoTreino;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "alunos_treinos_exercicios_id")
-    private AlunoTreinoExercicio alunoTreinoExercicio;
+    @JoinColumn(name = "sessao_treinos_exercicios_id")
+    private SessaoTreinoExercicio sessaoTreinoExercicio;
 
     @Column(name = "carga_executada")
     private Double cargaExecutada;
@@ -33,14 +29,12 @@ public class ExecucaoExercicio {
     public ExecucaoExercicio() {}
 
     public ExecucaoExercicio(
-            Integer id, SessaoTreino sessaoTreino,
-            AlunoTreinoExercicio alunoTreinoExercicio,
+            Integer id, SessaoTreinoExercicio sessaoTreinoExercicio,
             Double cargaExecutada, Integer repeticoesExecutadas,
             Integer seriesExecutadas, Integer descansoExecutado
     ) {
         this.id = id;
-        this.sessaoTreino = sessaoTreino;
-        this.alunoTreinoExercicio = alunoTreinoExercicio;
+        this.sessaoTreinoExercicio = sessaoTreinoExercicio;
         this.cargaExecutada = cargaExecutada;
         this.repeticoesExecutadas = repeticoesExecutadas;
         this.seriesExecutadas = seriesExecutadas;
@@ -55,20 +49,12 @@ public class ExecucaoExercicio {
         this.id = id;
     }
 
-    public SessaoTreino getSessaoTreino() {
-        return sessaoTreino;
+    public SessaoTreinoExercicio getSessaoTreinoExercicio() {
+        return sessaoTreinoExercicio;
     }
 
-    public void setSessaoTreino(SessaoTreino sessaoTreino) {
-        this.sessaoTreino = sessaoTreino;
-    }
-
-    public AlunoTreinoExercicio getAlunoTreinoExercicio() {
-        return alunoTreinoExercicio;
-    }
-
-    public void setAlunoTreinoExercicio(AlunoTreinoExercicio alunoTreinoExercicio) {
-        this.alunoTreinoExercicio = alunoTreinoExercicio;
+    public void setSessaoTreinoExercicio(SessaoTreinoExercicio sessaoTreinoExercicio) {
+        this.sessaoTreinoExercicio = sessaoTreinoExercicio;
     }
 
     public Double getCargaExecutada() {

@@ -45,13 +45,16 @@ public class AlunoTreinoExercicio {
     @Column(name = "ic_model")
     private Boolean icModel;
 
+    @Column(name = "exercicio_finalizado")
+    private Boolean exercicioFinalizado;
+
     public AlunoTreinoExercicio() {}
 
     public AlunoTreinoExercicio(
             Integer id, AlunoTreino alunoTreino, Exercicio exercicio,
             Treino treino, Double carga, Integer repeticoes,
             Integer series, Integer descanso, String observacoesPersonalizadas,
-            LocalDateTime dataModificacao, Boolean icModel
+            LocalDateTime dataModificacao, Boolean icModel, Boolean exercicioFinalizado
     ) {
         this.id = id;
         this.alunoTreino = alunoTreino;
@@ -64,6 +67,7 @@ public class AlunoTreinoExercicio {
         this.observacoesPersonalizadas = observacoesPersonalizadas;
         this.dataModificacao = dataModificacao;
         this.icModel = icModel;
+        this.exercicioFinalizado = exercicioFinalizado;
     }
 
     public Integer getId() {
@@ -152,6 +156,14 @@ public class AlunoTreinoExercicio {
 
     public void setIcModel(Boolean icModel) {
         this.icModel = icModel;
+    }
+
+    public Boolean getExercicioFinalizado() {
+        return exercicioFinalizado;
+    }
+
+    public void setExercicioFinalizado(Boolean exercicioFinalizado) {
+        this.exercicioFinalizado = exercicioFinalizado;
     }
 }
 

@@ -2,17 +2,12 @@ package tech.vitalis.caringu.mapper;
 
 import org.springframework.stereotype.Component;
 import tech.vitalis.caringu.dtos.Aluno.*;
-import tech.vitalis.caringu.dtos.PerfilAluno.AlunoGetPerfilDetalhesDTO;
-import tech.vitalis.caringu.dtos.PerfilAluno.PessoaGetPerfilDetalhesDTO;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.enums.PeriodoEnum;
 import tech.vitalis.caringu.repository.SessaoTreinoRepository;
-import tech.vitalis.caringu.repository.TreinoFinalizadoRepository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component

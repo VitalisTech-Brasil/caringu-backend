@@ -15,17 +15,25 @@ public class Comentario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @ManyToOne
-    @JoinColumn(name = "feedback_id", nullable = false)
+    @JoinColumn(name = "feedbacks_id", nullable = false)
     private Feedback feedback;
+
     @ManyToOne
     @JoinColumn(name = "pessoas_id", nullable = false)
     private Pessoa pessoas;
-    @NotBlank
+
+    @Column(columnDefinition = "TEXT")
     private String descricao;
-    @NotNull
+
+    @Column(name = "data_criacao")
     private LocalDateTime dataCriacao;
+
+    @Column(name = "tipo_autor")
     private TipoAutorEnum tipoAutor;
+
+    @Enumerated(EnumType.STRING)
     private IntensidadeComentarioEnum intensidade;
 
     public Comentario(
