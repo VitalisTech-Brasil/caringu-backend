@@ -104,7 +104,7 @@ public class NotificacoesController {
     @GetMapping("/testar/notificacoes-plano")
     public ResponseEntity<String> testarNotificacoesManualPlano() {
         notificacaoPlanoVencimentoService.enviarNotificacoesPlanoVencimento();
-        notificacaoPlanoVencimentoService.notificarPersonais();
+
         return ResponseEntity.ok("Notificações enviadas com sucesso!");
     }
 

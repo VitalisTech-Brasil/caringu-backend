@@ -18,13 +18,14 @@ import java.time.LocalDateTime;
 public class Feedback {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @NotBlank
     private String titulo;
     @NotNull
     private LocalDateTime dataCriacao;
     @ManyToOne
-    @JoinColumn(name = "alunos_treino_id")
+    @JoinColumn(name = "alunos_treinos_id")
     private AlunoTreino alunosTreino;
 
 }

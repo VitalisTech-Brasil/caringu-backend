@@ -24,4 +24,4 @@ COPY --from=builder /app/target/*.jar app.jar
 EXPOSE 8080
 
 # Comando para rodar a aplicação
-CMD ["java", "-Xms512m", "-Xmx10g", "-Dspring.profiles.active=prod", "-jar", "/app/app.jar"]
+CMD ["java", "-Xms512m", "-Xmx10g", "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "-jar", "/app/app.jar"]

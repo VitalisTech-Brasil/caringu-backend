@@ -65,13 +65,13 @@ public interface PlanoContratadoRepository extends JpaRepository<PlanoContratado
 
         @Query("""
         SELECT DISTINCT new tech.vitalis.caringu.dtos.Notificacoes.NotificacaoPlanoVencimentoDto(
-            pt.id,
+            pt,
             pePersonal.nome,
-            a.id,
+            a,
             peAluno.nome,
             p.id,
             p.nome,
-            pc.id,
+            pc,
             pc.status,
             pc.dataContratacao,
             pc.dataFim,
@@ -99,13 +99,13 @@ public interface PlanoContratadoRepository extends JpaRepository<PlanoContratado
 
     @Query("""
         SELECT DISTINCT new tech.vitalis.caringu.dtos.Notificacoes.NotificacaoPlanoVencimentoDto(
-            pt.id,
+            pt,
             pePersonal.nome,
-            a.id,
+            a,
             peAluno.nome,
             p.id,
             p.nome,
-            pc.id,
+            pc,
             pc.status,
             pc.dataContratacao,
             pc.dataFim,
