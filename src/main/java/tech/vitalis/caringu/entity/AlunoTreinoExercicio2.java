@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "alunos_treinos_exercicios")
-public class AlunoTreinoExercicio {
+public class AlunoTreinoExercicio2 {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,9 +48,9 @@ public class AlunoTreinoExercicio {
     @Column(name = "exercicio_finalizado")
     private Boolean exercicioFinalizado;
 
-    public AlunoTreinoExercicio() {}
+    public AlunoTreinoExercicio2() {}
 
-    public AlunoTreinoExercicio(
+    public AlunoTreinoExercicio2(
             Integer id, AlunoTreino alunoTreino, Exercicio exercicio,
             Treino treino, Double carga, Integer repeticoes,
             Integer series, Integer descanso, String observacoesPersonalizadas,

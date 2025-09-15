@@ -1,4 +1,4 @@
-package tech.vitalis.caringu.dtos.AlunosTreinoExercicio;
+package tech.vitalis.caringu.dtos.TreinoExercicio;
 
 public record ExerciciosPorTreinoResponseDTO(
         Integer alunoTreinoExercicioId,

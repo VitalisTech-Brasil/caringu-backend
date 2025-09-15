@@ -1,8 +1,6 @@
 package tech.vitalis.caringu.entity;
 
 import jakarta.persistence.*;
-import tech.vitalis.caringu.enums.TreinoExercicio.GrauDificuldadeEnum;
-import tech.vitalis.caringu.enums.TreinoExercicio.OrigemTreinoExercicioEnum;
 
 import java.time.LocalDateTime;
 
@@ -13,42 +11,59 @@ public class TreinoExercicio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "treino_id", nullable = false)
-    private Treino treinos;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "exercicio_id", nullable = false)
+    @JoinColumn(name = "exercicios_id")
     private Exercicio exercicio;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "treinos_id")
+    private Treino treino;
+
+    @Column(nullable = false)
     private Double carga;
+
+    @Column(nullable = false)
     private Integer repeticoes;
+
+    @Column(nullable = false)
     private Integer series;
+
+    @Column(nullable = false)
     private Integer descanso;
-    private LocalDateTime dataHoraCriacao;
-    private LocalDateTime dataHoraModificacao;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "origem", nullable = false)
-    private OrigemTreinoExercicioEnum origemTreinoExercicio;
+    @Column(name = "observacoes_personalizadas")
+    private String observacoesPersonalizadas;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "grau_dificuldade", nullable = false)
-    private GrauDificuldadeEnum grauDificuldade;
+    @Column(name = "data_modificacao")
+    private LocalDateTime dataModificacao;
 
-    public TreinoExercicio(Integer id, Treino treinos, Exercicio exercicio, Double carga, Integer repeticoes, Integer series, Integer descanso, LocalDateTime dataHoraCriacao, LocalDateTime dataHoraModificacao, OrigemTreinoExercicioEnum origemTreinoExercicio, GrauDificuldadeEnum grauDificuldade) {
+    @Column(name = "ic_model")
+    private Boolean icModel;
+
+    @Column(name = "exercicio_finalizado")
+    private Boolean exercicioFinalizado;
+
+    public TreinoExercicio() {}
+
+    public TreinoExercicio(
+            Integer id, Exercicio exercicio, Treino treino,
+            Double carga, Integer repeticoes, Integer series,
+            Integer descanso, String observacoesPersonalizadas,
+            LocalDateTime dataModificacao, Boolean icModel, Boolean exercicioFinalizado
+    ) {
         this.id = id;
-        this.treinos = treinos;
         this.exercicio = exercicio;
+        this.treino = treino;
         this.carga = carga;
         this.repeticoes = repeticoes;
         this.series = series;
         this.descanso = descanso;
-        this.dataHoraCriacao = dataHoraCriacao;
-        this.dataHoraModificacao = dataHoraModificacao;
-        this.origemTreinoExercicio = origemTreinoExercicio;
-        this.grauDificuldade = grauDificuldade;
+        this.observacoesPersonalizadas = observacoesPersonalizadas;
+        this.dataModificacao = dataModificacao;
+        this.icModel = icModel;
+        this.exercicioFinalizado = exercicioFinalizado;
     }
-
-    public TreinoExercicio() {}
 
     public Integer getId() {
         return id;
@@ -58,20 +73,20 @@ public class TreinoExercicio {
         this.id = id;
     }
 
-    public Treino getTreinos() {
-        return treinos;
-    }
-
-    public void setTreinos(Treino treinos) {
-        this.treinos = treinos;
-    }
-
     public Exercicio getExercicio() {
         return exercicio;
     }
 
     public void setExercicio(Exercicio exercicio) {
         this.exercicio = exercicio;
+    }
+
+    public Treino getTreino() {
+        return treino;
+    }
+
+    public void setTreino(Treino treino) {
+        this.treino = treino;
     }
 
     public Double getCarga() {
@@ -106,36 +121,36 @@ public class TreinoExercicio {
         this.descanso = descanso;
     }
 
-    public LocalDateTime getDataHoraCriacao() {
-        return dataHoraCriacao;
+    public String getObservacoesPersonalizadas() {
+        return observacoesPersonalizadas;
     }
 
-    public void setDataHoraCriacao(LocalDateTime dataHoraCriacao) {
-        this.dataHoraCriacao = dataHoraCriacao;
+    public void setObservacoesPersonalizadas(String observacoesPersonalizadas) {
+        this.observacoesPersonalizadas = observacoesPersonalizadas;
     }
 
-    public LocalDateTime getDataHoraModificacao() {
-        return dataHoraModificacao;
+    public LocalDateTime getDataModificacao() {
+        return dataModificacao;
     }
 
-    public void setDataHoraModificacao(LocalDateTime dataHoraModificacao) {
-        this.dataHoraModificacao = dataHoraModificacao;
+    public void setDataModificacao(LocalDateTime dataModificacao) {
+        this.dataModificacao = dataModificacao;
     }
 
-    public OrigemTreinoExercicioEnum getOrigemTreinoExercicio() {
-        return origemTreinoExercicio;
+    public Boolean getIcModel() {
+        return icModel;
     }
 
-    public void setOrigemTreinoExercicio(OrigemTreinoExercicioEnum origemTreinoExercicio) {
-        this.origemTreinoExercicio = origemTreinoExercicio;
+    public void setIcModel(Boolean icModel) {
+        this.icModel = icModel;
     }
 
-    public GrauDificuldadeEnum getGrauDificuldade() {
-        return grauDificuldade;
+    public Boolean getExercicioFinalizado() {
+        return exercicioFinalizado;
     }
 
-    public void setGrauDificuldade(GrauDificuldadeEnum grauDificuldade) {
-        this.grauDificuldade = grauDificuldade;
+    public void setExercicioFinalizado(Boolean exercicioFinalizado) {
+        this.exercicioFinalizado = exercicioFinalizado;
     }
 }
 

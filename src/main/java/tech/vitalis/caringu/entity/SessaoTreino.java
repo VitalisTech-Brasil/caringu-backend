@@ -14,8 +14,8 @@ public class SessaoTreino {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "alunos_treinos_id")
-    private AlunoTreino alunoTreino;
+    @JoinColumn(name = "planos_contratados_id")
+    private PlanoContratado planoContratado;
 
     @Column(name = "data_horario_inicio")
     private LocalDateTime dataHorarioInicio;
@@ -30,12 +30,13 @@ public class SessaoTreino {
     public SessaoTreino() {}
 
     public SessaoTreino(
-            Integer id, AlunoTreino alunoTreino,
+            Integer id, PlanoContratado planoContratado,
             LocalDateTime dataHorarioInicio,
             LocalDateTime dataHorarioFim,
-            StatusSessaoTreinoEnum status) {
+            StatusSessaoTreinoEnum status
+    ) {
         this.id = id;
-        this.alunoTreino = alunoTreino;
+        this.planoContratado = planoContratado;
         this.dataHorarioInicio = dataHorarioInicio;
         this.dataHorarioFim = dataHorarioFim;
         this.status = status;
@@ -49,12 +50,12 @@ public class SessaoTreino {
         this.id = id;
     }
 
-    public AlunoTreino getAlunoTreino() {
-        return alunoTreino;
+    public PlanoContratado getPlanoContratado() {
+        return planoContratado;
     }
 
-    public void setAlunoTreino(AlunoTreino alunoTreino) {
-        this.alunoTreino = alunoTreino;
+    public void setPlanoContratado(PlanoContratado planoContratado) {
+        this.planoContratado = planoContratado;
     }
 
     public LocalDateTime getDataHorarioInicio() {

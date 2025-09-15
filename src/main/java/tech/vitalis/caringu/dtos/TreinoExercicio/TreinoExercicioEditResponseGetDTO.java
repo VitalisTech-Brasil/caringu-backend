@@ -1,4 +1,4 @@
-package tech.vitalis.caringu.dtos.AlunosTreinoExercicio;
+package tech.vitalis.caringu.dtos.TreinoExercicio;
 
 import tech.vitalis.caringu.enums.Exercicio.GrupoMuscularEnum;
 import tech.vitalis.caringu.enums.Exercicio.OrigemEnum;

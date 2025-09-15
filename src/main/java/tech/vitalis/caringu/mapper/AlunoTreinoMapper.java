@@ -1,24 +1,18 @@
 package tech.vitalis.caringu.mapper;
 
 import org.springframework.stereotype.Component;
-import tech.vitalis.caringu.dtos.AlunosTreino.AlunoTreinoRequestPostDTO;
-import tech.vitalis.caringu.dtos.AlunosTreino.AlunoTreinoResponseGetDTO;
-import tech.vitalis.caringu.entity.Aluno;
-import tech.vitalis.caringu.entity.AlunoTreino;
-import tech.vitalis.caringu.entity.TreinoExercicio;
-import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.repository.AlunoRepository;
-import tech.vitalis.caringu.repository.TreinoExercicioRepository;
+import tech.vitalis.caringu.repository.TreinoExercicioRepository2;
 
 @Component
 public class AlunoTreinoMapper {
 
     private final AlunoMapper alunoMapper;
-    private final TreinoExercicioMapper treinoExercicioMapper;
+    private final TreinoExercicioMappe2r treinoExercicioMapper;
     private final AlunoRepository alunoRepository;
-    private final TreinoExercicioRepository treinoExercicioRepository;
+    private final TreinoExercicioRepository2 treinoExercicioRepository;
 
-    public AlunoTreinoMapper(AlunoMapper alunoMapper, TreinoExercicioMapper treinoExercicioMapper, AlunoRepository alunoRepository, TreinoExercicioRepository treinoExercicioRepository) {
+    public AlunoTreinoMapper(AlunoMapper alunoMapper, TreinoExercicioMappe2r treinoExercicioMapper, AlunoRepository alunoRepository, TreinoExercicioRepository2 treinoExercicioRepository) {
         this.alunoMapper = alunoMapper;
         this.treinoExercicioMapper = treinoExercicioMapper;
         this.alunoRepository = alunoRepository;

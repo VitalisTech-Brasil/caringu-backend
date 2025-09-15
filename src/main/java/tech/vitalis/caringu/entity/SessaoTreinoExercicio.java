@@ -14,8 +14,8 @@ public class SessaoTreinoExercicio {
     private SessaoTreino sessaoTreino;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "alunos_treinos_exercicios_id")
-    private AlunoTreinoExercicio alunoTreinoExercicio;
+    @JoinColumn(name = "treinos_exercicios_id")
+    private TreinoExercicio treinoExercicio;
 
     private Integer ordem;
 
@@ -23,12 +23,12 @@ public class SessaoTreinoExercicio {
 
     public SessaoTreinoExercicio(
             Integer id, SessaoTreino sessaoTreino,
-            AlunoTreinoExercicio alunoTreinoExercicio,
+            TreinoExercicio treinoExercicio,
             Integer ordem
     ) {
         this.id = id;
         this.sessaoTreino = sessaoTreino;
-        this.alunoTreinoExercicio = alunoTreinoExercicio;
+        this.treinoExercicio = treinoExercicio;
         this.ordem = ordem;
     }
 
@@ -48,12 +48,12 @@ public class SessaoTreinoExercicio {
         this.sessaoTreino = sessaoTreino;
     }
 
-    public AlunoTreinoExercicio getAlunoTreinoExercicio() {
-        return alunoTreinoExercicio;
+    public TreinoExercicio getTreinoExercicio() {
+        return treinoExercicio;
     }
 
-    public void setAlunoTreinoExercicio(AlunoTreinoExercicio alunoTreinoExercicio) {
-        this.alunoTreinoExercicio = alunoTreinoExercicio;
+    public void setTreinoExercicio(TreinoExercicio treinoExercicio) {
+        this.treinoExercicio = treinoExercicio;
     }
 
     public Integer getOrdem() {
