@@ -101,8 +101,9 @@ src
 │   │       ├── service                 # Camada de serviço com a lógica de negócio da aplicação
 │   │       └── strategy                # Implementações do padrão Strategy para regras de negócio variáveis (ex: cálculos, filtros, validações dinâmicas)
 │   └── resources
-│       └── application.properties      # Arquivo de configuração principal da aplicação 
+│       └── application.properties      # Arquivo de configuração padrão da aplicação 
 │       └── application-dev.properties  # Arquivo de configuração de desenvolvimento da aplicação
+│       └── application-prod.properties  # Arquivo de configuração de produção da aplicação
 └── test
     └── java
         └── tech.vitalis.caringu        # Testes unitários e de integração

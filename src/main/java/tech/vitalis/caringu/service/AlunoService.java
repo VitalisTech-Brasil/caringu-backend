@@ -86,14 +86,23 @@ public class AlunoService {
         return page.map(alunoMapper::toResponseDTO);
     }
 
-    public List<AlunoDetalhadoComTreinosDTO> buscarAlunosDetalhados(Integer personalId) {
-        List<AlunoDetalhadoResponseDTO> dadosBrutos = alunoRepository.buscarDetalhesPorPersonal(personalId);
+    public List<AlunoDetalhadoComTreinosDTO> buscarAlunosDetalhados(Integer idPersonal) {
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+        LocalDate endOfWeek = today.with(DayOfWeek.SUNDAY);
+
+        List<AlunoDetalhadoResponseDTO> dadosBrutos = alunoRepository.buscarDetalhesPorPersonal(idPersonal, startOfWeek.atStartOfDay(), endOfWeek.atTime(LocalTime.MAX));
+
         return alunoMapper.consolidarPorAluno(dadosBrutos);
     }
 
-    public Page<AlunoDetalhadoComTreinosDTO> buscarAlunosDetalhadosPaginado(Integer personalId, Pageable pageable) {
+    public Page<AlunoDetalhadoComTreinosDTO> buscarAlunosDetalhadosPaginado(Integer idPersonal, Pageable pageable) {
         // buscar tudo, sem paginação para pegar todos os registros (ou um número grande)
-        List<AlunoDetalhadoResponseDTO> dadosBrutos = alunoRepository.buscarDetalhesPorPersonal(personalId);
+
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+        LocalDate endOfWeek = today.with(DayOfWeek.SUNDAY);
+        List<AlunoDetalhadoResponseDTO> dadosBrutos = alunoRepository.buscarDetalhesPorPersonal(idPersonal, startOfWeek.atStartOfDay(), endOfWeek.atTime(LocalTime.MAX));
 
         // consolidar agrupando treinos por aluno
         List<AlunoDetalhadoComTreinosDTO> listaConsolidada = alunoMapper.consolidarPorAluno(dadosBrutos);

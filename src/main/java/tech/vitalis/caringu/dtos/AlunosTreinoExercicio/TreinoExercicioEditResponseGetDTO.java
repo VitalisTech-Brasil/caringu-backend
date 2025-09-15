@@ -1,4 +1,4 @@
-package tech.vitalis.caringu.dtos.TreinoExercicio;
+package tech.vitalis.caringu.dtos.AlunosTreinoExercicio;
 
 import tech.vitalis.caringu.enums.Exercicio.GrupoMuscularEnum;
 import tech.vitalis.caringu.enums.Exercicio.OrigemEnum;
@@ -20,7 +20,6 @@ public record TreinoExercicioEditResponseGetDTO(
         Integer repeticoes,
         Integer series,
         Integer descanso,
-        LocalDateTime dataHoraCriacao,
         LocalDateTime dataHoraModificacao,
         OrigemTreinoExercicioEnum origemTreinoExercicio,
         Boolean favoritoTreino,

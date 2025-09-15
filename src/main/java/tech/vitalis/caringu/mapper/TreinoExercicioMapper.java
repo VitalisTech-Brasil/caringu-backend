@@ -32,21 +32,21 @@ public class TreinoExercicioMapper {
         return treinoExercicio;
     }
 
-    public TreinoExercicioResponseGetDto toResponseDTO(TreinoExercicio treinoExercicio){
-        if (treinoExercicio == null) return null;
-
-        return new TreinoExercicioResponseGetDto(
-                treinoExercicio.getId(),
-                treinoMapper.toResponseDTO(treinoExercicio.getTreinos()),
-                exercicioMapper.toResponseDTO(treinoExercicio.getExercicio()),
-                treinoExercicio.getCarga(),
-                treinoExercicio.getRepeticoes(),
-                treinoExercicio.getSeries(),
-                treinoExercicio.getDescanso(),
-                treinoExercicio.getDataHoraCriacao(),
-                treinoExercicio.getDataHoraModificacao(),
-                treinoExercicio.getOrigemTreinoExercicio(),
-                treinoExercicio.getGrauDificuldade()
-        );
-    }
+//    public TreinoExercicioResponseGetDto toResponseDTO(TreinoExercicio treinoExercicio){
+//        if (treinoExercicio == null) return null;
+//
+//        return new TreinoExercicioResponseGetDto(
+//                treinoExercicio.getId(),
+//                treinoMapper.toResponseDTO(treinoExercicio.getTreinos()),
+//                exercicioMapper.toResponseDTO(treinoExercicio.getExercicio()),
+//                treinoExercicio.getCarga(),
+//                treinoExercicio.getRepeticoes(),
+//                treinoExercicio.getSeries(),
+//                treinoExercicio.getDescanso(),
+//                treinoExercicio.getDataHoraCriacao(),
+//                treinoExercicio.getDataHoraModificacao(),
+//                treinoExercicio.getOrigemTreinoExercicio(),
+//                treinoExercicio.getGrauDificuldade()
+//        );
+//    }
 }

@@ -73,14 +73,14 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Lombok -->
+        <!-- Lombok
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
-        </dependency>
+        </dependency> -->
 
-        <!-- MapStruct -->
+        <!-- MapStruct
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
@@ -92,15 +92,15 @@
             <artifactId>mapstruct-processor</artifactId>
             <version>1.5.5.Final</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency>-->
 
-        <!-- Suporte integrado para MapStruct + Lombok -->
+        <!-- Suporte integrado para MapStruct + Lombok
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok-mapstruct-binding</artifactId>
             <version>0.2.0</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency> -->
 
         <!-- SpringDoc OpenAPI (Swagger) -->
         <dependency>

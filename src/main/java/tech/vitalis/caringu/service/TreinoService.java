@@ -5,14 +5,13 @@ import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Treino.TreinoRequestPostDTO;
 import tech.vitalis.caringu.dtos.Treino.TreinoRequestUpdateDto;
 import tech.vitalis.caringu.dtos.Treino.TreinoResponseGetDTO;
+import tech.vitalis.caringu.entity.AlunoTreinoExercicio;
 import tech.vitalis.caringu.entity.PersonalTrainer;
-import tech.vitalis.caringu.entity.Pessoa;
 import tech.vitalis.caringu.entity.Treino;
-import tech.vitalis.caringu.entity.TreinoExercicio;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.mapper.TreinoMapper;
+import tech.vitalis.caringu.repository.AlunoTreinoExercicioRepository;
 import tech.vitalis.caringu.repository.PersonalTrainerRepository;
-import tech.vitalis.caringu.repository.TreinoExercicioRepository;
 import tech.vitalis.caringu.repository.TreinoRepository;
 
 import java.util.ArrayList;
@@ -23,17 +22,21 @@ import java.util.stream.Collectors;
 public class TreinoService {
 
     private final TreinoRepository treinoRepository;
-    private final TreinoExercicioRepository treinoExercicioRepository;
     private final TreinoMapper treinoMapper;
+    private final AlunoTreinoExercicioRepository alunoTreinoExercicioRepository;
     private final PersonalTrainerRepository personalRepository;
 
-    public TreinoService(TreinoRepository treinoRepository, TreinoExercicioRepository treinoExercicioRepository, TreinoMapper treinoMapper, PersonalTrainerRepository personalRepository) {
+    public TreinoService(
+            TreinoRepository treinoRepository,
+            TreinoMapper treinoMapper,
+            AlunoTreinoExercicioRepository alunoTreinoExercicioRepository,
+            PersonalTrainerRepository personalRepository
+    ) {
         this.treinoRepository = treinoRepository;
-        this.treinoExercicioRepository = treinoExercicioRepository;
         this.treinoMapper = treinoMapper;
+        this.alunoTreinoExercicioRepository = alunoTreinoExercicioRepository;
         this.personalRepository = personalRepository;
     }
-
 
     public TreinoResponseGetDTO cadastrar(TreinoRequestPostDTO treinoDto){
         // já está validando se existe o personal
@@ -103,11 +106,11 @@ public class TreinoService {
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Treino com ID " + id + " não encontrado"));
 
         // Buscar todos os treinos_exercicios desse treino
-        List<TreinoExercicio> exercicios = treinoExercicioRepository.findByTreinosId(id);
+        List<AlunoTreinoExercicio> exercicios = alunoTreinoExercicioRepository.findByTreinoId(id);
 
-        for (TreinoExercicio ex : exercicios) {
-            ex.setTreinos(null); // desassociar
-            treinoExercicioRepository.save(ex);
+        for (AlunoTreinoExercicio ex : exercicios) {
+            ex.setTreino(null); // desassociar
+            alunoTreinoExercicioRepository.save(ex);
         }
 
         treino.setPersonal(null); // opcional

@@ -62,6 +62,8 @@ public class AlunoController {
         return ResponseEntity.ok(dados);
     }
 
+    // Esse endpoint vai ser usado pra listar os alunos com planos ativos do personal
+    // (na tela de Gerenciar Alunos -> No lado direito da tela: Alunos Ativos
     @GetMapping("/detalhes/personal/paginado/{personalId}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Page<AlunoDetalhadoComTreinosDTO>> buscarPorPersonalPaginado(

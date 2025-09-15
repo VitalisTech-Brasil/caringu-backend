@@ -1,10 +1,7 @@
 package tech.vitalis.caringu.service;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springdoc.core.service.GenericResponseService;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Bairro.BairroResponseGetDTO;
-import tech.vitalis.caringu.dtos.Cidade.CidadeResponseGetDTO;
 import tech.vitalis.caringu.entity.Bairro;
 import tech.vitalis.caringu.exception.Bairro.BairroJaExisteException;
 import tech.vitalis.caringu.exception.Bairro.BairroNaoEncontradoException;
@@ -13,7 +10,6 @@ import tech.vitalis.caringu.repository.BairroRepository;
 
 import java.util.List;
 
-@Slf4j
 @Service
 public class BairroService {
 

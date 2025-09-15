@@ -69,23 +69,23 @@ public class NotificacoesController {
     }
 
 
-    @GetMapping("/treinos-vencendo")
-    public List<NotificacaoTreinoPersonalDTO> listarTreinosVencendo() {
-        LocalDate limite = LocalDate.now().plusWeeks(2);
-        return notificacaoTreinoVencimentoService.buscarTreinosVencendo(limite);
-    }
+//    @GetMapping("/treinos-vencendo")
+//    public List<NotificacaoTreinoPersonalDTO> listarTreinosVencendo() {
+//        LocalDate limite = LocalDate.now().plusWeeks(2);
+//        return notificacaoTreinoVencimentoService.buscarTreinosVencendo(limite);
+//    }
+//
+//    @GetMapping("/treinos-vencendo/{personalId}")
+//    public List<NotificacaoTreinoPersonalDTO> listarTreinosVencendoPorPersonal(@PathVariable Integer personalId) {
+//        LocalDate limite = LocalDate.now().plusWeeks(2);
+//        return notificacaoTreinoVencimentoService.buscarTreinosVencendoPorPersonal(limite, personalId);
+//    }
 
-    @GetMapping("/treinos-vencendo/{personalId}")
-    public List<NotificacaoTreinoPersonalDTO> listarTreinosVencendoPorPersonal(@PathVariable Integer personalId) {
-        LocalDate limite = LocalDate.now().plusWeeks(2);
-        return notificacaoTreinoVencimentoService.buscarTreinosVencendoPorPersonal(limite, personalId);
-    }
-
-    @GetMapping("/planos-vencendo/{personalId}")
-    public List<NotificacaoPlanoVencimentoDto> buscarNotificacoesPlanoVencimentoPorPersonal(@PathVariable Integer personalId){
-        LocalDate limite = LocalDate.now().plusWeeks(2);
-        return notificacaoPlanoVencimentoService.buscarNotificacoesPlanoVencimentoPorPersonal(limite, personalId);
-    }
+//    @GetMapping("/planos-vencendo/{personalId}")
+//    public List<NotificacaoPlanoVencimentoDto> buscarNotificacoesPlanoVencimentoPorPersonal(@PathVariable Integer personalId){
+//        LocalDate limite = LocalDate.now().plusWeeks(2);
+//        return notificacaoPlanoVencimentoService.buscarNotificacoesPlanoVencimentoPorPersonal(limite, personalId);
+//    }
       
    @PatchMapping("/{id}/visualizada")
    @Operation(summary = "Visualizar notificação")
@@ -94,19 +94,21 @@ public class NotificacoesController {
         return ResponseEntity.status(204).build();
     }
 
-    @GetMapping("/testar/notificacoes")
-    public ResponseEntity<String> testarNotificacoesManual() {
-        notificacaoTreinoVencimentoService.enviarNotificacoesTreinosVencendo();
-        notificacaoTreinoVencimentoService.notificarPersonaisTreinadores();
-        return ResponseEntity.ok("Notificações enviadas com sucesso!");
-    }
+//    @GetMapping("/testar/notificacoes")
+//    public ResponseEntity<String> testarNotificacoesManual() {
+//        notificacaoTreinoVencimentoService.enviarNotificacoesTreinosVencendo();
+//        notificacaoTreinoVencimentoService.notificarPersonaisTreinadores();
+//        return ResponseEntity.ok("Notificações enviadas com sucesso!");
+//    }
 
-    @GetMapping("/testar/notificacoes-plano")
-    public ResponseEntity<String> testarNotificacoesManualPlano() {
-        notificacaoPlanoVencimentoService.enviarNotificacoesPlanoVencimento();
 
-        return ResponseEntity.ok("Notificações enviadas com sucesso!");
-    }
+//    @GetMapping("/testar/notificacoes-plano")
+//    public ResponseEntity<String> testarNotificacoesManualPlano() {
+//        notificacaoPlanoVencimentoService.enviarNotificacoesPlanoVencimento();
+//        notificacaoPlanoVencimentoService.notificarPersonais();
+//        return ResponseEntity.ok("Notificações enviadas com sucesso!");
+//    }
+
 
     @GetMapping("/pessoas/notificacoes-nao-visualizada/treino-vencimento/{id}")
     @Operation(summary = "Buscar todas as Notificações não visualizadas por pessoa do treino vencimento")
@@ -127,5 +129,12 @@ public class NotificacoesController {
     public ResponseEntity<Void> marcarTodasComoVisualizadas(@PathVariable Integer pessoaId){
         notificacoesService.marcarTodasComoVisualizadasPorPessoaId(pessoaId);
         return ResponseEntity.status(204).build();
+    }
+  
+      @GetMapping("/testar/notificacoes-plano")
+    public ResponseEntity<String> testarNotificacoesManualPlano() {
+        notificacaoPlanoVencimentoService.enviarNotificacoesPlanoVencimento();
+
+        return ResponseEntity.ok("Notificações enviadas com sucesso!");
     }
 }

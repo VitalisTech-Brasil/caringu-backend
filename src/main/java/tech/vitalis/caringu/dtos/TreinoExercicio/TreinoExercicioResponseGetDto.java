@@ -15,7 +15,6 @@ public record TreinoExercicioResponseGetDto(
         Integer repeticoes,
         Integer series,
         Integer descanso,
-        LocalDateTime dataHoraCriacao,
         LocalDateTime dataHoraModificacao,
         OrigemTreinoExercicioEnum origemTreinoExercicio,
         GrauDificuldadeEnum grauDificuldade
