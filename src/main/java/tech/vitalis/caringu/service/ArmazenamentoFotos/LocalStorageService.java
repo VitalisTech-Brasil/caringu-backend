@@ -13,7 +13,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Service
-@Profile("dev")
+@Profile({"dev", "docker"})
 public class LocalStorageService implements ArmazenamentoService {
 
     @Override

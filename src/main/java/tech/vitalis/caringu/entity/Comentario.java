@@ -16,7 +16,7 @@ public class Comentario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ManyToOne
-    @JoinColumn(name = "feedback_id", nullable = false)
+    @JoinColumn(name = "feedbacks_id", nullable = false)
     private Feedback feedback;
     @ManyToOne
     @JoinColumn(name = "pessoas_id", nullable = false)
