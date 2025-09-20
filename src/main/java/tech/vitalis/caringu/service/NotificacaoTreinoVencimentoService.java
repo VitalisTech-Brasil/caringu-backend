@@ -121,7 +121,7 @@ public class NotificacaoTreinoVencimentoService {
 //        notificacaoEnviarService.enviarNotificacao(personalId, mensagem);
 //    }
 
-
+/*
     private String montarMensagem(List<NotificacaoTreinoPersonalDTO> itens) {
         StringBuilder sb = new StringBuilder();
         sb.append("Você tem treinos vencendo nos próximos 14 dias para os seguintes alunos:\n");
@@ -132,7 +132,7 @@ public class NotificacaoTreinoVencimentoService {
         }
         return sb.toString();
     }
-
+*/
 //    public List<NotificacaoTreinoPersonalDTO> buscarTreinosVencendo(LocalDate dataLimite) {
 //        return alunoTreinoRepository.findTreinosVencendo(dataLimite);
 //    }

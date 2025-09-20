@@ -59,17 +59,58 @@ public class NotificacoesController {
     public ResponseEntity<NotificacoesResponseGetDto> atualizar(@PathVariable Integer id, @Valid @RequestBody NotificacoesRequestPatchDto notificacoesDto){
         return ResponseEntity.ok(notificacoesService.atualizar(id, notificacoesDto));
     }
-
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Remover Notificação")
-    public ResponseEntity<Void> removerNotificacao(@PathVariable Integer id){
-        notificacoesService.removerAssociacaoComPessoa(id);
-        notificacoesService.remover(id);
-        return ResponseEntity.noContent().build();
+      
+   @PatchMapping("/{id}/visualizada")
+   @Operation(summary = "Visualizar notificação")
+    public ResponseEntity<Void> atualizarVisualizada(@PathVariable Integer id, @RequestBody NotificacaoVisualizadaRequestPatchDto dto){
+        notificacoesService.atualizarVisualizada(id, dto.visualizada());
+        return ResponseEntity.status(204).build();
     }
 
+    @GetMapping("/pessoas/notificacoes-nao-visualizada/{id}")
+    @Operation(summary = "Buscar todas as Notificações não visualizadas por pessoa")
+    public ResponseEntity<List<NotificacoesResponseGetDto>> buscarPorPessoaIdENaoVisualza(@PathVariable Integer id){
+        List<NotificacoesResponseGetDto> notificacoes = notificacoesService.buscarPorPessoaIdENaoVisualza(id);
+        return ResponseEntity.ok(notificacoes);
+    }
 
-//    @GetMapping("/treinos-vencendo")
+    @PatchMapping("/visualizar-todas/{pessoaId}")
+    @Operation(summary = "Visualizar todas as notificações")
+    public ResponseEntity<Void> marcarTodasComoVisualizadas(@PathVariable Integer pessoaId){
+        notificacoesService.marcarTodasComoVisualizadasPorPessoaId(pessoaId);
+        return ResponseEntity.status(204).build();
+    }
+
+    /*
+          @GetMapping("/testar/notificacoes-plano")
+    public ResponseEntity<String> testarNotificacoesManualPlano() {
+        notificacaoPlanoVencimentoService.enviarNotificacoesPlanoVencimento();
+
+        return ResponseEntity.ok("Notificações enviadas com sucesso!");
+    }
+
+        @GetMapping("/pessoas/notificacoes-nao-visualizada/treino-vencimento/{id}")
+    @Operation(summary = "Buscar todas as Notificações não visualizadas por pessoa do treino vencimento")
+    public ResponseEntity<List<NotificacoesResponseGetDto>> buscarPorPessoaIdENaoVisualzaTreinoVencimento(@PathVariable Integer id){
+        List<NotificacoesResponseGetDto> notificacoes = notificacoesService.buscarPorPessoaIdENaoVisualzaTreinoVencimento(id);
+        return ResponseEntity.ok(notificacoes);
+    }
+
+    //    @GetMapping("/testar/notificacoes") public ResponseEntity<String> testarNotificacoesManual() {
+//        notificacaoTreinoVencimentoService.enviarNotificacoesTreinosVencendo();
+//        notificacaoTreinoVencimentoService.notificarPersonaisTreinadores();
+//        return ResponseEntity.ok("Notificações enviadas com sucesso!");
+//    }
+
+
+//    @GetMapping("/testar/notificacoes-plano")
+//    public ResponseEntity<String> testarNotificacoesManualPlano() {
+//        notificacaoPlanoVencimentoService.enviarNotificacoesPlanoVencimento();
+//        notificacaoPlanoVencimentoService.notificarPersonais();
+//        return ResponseEntity.ok("Notificações enviadas com sucesso!");
+//    }
+
+    //    @GetMapping("/treinos-vencendo")
 //    public List<NotificacaoTreinoPersonalDTO> listarTreinosVencendo() {
 //        LocalDate limite = LocalDate.now().plusWeeks(2);
 //        return notificacaoTreinoVencimentoService.buscarTreinosVencendo(limite);
@@ -86,55 +127,13 @@ public class NotificacoesController {
 //        LocalDate limite = LocalDate.now().plusWeeks(2);
 //        return notificacaoPlanoVencimentoService.buscarNotificacoesPlanoVencimentoPorPersonal(limite, personalId);
 //    }
-      
-   @PatchMapping("/{id}/visualizada")
-   @Operation(summary = "Visualizar notificação")
-    public ResponseEntity<Void> atualizarVisualizada(@PathVariable Integer id, @RequestBody NotificacaoVisualizadaRequestPatchDto dto){
-        notificacoesService.atualizarVisualizada(id, dto.visualizada());
-        return ResponseEntity.status(204).build();
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Remover Notificação")
+    public ResponseEntity<Void> removerNotificacao(@PathVariable Integer id){
+        notificacoesService.removerAssociacaoComPessoa(id);
+        notificacoesService.remover(id);
+        return ResponseEntity.noContent().build();
     }
-
-//    @GetMapping("/testar/notificacoes")
-//    public ResponseEntity<String> testarNotificacoesManual() {
-//        notificacaoTreinoVencimentoService.enviarNotificacoesTreinosVencendo();
-//        notificacaoTreinoVencimentoService.notificarPersonaisTreinadores();
-//        return ResponseEntity.ok("Notificações enviadas com sucesso!");
-//    }
-
-
-//    @GetMapping("/testar/notificacoes-plano")
-//    public ResponseEntity<String> testarNotificacoesManualPlano() {
-//        notificacaoPlanoVencimentoService.enviarNotificacoesPlanoVencimento();
-//        notificacaoPlanoVencimentoService.notificarPersonais();
-//        return ResponseEntity.ok("Notificações enviadas com sucesso!");
-//    }
-
-
-    @GetMapping("/pessoas/notificacoes-nao-visualizada/treino-vencimento/{id}")
-    @Operation(summary = "Buscar todas as Notificações não visualizadas por pessoa do treino vencimento")
-    public ResponseEntity<List<NotificacoesResponseGetDto>> buscarPorPessoaIdENaoVisualzaTreinoVencimento(@PathVariable Integer id){
-        List<NotificacoesResponseGetDto> notificacoes = notificacoesService.buscarPorPessoaIdENaoVisualzaTreinoVencimento(id);
-        return ResponseEntity.ok(notificacoes);
-    }
-
-    @GetMapping("/pessoas/notificacoes-nao-visualizada/{id}")
-    @Operation(summary = "Buscar todas as Notificações não visualizadas por pessoa")
-    public ResponseEntity<List<NotificacoesResponseGetDto>> buscarPorPessoaIdENaoVisualza(@PathVariable Integer id){
-        List<NotificacoesResponseGetDto> notificacoes = notificacoesService.buscarPorPessoaIdENaoVisualza(id);
-        return ResponseEntity.ok(notificacoes);
-    }
-
-    @PatchMapping("/visualizar-todas/{pessoaId}")
-    @Operation(summary = "Visualizar todas as notificações")
-    public ResponseEntity<Void> marcarTodasComoVisualizadas(@PathVariable Integer pessoaId){
-        notificacoesService.marcarTodasComoVisualizadasPorPessoaId(pessoaId);
-        return ResponseEntity.status(204).build();
-    }
-  
-      @GetMapping("/testar/notificacoes-plano")
-    public ResponseEntity<String> testarNotificacoesManualPlano() {
-        notificacaoPlanoVencimentoService.enviarNotificacoesPlanoVencimento();
-
-        return ResponseEntity.ok("Notificações enviadas com sucesso!");
-    }
+     */
 }
