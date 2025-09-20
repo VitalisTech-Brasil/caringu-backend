@@ -2,6 +2,8 @@ package tech.vitalis.caringu.entity;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "execucoes_exercicios")
 public class ExecucaoExercicio {
@@ -11,15 +13,11 @@ public class ExecucaoExercicio {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "sessao_treino_id")
-    private SessaoTreino sessaoTreino;
+    @JoinColumn(name = "aulas_treinos_exercicios_id")
+    private AulaTreinoExercicio aulaTreinoExercicio;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "alunos_treinos_exercicios_id")
-    private AlunoTreinoExercicio alunoTreinoExercicio;
-
-    @Column(name = "carga_executada")
-    private Double cargaExecutada;
+    @Column(name = "carga_executada", nullable = false, precision = 5, scale = 2)
+    private BigDecimal cargaExecutada;
 
     @Column(name = "repeticoes_executadas")
     private Integer repeticoesExecutadas;
@@ -30,21 +28,24 @@ public class ExecucaoExercicio {
     @Column(name = "descanso_executado")
     private Integer descansoExecutado;
 
+    @Column(nullable = false)
+    private Boolean finalizado;
+
     public ExecucaoExercicio() {}
 
     public ExecucaoExercicio(
-            Integer id, SessaoTreino sessaoTreino,
-            AlunoTreinoExercicio alunoTreinoExercicio,
-            Double cargaExecutada, Integer repeticoesExecutadas,
-            Integer seriesExecutadas, Integer descansoExecutado
+            Integer id, AulaTreinoExercicio aulaTreinoExercicio,
+            BigDecimal cargaExecutada, Integer repeticoesExecutadas,
+            Integer seriesExecutadas, Integer descansoExecutado,
+            Boolean finalizado
     ) {
         this.id = id;
-        this.sessaoTreino = sessaoTreino;
-        this.alunoTreinoExercicio = alunoTreinoExercicio;
+        this.aulaTreinoExercicio = aulaTreinoExercicio;
         this.cargaExecutada = cargaExecutada;
         this.repeticoesExecutadas = repeticoesExecutadas;
         this.seriesExecutadas = seriesExecutadas;
         this.descansoExecutado = descansoExecutado;
+        this.finalizado = finalizado;
     }
 
     public Integer getId() {
@@ -55,27 +56,19 @@ public class ExecucaoExercicio {
         this.id = id;
     }
 
-    public SessaoTreino getSessaoTreino() {
-        return sessaoTreino;
+    public AulaTreinoExercicio getAulaTreinoExercicio() {
+        return aulaTreinoExercicio;
     }
 
-    public void setSessaoTreino(SessaoTreino sessaoTreino) {
-        this.sessaoTreino = sessaoTreino;
+    public void setAulaTreinoExercicio(AulaTreinoExercicio aulaTreinoExercicio) {
+        this.aulaTreinoExercicio = aulaTreinoExercicio;
     }
 
-    public AlunoTreinoExercicio getAlunoTreinoExercicio() {
-        return alunoTreinoExercicio;
-    }
-
-    public void setAlunoTreinoExercicio(AlunoTreinoExercicio alunoTreinoExercicio) {
-        this.alunoTreinoExercicio = alunoTreinoExercicio;
-    }
-
-    public Double getCargaExecutada() {
+    public BigDecimal getCargaExecutada() {
         return cargaExecutada;
     }
 
-    public void setCargaExecutada(Double cargaExecutada) {
+    public void setCargaExecutada(BigDecimal cargaExecutada) {
         this.cargaExecutada = cargaExecutada;
     }
 
@@ -101,5 +94,13 @@ public class ExecucaoExercicio {
 
     public void setDescansoExecutado(Integer descansoExecutado) {
         this.descansoExecutado = descansoExecutado;
+    }
+
+    public Boolean getFinalizado() {
+        return finalizado;
+    }
+
+    public void setFinalizado(Boolean finalizado) {
+        this.finalizado = finalizado;
     }
 }

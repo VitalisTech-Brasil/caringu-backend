@@ -35,11 +35,11 @@ public class AlunoTreinoController {
 //        return ResponseEntity.ok(service.buscarPorId(id));
 //    }
 
-    @GetMapping("/kpis/proximos-vencimento/{personalId}")
-    public Integer contarProximosDoVencimento(@PathVariable Integer personalId,
-                                              @RequestParam(defaultValue = "14") int dias) {
-        return service.contarTreinosProximosVencimento(personalId, dias);
-    }
+//    @GetMapping("/kpis/proximos-vencimento/{personalId}")
+//    public Integer contarProximosDoVencimento(@PathVariable Integer personalId,
+//                                              @RequestParam(defaultValue = "14") int dias) {
+//        return service.contarTreinosProximosVencimento(personalId, dias);
+//    }
 
 //    @PostMapping
 //    @Operation(summary = "Cadastrar novo Aluno Treino")

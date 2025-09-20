@@ -1,8 +1,8 @@
 package tech.vitalis.caringu.dtos.SessaoTreino;
 
-import tech.vitalis.caringu.enums.SessaoTreino.StatusSessaoTreinoEnum;
+import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
 
 public record AtualizarStatusSessaoTreinoDTO(
-        StatusSessaoTreinoEnum status
+        AulaStatusEnum status
 ) {
 }

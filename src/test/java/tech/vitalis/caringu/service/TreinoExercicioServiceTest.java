@@ -8,7 +8,6 @@ import org.mockito.MockitoAnnotations;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioAssociacaoRequestDTO;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioRequestPostDto;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResponseGetDto;
-import tech.vitalis.caringu.entity.AlunoTreinoExercicio;
 import tech.vitalis.caringu.entity.Exercicio;
 import tech.vitalis.caringu.entity.Treino;
 import tech.vitalis.caringu.entity.TreinoExercicio;
@@ -16,8 +15,7 @@ import tech.vitalis.caringu.enums.TreinoExercicio.GrauDificuldadeEnum;
 import tech.vitalis.caringu.enums.TreinoExercicio.OrigemTreinoExercicioEnum;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.exception.Treino.TreinoNaoEncontradoException;
-import tech.vitalis.caringu.mapper.AlunoTreinoExercicioMapper;
-import tech.vitalis.caringu.repository.AlunoTreinoExercicioRepository;
+import tech.vitalis.caringu.mapper.TreinoExercicioMapper;
 import tech.vitalis.caringu.repository.ExercicioRepository;
 import tech.vitalis.caringu.repository.TreinoExercicioRepository;
 import tech.vitalis.caringu.repository.TreinoRepository;
@@ -29,10 +27,10 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class AlunoTreinoExercicioServiceTest {
+class TreinoExercicioServiceTest {
 
     @Mock
-    private AlunoTreinoExercicioRepository alunoTreinoExercicioRepository;
+    private TreinoExercicioRepository treinoExercicioRepository;
 
     @Mock
     private TreinoRepository treinoRepository;
@@ -41,10 +39,10 @@ class AlunoTreinoExercicioServiceTest {
     private ExercicioRepository exercicioRepository;
 
     @Mock
-    private AlunoTreinoExercicioMapper alunoTreinoExercicioMapper;
+    private TreinoExercicioMapper treinoExercicioMapper;
 
     @InjectMocks
-    private AlunoTreinoExercicioService alunoTreinoExercicioService;
+    private TreinoExercicioService treinoExercicioService;
 
     @BeforeEach
     void setUp() {
@@ -70,7 +68,7 @@ class AlunoTreinoExercicioServiceTest {
         Exercicio exercicio = new Exercicio();
         exercicio.setId(10);
 
-        AlunoTreinoExercicio treinoExercicio = new AlunoTreinoExercicio();
+        TreinoExercicio treinoExercicio = new TreinoExercicio();
         treinoExercicio.setId(100);
         treinoExercicio.setTreino(treino);
         treinoExercicio.setExercicio(exercicio);
@@ -80,13 +78,13 @@ class AlunoTreinoExercicioServiceTest {
         // Mock comportamento dos repositórios
         when(treinoRepository.findById(treinoId)).thenReturn(Optional.of(treino));
         when(exercicioRepository.findById(10)).thenReturn(Optional.of(exercicio));
-        when(alunoTreinoExercicioRepository.existsByTreino_IdAndExercicio_Id(treinoId, 10)).thenReturn(false);
-        when(alunoTreinoExercicioMapper.toEntity(dto)).thenReturn(treinoExercicio);
-        when(alunoTreinoExercicioRepository.saveAll(anyList())).thenReturn(Collections.singletonList(treinoExercicio));
-        when(alunoTreinoExercicioMapper.toResponseDTO(treinoExercicio)).thenReturn(responseDto);
+        when(treinoExercicioRepository.existsByTreino_IdAndExercicio_Id(treinoId, 10)).thenReturn(false);
+        when(treinoExercicioMapper.toEntity(dto)).thenReturn(treinoExercicio);
+        when(treinoExercicioRepository.saveAll(anyList())).thenReturn(Collections.singletonList(treinoExercicio));
+        when(treinoExercicioMapper.toResponseDTO(treinoExercicio)).thenReturn(responseDto);
 
         // Execução
-        List<TreinoExercicioResponseGetDto> resultado = alunoTreinoExercicioService.cadastrarComVariosExercicios(requestDTO);
+        List<TreinoExercicioResponseGetDto> resultado = treinoExercicioService.cadastrarComVariosExercicios(requestDTO);
 
         // Verificações
         assertNotNull(resultado);
@@ -95,8 +93,8 @@ class AlunoTreinoExercicioServiceTest {
 
         verify(treinoRepository, times(1)).findById(treinoId);
         verify(exercicioRepository, times(1)).findById(10);
-        verify(alunoTreinoExercicioRepository, times(1)).existsByTreino_IdAndExercicio_Id(treinoId, 10);
-        verify(alunoTreinoExercicioRepository, times(1)).saveAll(anyList());
+        verify(treinoExercicioRepository, times(1)).existsByTreino_IdAndExercicio_Id(treinoId, 10);
+        verify(treinoExercicioRepository, times(1)).saveAll(anyList());
     }
 
     @Test
@@ -109,7 +107,7 @@ class AlunoTreinoExercicioServiceTest {
         when(treinoRepository.findById(treinoId)).thenReturn(Optional.empty());
 
         TreinoNaoEncontradoException exception = assertThrows(TreinoNaoEncontradoException.class,
-                () -> alunoTreinoExercicioService.cadastrarComVariosExercicios(requestDTO));
+                () -> treinoExercicioService.cadastrarComVariosExercicios(requestDTO));
 
         assertTrue(exception.getMessage().contains("Treino com o ID " + treinoId + " não encontrado"));
     }
@@ -136,10 +134,10 @@ class AlunoTreinoExercicioServiceTest {
 
         when(treinoRepository.findById(treinoId)).thenReturn(Optional.of(treino));
         when(exercicioRepository.findById(exercicioId)).thenReturn(Optional.of(exercicio));
-        when(alunoTreinoExercicioRepository.existsByTreino_IdAndExercicio_Id(treinoId, exercicioId)).thenReturn(true);
+        when(treinoExercicioRepository.existsByTreino_IdAndExercicio_Id(treinoId, exercicioId)).thenReturn(true);
 
         ApiExceptions.BadRequestException exception = assertThrows(ApiExceptions.BadRequestException.class,
-                () -> alunoTreinoExercicioService.cadastrarComVariosExercicios(requestDTO));
+                () -> treinoExercicioService.cadastrarComVariosExercicios(requestDTO));
 
         assertTrue(exception.getMessage().contains("já está associado ao treino com ID " + treinoId));
     }

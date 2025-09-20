@@ -1,10 +1,11 @@
-package tech.vitalis.caringu.dtos.AlunosTreinoExercicio;
+package tech.vitalis.caringu.dtos.TreinoExercicio;
 
 import tech.vitalis.caringu.enums.Exercicio.GrupoMuscularEnum;
 import tech.vitalis.caringu.enums.Exercicio.OrigemEnum;
 import tech.vitalis.caringu.enums.TreinoExercicio.GrauDificuldadeEnum;
 import tech.vitalis.caringu.enums.TreinoExercicio.OrigemTreinoExercicioEnum;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record TreinoExercicioEditResponseGetDTO(
@@ -16,7 +17,7 @@ public record TreinoExercicioEditResponseGetDTO(
         Integer idTreinoExercicio,
         Integer treinoId,
         Integer exercicioId,
-        Double carga,
+        BigDecimal carga,
         Integer repeticoes,
         Integer series,
         Integer descanso,

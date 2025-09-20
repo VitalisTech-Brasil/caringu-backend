@@ -1,21 +1,21 @@
 package tech.vitalis.caringu.entity;
 
 import jakarta.persistence.*;
-import tech.vitalis.caringu.enums.SessaoTreino.StatusSessaoTreinoEnum;
+import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "sessao_treinos")
-public class SessaoTreino {
+@Table(name = "aulas")
+public class Aula {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "alunos_treinos_id")
-    private AlunoTreino alunoTreino;
+    @JoinColumn(name = "planos_contratados_id")
+    private PlanoContratado planoContratado;
 
     @Column(name = "data_horario_inicio")
     private LocalDateTime dataHorarioInicio;
@@ -25,17 +25,26 @@ public class SessaoTreino {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private StatusSessaoTreinoEnum status;
+    private AulaStatusEnum status;
 
-    public SessaoTreino() {}
+    // Setar caso venha nulo (AGENDADO) -> Seguir default do BD
+    @PrePersist
+    public void prePersist() {
+        if (status == null) {
+            status = AulaStatusEnum.AGENDADO;
+        }
+    }
 
-    public SessaoTreino(
-            Integer id, AlunoTreino alunoTreino,
+    public Aula() {}
+
+    public Aula(
+            Integer id, PlanoContratado planoContratado,
             LocalDateTime dataHorarioInicio,
             LocalDateTime dataHorarioFim,
-            StatusSessaoTreinoEnum status) {
+            AulaStatusEnum status
+    ) {
         this.id = id;
-        this.alunoTreino = alunoTreino;
+        this.planoContratado = planoContratado;
         this.dataHorarioInicio = dataHorarioInicio;
         this.dataHorarioFim = dataHorarioFim;
         this.status = status;
@@ -49,12 +58,12 @@ public class SessaoTreino {
         this.id = id;
     }
 
-    public AlunoTreino getAlunoTreino() {
-        return alunoTreino;
+    public PlanoContratado getPlanoContratado() {
+        return planoContratado;
     }
 
-    public void setAlunoTreino(AlunoTreino alunoTreino) {
-        this.alunoTreino = alunoTreino;
+    public void setPlanoContratado(PlanoContratado planoContratado) {
+        this.planoContratado = planoContratado;
     }
 
     public LocalDateTime getDataHorarioInicio() {
@@ -73,11 +82,11 @@ public class SessaoTreino {
         this.dataHorarioFim = dataHorarioFim;
     }
 
-    public StatusSessaoTreinoEnum getStatus() {
+    public AulaStatusEnum getStatus() {
         return status;
     }
 
-    public void setStatus(StatusSessaoTreinoEnum status) {
+    public void setStatus(AulaStatusEnum status) {
         this.status = status;
     }
 }

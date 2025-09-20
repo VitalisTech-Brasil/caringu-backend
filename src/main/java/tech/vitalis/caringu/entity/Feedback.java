@@ -1,8 +1,8 @@
 package tech.vitalis.caringu.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import tech.vitalis.caringu.enums.Feedback.IntensidadeEnum;
+import tech.vitalis.caringu.enums.Feedback.TipoAutorEnum;
 
 import java.time.LocalDateTime;
 
@@ -13,22 +13,52 @@ public class Feedback {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @NotBlank
-    private String titulo;
-    @NotNull
-    private LocalDateTime dataCriacao;
-    @ManyToOne
-    @JoinColumn(name = "alunos_treinos_id")
-    private AlunoTreino alunosTreino;
 
-    public Feedback(Integer id, String titulo, LocalDateTime dataCriacao, AlunoTreino alunosTreino) {
-        this.id = id;
-        this.titulo = titulo;
-        this.dataCriacao = dataCriacao;
-        this.alunosTreino = alunosTreino;
+    @ManyToOne
+    @JoinColumn(name = "aulas_id", nullable = false)
+    private Aula aula;
+
+    @ManyToOne
+    @JoinColumn(name = "pessoas_id", nullable = false)
+    private Pessoa pessoa;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String descricao;
+
+    @Column(name = "data_criacao", nullable = false, updatable = false)
+    private LocalDateTime dataCriacao;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_autor", nullable = false)
+    private TipoAutorEnum tipoAutor;
+
+    @Enumerated(EnumType.STRING)
+    private IntensidadeEnum intensidade;
+
+    // No banco a "dataCriacao" já tem DEFAULT CURRENT_TIMESTAMP ->
+    // Assim garante que tanto o BD quanto o Back conseguem setar o valor padrão
+    @PrePersist
+    public void prePersist() {
+        if (dataCriacao == null) {
+            dataCriacao = LocalDateTime.now();
+        }
     }
 
     public Feedback() {}
+
+    public Feedback(
+            Integer id, Aula aula, Pessoa pessoa,
+            String descricao, LocalDateTime dataCriacao,
+            TipoAutorEnum tipoAutor, IntensidadeEnum intensidade
+    ) {
+        this.id = id;
+        this.aula = aula;
+        this.pessoa = pessoa;
+        this.descricao = descricao;
+        this.dataCriacao = dataCriacao;
+        this.tipoAutor = tipoAutor;
+        this.intensidade = intensidade;
+    }
 
     public Integer getId() {
         return id;
@@ -38,12 +68,28 @@ public class Feedback {
         this.id = id;
     }
 
-    public String getTitulo() {
-        return titulo;
+    public Aula getAula() {
+        return aula;
     }
 
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
+    public void setAula(Aula aula) {
+        this.aula = aula;
+    }
+
+    public Pessoa getPessoa() {
+        return pessoa;
+    }
+
+    public void setPessoa(Pessoa pessoa) {
+        this.pessoa = pessoa;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
     public LocalDateTime getDataCriacao() {
@@ -54,11 +100,19 @@ public class Feedback {
         this.dataCriacao = dataCriacao;
     }
 
-    public AlunoTreino getAlunosTreino() {
-        return alunosTreino;
+    public TipoAutorEnum getTipoAutor() {
+        return tipoAutor;
     }
 
-    public void setAlunosTreino(AlunoTreino alunosTreino) {
-        this.alunosTreino = alunosTreino;
+    public void setTipoAutor(TipoAutorEnum tipoAutor) {
+        this.tipoAutor = tipoAutor;
+    }
+
+    public IntensidadeEnum getIntensidade() {
+        return intensidade;
+    }
+
+    public void setIntensidade(IntensidadeEnum intensidade) {
+        this.intensidade = intensidade;
     }
 }

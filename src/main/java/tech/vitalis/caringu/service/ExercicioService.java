@@ -3,24 +3,21 @@ package tech.vitalis.caringu.service;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioRequestPostDTO;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioRequestPostFuncionalDTO;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioResponseGetDTO;
 import tech.vitalis.caringu.dtos.Exercicio.ExercicioResponseTotalExercicioOrigemDTO;
-import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoDTO;
-import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoModeloCruQuerySqlDTO;
-import tech.vitalis.caringu.entity.AlunoTreinoExercicio;
 import tech.vitalis.caringu.entity.Exercicio;
 import tech.vitalis.caringu.entity.PersonalTrainer;
+import tech.vitalis.caringu.entity.TreinoExercicio;
 import tech.vitalis.caringu.enums.Exercicio.OrigemEnum;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.mapper.ExercicioMapper;
-import tech.vitalis.caringu.repository.AlunoTreinoExercicioRepository;
 import tech.vitalis.caringu.repository.ExercicioRepository;
 import tech.vitalis.caringu.repository.PersonalTrainerRepository;
+import tech.vitalis.caringu.repository.TreinoExercicioRepository;
 import tech.vitalis.caringu.strategy.Exercicio.GrupoMuscularEnumValidator;
 
 import java.util.List;
@@ -33,17 +30,17 @@ import static tech.vitalis.caringu.strategy.EnumValidador.validarEnums;
 @Service
 public class ExercicioService {
 
-    private final AlunoTreinoExercicioRepository alunoTreinoExercicioRepository;
+    private final TreinoExercicioRepository treinoExercicioRepository;
     private final PersonalTrainerRepository personalTrainerRepository;
     private final ExercicioRepository exercicioRepository;
     private final ExercicioMapper exercicioMapper;
 
     @Autowired
     public ExercicioService(
-            AlunoTreinoExercicioRepository alunoTreinoExercicioRepository, PersonalTrainerRepository personalTrainerRepository,
+            TreinoExercicioRepository treinoExercicioRepository, PersonalTrainerRepository personalTrainerRepository,
             ExercicioRepository exercicioRepository, ExercicioMapper exercicioMapper
     ) {
-        this.alunoTreinoExercicioRepository = alunoTreinoExercicioRepository;
+        this.treinoExercicioRepository = treinoExercicioRepository;
         this.personalTrainerRepository = personalTrainerRepository;
         this.exercicioRepository = exercicioRepository;
         this.exercicioMapper = exercicioMapper;
@@ -146,10 +143,10 @@ public class ExercicioService {
             throw new ApiExceptions.ResourceNotFoundException("Exercício com ID " + id + " não encontrado");
         }
 
-        List<AlunoTreinoExercicio> alunoTreinoExercicios = alunoTreinoExercicioRepository.findAllByExercicioId(id);
+        List<TreinoExercicio> treinoExercicios = treinoExercicioRepository.findAllByExercicioId(id);
 
-        for (AlunoTreinoExercicio alunoTreinoExercicio : alunoTreinoExercicios) {
-            alunoTreinoExercicio.setExercicio(null);
+        for (TreinoExercicio treinoExercicio : treinoExercicios) {
+            treinoExercicio.setExercicio(null);
         }
 
         exercicioRepository.deleteById(id);

@@ -3,7 +3,11 @@ package tech.vitalis.caringu.mapper;
 import org.springframework.stereotype.Component;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioRequestPostDto;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResponseGetDto;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoDTO;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoModeloCruQuerySqlDTO;
 import tech.vitalis.caringu.entity.TreinoExercicio;
+
+import java.util.List;
 
 @Component
 public class TreinoExercicioMapper {
@@ -16,7 +20,7 @@ public class TreinoExercicioMapper {
         this.exercicioMapper = exercicioMapper;
     }
 
-    public TreinoExercicio toEntity(TreinoExercicioRequestPostDto dto){
+    public TreinoExercicio toEntity(TreinoExercicioRequestPostDto dto) {
         if (dto == null) return null;
 
         TreinoExercicio treinoExercicio = new TreinoExercicio();
@@ -24,29 +28,38 @@ public class TreinoExercicioMapper {
         treinoExercicio.setRepeticoes(dto.repeticoes());
         treinoExercicio.setSeries(dto.series());
         treinoExercicio.setDescanso(dto.descanso());
-        treinoExercicio.setDataHoraCriacao(dto.dataHoraCriacao());
-        treinoExercicio.setDataHoraModificacao(dto.dataHoraModificacao());
-        treinoExercicio.setOrigemTreinoExercicio(dto.origemTreinoExercicio());
-        treinoExercicio.setGrauDificuldade(dto.grauDificuldade());
+        treinoExercicio.setDataModificacao(dto.dataHoraModificacao());
 
         return treinoExercicio;
     }
 
-//    public TreinoExercicioResponseGetDto toResponseDTO(TreinoExercicio treinoExercicio){
-//        if (treinoExercicio == null) return null;
-//
-//        return new TreinoExercicioResponseGetDto(
-//                treinoExercicio.getId(),
-//                treinoMapper.toResponseDTO(treinoExercicio.getTreinos()),
-//                exercicioMapper.toResponseDTO(treinoExercicio.getExercicio()),
-//                treinoExercicio.getCarga(),
-//                treinoExercicio.getRepeticoes(),
-//                treinoExercicio.getSeries(),
-//                treinoExercicio.getDescanso(),
-//                treinoExercicio.getDataHoraCriacao(),
-//                treinoExercicio.getDataHoraModificacao(),
-//                treinoExercicio.getOrigemTreinoExercicio(),
-//                treinoExercicio.getGrauDificuldade()
-//        );
-//    }
+    public TreinoExercicioResponseGetDto toResponseDTO(TreinoExercicio treinoExercicio) {
+        if (treinoExercicio == null) return null;
+
+        return new TreinoExercicioResponseGetDto(
+                treinoExercicio.getId(),
+                treinoMapper.toResponseDTO(treinoExercicio.getTreino()),
+                exercicioMapper.toResponseDTO(treinoExercicio.getExercicio()),
+                treinoExercicio.getCarga(),
+                treinoExercicio.getRepeticoes(),
+                treinoExercicio.getSeries(),
+                treinoExercicio.getDescanso(),
+                treinoExercicio.getDataModificacao(),
+                treinoExercicio.getTreino().getOrigem(),
+                treinoExercicio.getTreino().getGrauDificuldade()
+        );
+    }
+
+    public TreinoExercicioResumoDTO toResumoDTO(List<TreinoExercicioResumoModeloCruQuerySqlDTO> lista) {
+        TreinoExercicioResumoModeloCruQuerySqlDTO primeiro = lista.getFirst();
+
+        return new TreinoExercicioResumoDTO(
+                primeiro.treinoId(),
+                primeiro.nomeTreino(),
+                primeiro.grauDificuldade(),
+                primeiro.origemTreinoExercicio(),
+                primeiro.favorito(),
+                lista.size()
+        );
+    }
 }

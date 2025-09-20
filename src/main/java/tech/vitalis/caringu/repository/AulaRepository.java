@@ -7,44 +7,44 @@ import org.springframework.stereotype.Repository;
 import tech.vitalis.caringu.dtos.SessaoTreino.SessaoAulasAgendadasResponseDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoCargaDashboardResponseDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoTreinoCumpridoResponseDTO;
-import tech.vitalis.caringu.entity.SessaoTreino;
+import tech.vitalis.caringu.entity.Aula;
 
 import java.util.List;
 
 @Repository
-public interface SessaoTreinoRepository extends JpaRepository<SessaoTreino, Integer> {
+public interface AulaRepository extends JpaRepository<Aula, Integer> {
 
     @Query("""
-    SELECT FUNCTION('DATE_FORMAT', st.dataHorarioInicio, '%Y-%m-%d %H:%i')
-    FROM SessaoTreino st
-    WHERE st.alunoTreino.alunos.id = :alunoId
-      AND FUNCTION('YEARWEEK', st.dataHorarioInicio, 1) = FUNCTION('YEARWEEK', CURRENT_DATE, 1)
-    ORDER BY st.dataHorarioInicio
+    SELECT FUNCTION('DATE_FORMAT', au.dataHorarioInicio, '%Y-%m-%d %H:%i')
+    FROM Aula au
+    WHERE au.planoContratado.aluno.id = :alunoId
+      AND FUNCTION('YEARWEEK', au.dataHorarioInicio, 1) = FUNCTION('YEARWEEK', CURRENT_DATE, 1)
+    ORDER BY au.dataHorarioInicio
 """)
     List<String> buscarHorariosInicioSemana(@Param("alunoId") Integer alunoId);
 
     @Query("""
-    SELECT FUNCTION('DATE_FORMAT', st.dataHorarioFim, '%Y-%m-%d %H:%i')
-    FROM SessaoTreino st
-    WHERE st.alunoTreino.alunos.id = :alunoId
-      AND FUNCTION('YEARWEEK', st.dataHorarioInicio, 1) = FUNCTION('YEARWEEK', CURRENT_DATE, 1)
-    ORDER BY st.dataHorarioInicio
+    SELECT FUNCTION('DATE_FORMAT', au.dataHorarioFim, '%Y-%m-%d %H:%i')
+    FROM Aula au
+    WHERE au.planoContratado.aluno.id = :alunoId
+      AND FUNCTION('YEARWEEK', au.dataHorarioInicio, 1) = FUNCTION('YEARWEEK', CURRENT_DATE, 1)
+    ORDER BY au.dataHorarioInicio
 """)
     List<String> buscarHorariosFimSemana(@Param("alunoId") Integer alunoId);
 
     @Query("""
-    SELECT FUNCTION('DATE_FORMAT', st.dataHorarioInicio, '%Y-%m-%d %H:%i')
-    FROM SessaoTreino st
-    WHERE st.alunoTreino.alunos.id = :alunoId
-    ORDER BY st.dataHorarioInicio
+    SELECT FUNCTION('DATE_FORMAT', au.dataHorarioInicio, '%Y-%m-%d %H:%i')
+    FROM Aula au
+    WHERE au.planoContratado.aluno.id = :alunoId
+    ORDER BY au.dataHorarioInicio
 """)
     List<String> buscarHorariosInicioTotal(@Param("alunoId") Integer alunoId);
 
     @Query("""
-    SELECT FUNCTION('DATE_FORMAT', st.dataHorarioFim, '%Y-%m-%d %H:%i')
-    FROM SessaoTreino st
-    WHERE st.alunoTreino.alunos.id = :alunoId
-    ORDER BY st.dataHorarioInicio
+    SELECT FUNCTION('DATE_FORMAT', au.dataHorarioFim, '%Y-%m-%d %H:%i')
+    FROM Aula au
+    WHERE au.planoContratado.aluno.id = :alunoId
+    ORDER BY au.dataHorarioInicio
 """)
     List<String> buscarHorariosFimTotal(@Param("alunoId") Integer alunoId);
 
@@ -53,10 +53,10 @@ public interface SessaoTreinoRepository extends JpaRepository<SessaoTreino, Inte
                     a.id,
                     pa.nome,
                     pa.urlFotoPerfil,
-                    st.id,
-                    st.dataHorarioInicio,
-                    st.dataHorarioFim,
-                    st.status
+                    au.id,
+                    au.dataHorarioInicio,
+                    au.dataHorarioFim,
+                    au.status
                 )
                 FROM PlanoContratado pc
                 JOIN Plano pl
@@ -69,10 +69,8 @@ public interface SessaoTreinoRepository extends JpaRepository<SessaoTreino, Inte
                     ON pc.aluno.id = a.id
                 JOIN Pessoa pa
                     ON a.id = pa.id
-                JOIN AlunoTreino at
-                    ON a.id = at.alunos.id
-                JOIN SessaoTreino st
-                    ON at.id = st.alunoTreino.id
+                JOIN Aula au
+                    ON pc.id = au.planoContratado.id
                 WHERE pc.status = 'ATIVO'
                   AND NOW() BETWEEN pc.dataContratacao AND pc.dataFim
                   AND pt.id = :idPersonal
@@ -90,12 +88,13 @@ public interface SessaoTreinoRepository extends JpaRepository<SessaoTreino, Inte
         ee.cargaExecutada,
         ex.nome
     )
-    FROM SessaoTreino st
-    JOIN AlunoTreino at ON st.alunoTreino.id = at.id
-    JOIN ExecucaoExercicio ee ON st.id = ee.sessaoTreino.id
-    JOIN AlunoTreinoExercicio ate ON ate.id = ee.alunoTreinoExercicio.id
-    JOIN Exercicio ex ON ate.exercicio.id = ex.id
-    JOIN Aluno a ON at.alunos.id = a.id
+    FROM Aula st
+    JOIN PlanoContratado pc ON st.planoContratado.id = pc.id
+    JOIN AulaTreinoExercicio ate ON ate.aula.id = st.id
+    JOIN TreinoExercicio te ON te.id = ate.treinoExercicio.id
+    JOIN ExecucaoExercicio ee ON ee.aulaTreinoExercicio.id = ate.id
+    JOIN Exercicio ex ON te.exercicio.id = ex.id
+    JOIN Aluno a ON pc.aluno.id = a.id
     WHERE ex.id = :idExercicio
       AND a.id = :idAluno
       AND st.status = 'REALIZADO'
@@ -112,24 +111,24 @@ public interface SessaoTreinoRepository extends JpaRepository<SessaoTreino, Inte
         a.nome,
         ex.id,
         ex.nome,
-        YEAR(st.dataHorarioInicio),
-        MONTH(st.dataHorarioInicio),
-        COUNT(st.id),
+        YEAR(au.dataHorarioInicio),
+        MONTH(au.dataHorarioInicio),
+        COUNT(au.id),
         ana.frequenciaTreino
     )
-    FROM Aluno a
+    FROM Aula au
+    JOIN PlanoContratado pc ON au.planoContratado.id = pc.id
+    JOIN Aluno a ON a.id = pc.aluno.id
     LEFT JOIN Anamnese ana ON ana.aluno.id = a.id
-    
-    JOIN AlunoTreino at ON at.alunos.id = a.id
-    JOIN AlunoTreinoExercicio ate ON ate.alunoTreino.id = at.id
-    JOIN Exercicio ex ON ate.exercicio.id = ex.id
-    JOIN SessaoTreino st ON st.alunoTreino.id = at.id
+    JOIN AulaTreinoExercicio ate ON ate.aula.id = au.id
+    JOIN TreinoExercicio te ON te.id = ate.treinoExercicio.id
+    JOIN Exercicio ex ON te.exercicio.id = ex.id
     WHERE a.id = :alunoId
       AND ex.id = :exercicioId
-      AND st.status = 'REALIZADO'
+      AND au.status = 'REALIZADO'
     GROUP BY
-        a.id, a.nome, ex.id, ex.nome, YEAR(st.dataHorarioInicio), MONTH(st.dataHorarioInicio), ana.frequenciaTreino
-    ORDER BY YEAR(st.dataHorarioInicio), MONTH(st.dataHorarioInicio)
+        a.id, a.nome, ex.id, ex.nome, YEAR(au.dataHorarioInicio), MONTH(au.dataHorarioInicio), ana.frequenciaTreino
+    ORDER BY YEAR(au.dataHorarioInicio), MONTH(au.dataHorarioInicio)
 """)
     List<EvolucaoTreinoCumpridoResponseDTO> buscarEvolucaoTreinosCumpridosMensal(
             @Param("alunoId") Integer alunoId,
@@ -137,32 +136,33 @@ public interface SessaoTreinoRepository extends JpaRepository<SessaoTreino, Inte
     );
 
     @Query(value = """
-            SELECT\s
+        SELECT
             a.id AS idAluno,
             p.nome AS nomeAluno,
             ex.id AS idExercicio,
             ex.nome AS nomeExercicio,
-            YEAR(st.data_horario_inicio) AS ano,
-            MONTH(st.data_horario_inicio) AS mes,
-            YEARWEEK(st.data_horario_inicio, 1) AS anoSemana,
-            ROUND(SUM(TIMESTAMPDIFF(MINUTE, st.data_horario_inicio, st.data_horario_fim)) / 60, 2) AS horasTreinadas
-        FROM sessao_treinos st
-        JOIN alunos_treinos at ON st.alunos_treinos_id = at.id
-        JOIN alunos_treinos_exercicios ate ON ate.alunos_treinos_id = at.id
-        JOIN exercicios ex ON ate.exercicios_id = ex.id
-        JOIN alunos a ON at.alunos_id = a.id
+            YEAR(au.data_horario_inicio) AS ano,
+            MONTH(au.data_horario_inicio) AS mes,
+            YEARWEEK(au.data_horario_inicio, 1) AS anoSemana,
+            ROUND(SUM(TIMESTAMPDIFF(MINUTE, au.data_horario_inicio, au.data_horario_fim)) / 60, 2) AS horasTreinadas
+        FROM aulas au
+        JOIN planos_contratados pc ON au.planos_contratados_id = pc.id
+        JOIN alunos a ON pc.alunos_id = a.id
         JOIN pessoas p ON a.id = p.id
-        WHERE st.data_horario_inicio <= NOW()
-          AND ex.id = ?\s
-          AND a.id = ?\s
-          AND st.status = 'REALIZADO'
-        GROUP BY\s
-            a.id,\s
-            ex.id,\s
-            YEAR(st.data_horario_inicio),\s
-            MONTH(st.data_horario_inicio),\s
-            YEARWEEK(st.data_horario_inicio, 1)
-        ORDER BY ano, mes, anoSemana;
+        JOIN aulas_treinos_exercicios ste ON ste.aulas_id = au.id
+        JOIN treinos_exercicios te ON ste.treinos_exercicios_id = te.id
+        JOIN exercicios ex ON te.exercicios_id = ex.id
+        WHERE au.data_horario_inicio <= NOW()
+          AND ex.id = :exercicioId
+          AND a.id = :alunoId
+          AND au.status = 'REALIZADO'
+        GROUP BY
+            a.id,
+            ex.id,
+            YEAR(au.data_horario_inicio),
+            MONTH(au.data_horario_inicio),
+            YEARWEEK(au.data_horario_inicio, 1)
+        ORDER BY ano, mes, anoSemana
         """, nativeQuery = true)
     List<Object[]> buscarHorasAgrupadasPorAlunoExercicio(
             @Param("alunoId") Integer alunoId,

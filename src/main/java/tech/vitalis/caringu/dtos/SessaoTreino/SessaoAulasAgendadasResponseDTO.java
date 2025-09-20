@@ -1,6 +1,6 @@
 package tech.vitalis.caringu.dtos.SessaoTreino;
 
-import tech.vitalis.caringu.enums.SessaoTreino.StatusSessaoTreinoEnum;
+import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +11,6 @@ public record SessaoAulasAgendadasResponseDTO(
         Integer idSessaoTreino,
         LocalDateTime dataHorarioInicio,
         LocalDateTime dataHorarioFim,
-        StatusSessaoTreinoEnum status
+        AulaStatusEnum status
 ) {
 }
