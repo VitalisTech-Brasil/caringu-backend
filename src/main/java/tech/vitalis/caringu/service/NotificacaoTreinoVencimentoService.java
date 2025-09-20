@@ -40,9 +40,9 @@ public class NotificacaoTreinoVencimentoService {
 //        for (AlunoTreino alunoTreino : alunoTreinos) {
 //            Pessoa alunoPessoa = alunoTreino.getAlunos();
 //            TreinoExercicio treino = alunoTreino.getTreinosExercicios();
-//            PersonalTrainer personal = treino.getTreinos().getPersonal();
+//            PersonalTrainer personal = treino.getTreino().getPersonal();
 //            Pessoa pessoaPersonal = personal;
-//            Treino treinoObj = treino.getTreinos();
+//            Treino treinoObj = treino.getTreino();
 //            String nomeTreino = treinoObj.getNome();
 //
 //            LocalDate dataVencimento = alunoTreino.getDataVencimento();

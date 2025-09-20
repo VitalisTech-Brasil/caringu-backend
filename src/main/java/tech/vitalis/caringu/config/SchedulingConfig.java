@@ -16,21 +16,15 @@ import java.time.LocalDateTime;
 @EnableScheduling
 public class SchedulingConfig {
     private static final Logger logger = LoggerFactory.getLogger(SchedulingConfig.class);
-    private final NotificacaoTreinoVencimentoService notificacoesTreinoService;
-    private final NotificacaoEventoPublicacao notificacaoEventoPublicacao;
     private final NotificacaoPlanoVencimentoService notificacaoPlanoVencimentoService;
 
-    public SchedulingConfig(NotificacaoTreinoVencimentoService notificacoesTreinoService, NotificacaoEventoPublicacao notificacaoEventoPublicacao, NotificacaoPlanoVencimentoService notificacaoPlanoVencimentoService) {
-        this.notificacoesTreinoService = notificacoesTreinoService;
-        this.notificacaoEventoPublicacao = notificacaoEventoPublicacao;
+    public SchedulingConfig(NotificacaoPlanoVencimentoService notificacaoPlanoVencimentoService) {
         this.notificacaoPlanoVencimentoService = notificacaoPlanoVencimentoService;
     }
 
     @Scheduled(cron = "0 0 8,13,22 * * *")
     public void verificarTreinosVencendo(){
         logger.info("Executando verificarTreinosVencendo em {}", LocalDateTime.now());
-        notificacoesTreinoService.enviarNotificacoesTreinosVencendo();
-        notificacoesTreinoService.notificarPersonaisTreinadores();
         notificacaoPlanoVencimentoService.enviarNotificacoesPlanoVencimento();
     }
 }

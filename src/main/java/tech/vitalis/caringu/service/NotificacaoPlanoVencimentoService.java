@@ -5,11 +5,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.consumer.NotificacaoEventoPublicacao;
 import tech.vitalis.caringu.dtos.Notificacoes.NotificacaoPlanoVencimentoDto;
-import tech.vitalis.caringu.entity.*;
+import tech.vitalis.caringu.entity.PersonalTrainer;
+import tech.vitalis.caringu.entity.Pessoa;
+import tech.vitalis.caringu.entity.Plano;
+import tech.vitalis.caringu.entity.PlanoContratado;
 import tech.vitalis.caringu.enums.Notificacoes.TipoNotificacaoEnum;
 import tech.vitalis.caringu.enums.PreferenciaNotificacao.TipoPreferenciaEnum;
 import tech.vitalis.caringu.enums.StatusEnum;
-import tech.vitalis.caringu.repository.*;
+import tech.vitalis.caringu.repository.NotificacoesRepository;
+import tech.vitalis.caringu.repository.PlanoContratadoRepository;
+import tech.vitalis.caringu.repository.PreferenciaNotificacaoRepository;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

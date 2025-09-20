@@ -78,13 +78,12 @@ public interface PlanoContratadoRepository extends JpaRepository<PlanoContratado
             n.visualizada
         )
         FROM Aluno a
-        JOIN AlunoTreino ata ON ata.id = a.id
         JOIN PlanoContratado pc ON pc.aluno.id = a.id
         JOIN pc.plano p
         JOIN p.personalTrainer pt
         JOIN Pessoa pePersonal ON pePersonal.id = pt.id
-        JOIN ata.treinosExercicios te
-        JOIN te.treinos t
+        JOIN Treino t ON pt.id = t.personal.id
+        JOIN TreinoExercicio te ON te.treino.id = t.id
         JOIN Pessoa peAluno ON peAluno.id = a.id
         LEFT JOIN Notificacoes n ON n.pessoa.id = peAluno.id
         WHERE pc.dataFim IS NOT NULL
@@ -112,13 +111,12 @@ public interface PlanoContratadoRepository extends JpaRepository<PlanoContratado
             n.visualizada
         )
         FROM Aluno a
-        JOIN AlunoTreino ata ON ata.id = a.id
         JOIN PlanoContratado pc ON pc.aluno.id = a.id
         JOIN pc.plano p
         JOIN p.personalTrainer pt
         JOIN Pessoa pePersonal ON pePersonal.id = pt.id
-        JOIN ata.treinosExercicios te
-        JOIN te.treinos t
+        JOIN Treino t ON pt.id = t.personal.id
+        JOIN TreinoExercicio te ON te.treino.id = t.id
         JOIN Pessoa peAluno ON peAluno.id = a.id
         LEFT JOIN Notificacoes n ON n.pessoa.id = peAluno.id
         WHERE pc.dataFim IS NOT NULL
