@@ -9,24 +9,24 @@ import tech.vitalis.caringu.dtos.SessaoTreino.SessaoAulasAgendadasResponseDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoCargaDashboardResponseDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoTreinoCumpridoResponseDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.HorasTreinadasResponseDTO;
-import tech.vitalis.caringu.service.SessaoTreinoService;
+import tech.vitalis.caringu.service.AulaService;
 
 import java.util.List;
 
 @RestController
 @SecurityRequirement(name = "Bearer")
-@RequestMapping("/sessao-treino")
-public class SessaoTreinoController {
+@RequestMapping("/aulas")
+public class AulaController {
 
-    private final SessaoTreinoService sessaoTreinoService;
+    private final AulaService aulaService;
 
-    public SessaoTreinoController(SessaoTreinoService sessaoTreinoService) {
-        this.sessaoTreinoService = sessaoTreinoService;
+    public AulaController(AulaService aulaService) {
+        this.aulaService = aulaService;
     }
 
     @GetMapping("/personal-aulas/{idPersonal}")
     public ResponseEntity<List<SessaoAulasAgendadasResponseDTO>> listarAulasPorPersonal(@PathVariable Integer idPersonal) {
-        List<SessaoAulasAgendadasResponseDTO> aulasAgendadas = sessaoTreinoService.listarAulasPorPersonal(idPersonal);
+        List<SessaoAulasAgendadasResponseDTO> aulasAgendadas = aulaService.listarAulasPorPersonal(idPersonal);
 
         return ResponseEntity.ok(aulasAgendadas);
     }
@@ -36,7 +36,7 @@ public class SessaoTreinoController {
             @RequestParam Integer idAluno,
             @RequestParam Integer idExercicio
     ) {
-        return sessaoTreinoService.buscarEvolucaoCarga(idAluno, idExercicio);
+        return aulaService.buscarEvolucaoCarga(idAluno, idExercicio);
     }
 
     @GetMapping("/evolucao-treinos-cumpridos")
@@ -44,7 +44,7 @@ public class SessaoTreinoController {
             @RequestParam Integer idAluno,
             @RequestParam Integer idExercicio
     ) {
-        List<EvolucaoTreinoCumpridoResponseDTO> resultado = sessaoTreinoService.buscarEvolucaoTreinosCumpridosMensal(idAluno, idExercicio);
+        List<EvolucaoTreinoCumpridoResponseDTO> resultado = aulaService.buscarEvolucaoTreinosCumpridosMensal(idAluno, idExercicio);
         return ResponseEntity.ok(resultado);
     }
 
@@ -53,7 +53,7 @@ public class SessaoTreinoController {
             @RequestParam Integer idAluno,
             @RequestParam Integer idExercicio
     ) {
-        HorasTreinadasResponseDTO resultado = sessaoTreinoService.buscarHorasTreinadas(idAluno, idExercicio);
+        HorasTreinadasResponseDTO resultado = aulaService.buscarHorasTreinadas(idAluno, idExercicio);
         return ResponseEntity.ok(resultado);
     }
 
@@ -63,7 +63,7 @@ public class SessaoTreinoController {
             @PathVariable("idSessaoTreino") Integer idSessaoTreino,
             @RequestBody AtualizarStatusSessaoTreinoDTO dto
     ) {
-        sessaoTreinoService.atualizarStatus(idSessaoTreino, dto.status());
+        aulaService.atualizarStatus(idSessaoTreino, dto.status());
         return ResponseEntity.noContent().build();
     }
 }

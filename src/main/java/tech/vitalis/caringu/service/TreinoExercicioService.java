@@ -152,7 +152,6 @@ public class TreinoExercicioService {
             TreinoExercicio novoTreino = treinoExercicioMapper.toEntity(dto);
             novoTreino.setTreino(treinoExistente);
             novoTreino.setExercicio(exercicioExistente);
-            novoTreino.setIcModel(true);
 
             treinoExistente.setGrauDificuldade(dto.grauDificuldade());
             treinoExistente.setFavorito(false);

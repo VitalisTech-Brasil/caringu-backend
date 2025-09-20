@@ -1,5 +1,6 @@
 package tech.vitalis.caringu.dtos.SessaoTreino;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record EvolucaoCargaDashboardResponseDTO(
@@ -9,7 +10,7 @@ public record EvolucaoCargaDashboardResponseDTO(
         Double alturaAluno,
         LocalDateTime dataHorarioInicio,
         LocalDateTime dataHorarioFim,
-        Double cargaUtilizada,
+        BigDecimal cargaUtilizada,
         String nomeExercicio
 ) {
 }

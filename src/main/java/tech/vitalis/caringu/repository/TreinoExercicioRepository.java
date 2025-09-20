@@ -33,7 +33,7 @@ public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio
                 FROM TreinoExercicio te
                 JOIN te.treino t
                 JOIN te.exercicio e
-                WHERE te.icModel = true AND (t.personal.id = :personalId OR t.personal.id IS NULL)
+                WHERE t.personal.id = :personalId OR t.personal.id IS NULL
             """)
     List<TreinoExercicioResumoModeloCruQuerySqlDTO> buscarTreinosExerciciosPorPersonal(@Param("personalId") Integer personalId);
 
@@ -47,10 +47,10 @@ public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio
                     t.origem,
                     t.favorito
                 )
-                FROM SessaoTreino st
-                JOIN PlanoContratado pc ON st.planoContratado.id = pc.id
-                JOIN SessaoTreinoExercicio ste ON st.id = ste.sessaoTreino.id
-                JOIN TreinoExercicio te ON te.id = ste.treinoExercicio.id
+                FROM Aula au
+                JOIN PlanoContratado pc ON au.planoContratado.id = pc.id
+                JOIN AulaTreinoExercicio ate ON au.id = ate.aula.id
+                JOIN TreinoExercicio te ON te.id = ate.treinoExercicio.id
                 JOIN Treino t ON t.id = te.treino.id
                 JOIN Exercicio e ON e.id = te.exercicio.id
                 WHERE pc.aluno.id = :alunoId
@@ -69,9 +69,9 @@ public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio
                 FROM TreinoExercicio te
                 JOIN te.exercicio e
                 JOIN te.treino t
-                JOIN SessaoTreinoExercicio ste ON ste.treinoExercicio.id = te.id
-                JOIN SessaoTreino st ON ste.sessaoTreino.id = st.id
-                JOIN PlanoContratado pc ON st.planoContratado.id = pc.id
+                JOIN AulaTreinoExercicio ate ON ate.treinoExercicio.id = te.id
+                JOIN Aula au ON ate.aula.id = au.id
+                JOIN PlanoContratado pc ON au.planoContratado.id = pc.id
                 JOIN Aluno a ON a.id = pc.aluno.id
                 WHERE
                     te.treino.id = :treinoId

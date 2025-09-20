@@ -1,13 +1,13 @@
 package tech.vitalis.caringu.entity;
 
 import jakarta.persistence.*;
-import tech.vitalis.caringu.enums.SessaoTreino.StatusSessaoTreinoEnum;
+import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "sessao_treinos")
-public class SessaoTreino {
+@Table(name = "aulas")
+public class Aula {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,15 +25,23 @@ public class SessaoTreino {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private StatusSessaoTreinoEnum status;
+    private AulaStatusEnum status;
 
-    public SessaoTreino() {}
+    // Setar caso venha nulo (AGENDADO) -> Seguir default do BD
+    @PrePersist
+    public void prePersist() {
+        if (status == null) {
+            status = AulaStatusEnum.AGENDADO;
+        }
+    }
 
-    public SessaoTreino(
+    public Aula() {}
+
+    public Aula(
             Integer id, PlanoContratado planoContratado,
             LocalDateTime dataHorarioInicio,
             LocalDateTime dataHorarioFim,
-            StatusSessaoTreinoEnum status
+            AulaStatusEnum status
     ) {
         this.id = id;
         this.planoContratado = planoContratado;
@@ -74,11 +82,11 @@ public class SessaoTreino {
         this.dataHorarioFim = dataHorarioFim;
     }
 
-    public StatusSessaoTreinoEnum getStatus() {
+    public AulaStatusEnum getStatus() {
         return status;
     }
 
-    public void setStatus(StatusSessaoTreinoEnum status) {
+    public void setStatus(AulaStatusEnum status) {
         this.status = status;
     }
 }

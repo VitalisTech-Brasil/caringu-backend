@@ -3,23 +3,29 @@ package tech.vitalis.caringu.entity;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "treinos_exercicios")
-public class TreinoExercicio {
-
+@Table(
+        name = "aulas_treinos_exercicios",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uq_aulas_exercicio", columnNames = {"aulas_id", "treinos_exercicios_id"})
+        }
+)
+public class AulaTreinoExercicio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "exercicios_id")
-    private Exercicio exercicio;
+    @JoinColumn(name = "aulas_id")
+    private Aula aula;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "treinos_id")
-    private Treino treino;
+    @JoinColumn(name = "treinos_exercicios_id")
+    private TreinoExercicio treinoExercicio;
+
+    @Column(nullable = false)
+    private Integer ordem;
 
     @Column(nullable = false, precision = 5, scale = 2)
     private BigDecimal carga;
@@ -36,19 +42,18 @@ public class TreinoExercicio {
     @Column(name = "observacoes_personalizadas", columnDefinition = "TEXT")
     private String observacoesPersonalizadas;
 
-    @Column(name = "data_modificacao", insertable = false, updatable = false)
-    private LocalDateTime dataModificacao;
+    public AulaTreinoExercicio() {}
 
-    public TreinoExercicio() {}
-
-    public TreinoExercicio(
-            Integer id, Exercicio exercicio, Treino treino,
-            BigDecimal carga, Integer repeticoes, Integer series,
-            Integer descanso, String observacoesPersonalizadas
+    public AulaTreinoExercicio(
+            Integer id, Aula aula, TreinoExercicio treinoExercicio,
+            Integer ordem, BigDecimal carga, Integer repeticoes,
+            Integer series, Integer descanso,
+            String observacoesPersonalizadas
     ) {
         this.id = id;
-        this.exercicio = exercicio;
-        this.treino = treino;
+        this.aula = aula;
+        this.treinoExercicio = treinoExercicio;
+        this.ordem = ordem;
         this.carga = carga;
         this.repeticoes = repeticoes;
         this.series = series;
@@ -64,20 +69,28 @@ public class TreinoExercicio {
         this.id = id;
     }
 
-    public Exercicio getExercicio() {
-        return exercicio;
+    public Aula getAula() {
+        return aula;
     }
 
-    public void setExercicio(Exercicio exercicio) {
-        this.exercicio = exercicio;
+    public void setAula(Aula aula) {
+        this.aula = aula;
     }
 
-    public Treino getTreino() {
-        return treino;
+    public TreinoExercicio getTreinoExercicio() {
+        return treinoExercicio;
     }
 
-    public void setTreino(Treino treino) {
-        this.treino = treino;
+    public void setTreinoExercicio(TreinoExercicio treinoExercicio) {
+        this.treinoExercicio = treinoExercicio;
+    }
+
+    public Integer getOrdem() {
+        return ordem;
+    }
+
+    public void setOrdem(Integer ordem) {
+        this.ordem = ordem;
     }
 
     public BigDecimal getCarga() {
@@ -119,13 +132,4 @@ public class TreinoExercicio {
     public void setObservacoesPersonalizadas(String observacoesPersonalizadas) {
         this.observacoesPersonalizadas = observacoesPersonalizadas;
     }
-
-    public LocalDateTime getDataModificacao() {
-        return dataModificacao;
-    }
-
-    public void setDataModificacao(LocalDateTime dataModificacao) {
-        this.dataModificacao = dataModificacao;
-    }
 }
-

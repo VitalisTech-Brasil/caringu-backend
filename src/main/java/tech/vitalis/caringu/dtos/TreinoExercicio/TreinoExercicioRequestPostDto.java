@@ -4,14 +4,15 @@
         import jakarta.validation.constraints.Positive;
         import tech.vitalis.caringu.enums.TreinoExercicio.GrauDificuldadeEnum;
         import tech.vitalis.caringu.enums.TreinoExercicio.OrigemTreinoExercicioEnum;
-        
+
+        import java.math.BigDecimal;
         import java.time.LocalDateTime;
         
         public record TreinoExercicioRequestPostDto(
                 Integer exercicioId,
                 @Positive
                 @NotNull(message = "Carga é obrigatória e não pode ser zero")
-                Double carga,
+                BigDecimal carga,
                 @Positive
                 @NotNull(message = "Repetições é obrigatório e não pode ser zero")
                 Integer repeticoes,
