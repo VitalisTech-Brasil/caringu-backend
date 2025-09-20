@@ -101,12 +101,14 @@ public class NotificacoesController {
 //        return ResponseEntity.ok("Notificações enviadas com sucesso!");
 //    }
 
+
 //    @GetMapping("/testar/notificacoes-plano")
 //    public ResponseEntity<String> testarNotificacoesManualPlano() {
 //        notificacaoPlanoVencimentoService.enviarNotificacoesPlanoVencimento();
 //        notificacaoPlanoVencimentoService.notificarPersonais();
 //        return ResponseEntity.ok("Notificações enviadas com sucesso!");
 //    }
+
 
     @GetMapping("/pessoas/notificacoes-nao-visualizada/treino-vencimento/{id}")
     @Operation(summary = "Buscar todas as Notificações não visualizadas por pessoa do treino vencimento")
@@ -127,5 +129,12 @@ public class NotificacoesController {
     public ResponseEntity<Void> marcarTodasComoVisualizadas(@PathVariable Integer pessoaId){
         notificacoesService.marcarTodasComoVisualizadasPorPessoaId(pessoaId);
         return ResponseEntity.status(204).build();
+    }
+  
+      @GetMapping("/testar/notificacoes-plano")
+    public ResponseEntity<String> testarNotificacoesManualPlano() {
+        notificacaoPlanoVencimentoService.enviarNotificacoesPlanoVencimento();
+
+        return ResponseEntity.ok("Notificações enviadas com sucesso!");
     }
 }
