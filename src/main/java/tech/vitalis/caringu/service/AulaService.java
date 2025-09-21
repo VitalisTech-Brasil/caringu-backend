@@ -3,12 +3,20 @@ package tech.vitalis.caringu.service;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGetDTO;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
+import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoRequestPostDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoCriadaDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoResponsePostDTO;
 import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.*;
 import tech.vitalis.caringu.entity.Aula;
+import tech.vitalis.caringu.entity.PlanoContratado;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
+import tech.vitalis.caringu.enums.StatusEnum;
+import tech.vitalis.caringu.exception.PlanoContratado.AlunoSemPlanoContratadoException;
 import tech.vitalis.caringu.exception.SessaoTreino.SessaoTreinoNaoEncontradoException;
+import tech.vitalis.caringu.mapper.AulaMapper;
 import tech.vitalis.caringu.repository.AulaRepository;
+import tech.vitalis.caringu.repository.PlanoContratadoRepository;
 import tech.vitalis.caringu.strategy.SessaoTreino.StatusSessaoTreinoValidationStrategy;
 
 import java.time.LocalDateTime;
@@ -22,9 +30,17 @@ import static tech.vitalis.caringu.strategy.EnumValidador.validarEnums;
 public class AulaService {
 
     private final AulaRepository aulaRepository;
+    private final PlanoContratadoRepository planoContratadoRepository;
+    private final AulaMapper aulaMapper;
 
-    public AulaService(AulaRepository aulaRepository) {
+    public AulaService(
+            AulaRepository aulaRepository,
+            PlanoContratadoRepository planoContratadoRepository,
+            AulaMapper aulaMapper
+    ) {
         this.aulaRepository = aulaRepository;
+        this.planoContratadoRepository = planoContratadoRepository;
+        this.aulaMapper = aulaMapper;
     }
 
     public List<SessaoAulasAgendadasResponseDTO> listarAulasPorPersonal(Integer idPersonal) {
@@ -65,6 +81,32 @@ public class AulaService {
     public AulasRascunhoResponseDTO buscarAulasRascunho(Integer idAluno) {
         List<AulaRascunhoResponseGetDTO> aulas = aulaRepository.buscarAulasRascunho(idAluno);
         return new AulasRascunhoResponseDTO(!aulas.isEmpty(), aulas);
+    }
+
+    public AulaRascunhoResponsePostDTO criarAulasRascunho(
+            Integer idAluno,
+            AulaRascunhoRequestPostDTO requestDTO
+    ) {
+
+        // 1. Buscar plano ativo do aluno
+        PlanoContratado planoAtivo = planoContratadoRepository
+                .findFirstByAlunoIdAndStatus(idAluno, StatusEnum.ATIVO)
+                .orElseThrow(() -> new AlunoSemPlanoContratadoException("Aluno não possui plano contratado ativo."));
+
+        // 2. Converter DTOs para entidades
+        List<Aula> aulas = requestDTO.aulas().stream()
+                .map(dto -> aulaMapper.toEntity(dto, planoAtivo))
+                .toList();
+
+        // 3. Salvar todas
+        List<Aula> aulasSalvas = aulaRepository.saveAll(aulas);
+
+        // 4. Converter para resposta
+        List<AulaRascunhoCriadaDTO> aulasCriadas = aulasSalvas.stream()
+                .map(aulaMapper::toResponse)
+                .toList();
+
+        return new AulaRascunhoResponsePostDTO(aulasCriadas);
     }
 
     public void atualizarStatus(Integer idSessaoTreino, AulaStatusEnum novoStatus) {

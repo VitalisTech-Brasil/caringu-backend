@@ -53,19 +53,16 @@ public class AlunoService {
     private final AlunoRepository alunoRepository;
     private final PessoaRepository pessoaRepository;
 
-    private final TreinoFinalizadoRepository treinoFinalizadoRepository;
-
     public AlunoService(PasswordEncoder passwordEncoder,
                         AlunoMapper alunoMapper,
 
                         AlunoRepository alunoRepository,
-                        PessoaRepository pessoaRepository,
-                        TreinoFinalizadoRepository treinoFinalizadoRepository) {
+                        PessoaRepository pessoaRepository
+    ) {
         this.passwordEncoder = passwordEncoder;
         this.alunoMapper = alunoMapper;
         this.alunoRepository = alunoRepository;
         this.pessoaRepository = pessoaRepository;
-        this.treinoFinalizadoRepository = treinoFinalizadoRepository;
     }
 
     public List<AlunoResponseGetDTO> listar() {
@@ -123,7 +120,8 @@ public class AlunoService {
         return alunoMapper.toResponseDTO(aluno);
     }
 
-    public AlunoResponseGetDTO cadastrar(Aluno aluno) {
+    public AlunoResponseGetDTO cadastrar(AlunoRequestPostDTO alunoDTO) {
+        Aluno aluno = alunoMapper.toEntity(alunoDTO);
 
         validarSenha(aluno.getSenha());
         validarEnumsAluno(aluno);

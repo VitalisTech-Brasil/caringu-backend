@@ -74,12 +74,14 @@ public class AulaController {
         return ResponseEntity.ok(aulas);
     }
 
-//    @PostMapping("/{idAluno}/rascunhos")
-//    public ResponseEntity<AulaRascunhoResponsePostDTO> criarAulasRascunho(
-//            @PathVariable Integer idAluno,
-//            @Valid @RequestBody AulaRascunhoRequestPostDTO requestDTO) {
-//        return ResponseEntity.noContent().build();
-//    }
+    @PostMapping("/{idAluno}/rascunhos")
+    public ResponseEntity<AulaRascunhoResponsePostDTO> criarAulasRascunho(
+            @PathVariable Integer idAluno,
+            @Valid @RequestBody AulaRascunhoRequestPostDTO requestDTO
+    ) {
+        AulaRascunhoResponsePostDTO response = aulaService.criarAulasRascunho(idAluno, requestDTO);
+        return ResponseEntity.ok(response);
+    }
 
 //    @PostMapping("/{idAula}/treinos")
 //

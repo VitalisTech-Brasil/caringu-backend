@@ -29,6 +29,7 @@ import tech.vitalis.caringu.exception.PersonalTrainer.PersonalNaoEncontradoExcep
 import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
 import tech.vitalis.caringu.exception.Pessoa.PessoaNaoEncontradaException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
+import tech.vitalis.caringu.exception.PlanoContratado.AlunoSemPlanoContratadoException;
 import tech.vitalis.caringu.exception.PlanoContratado.PlanoContratadoNaoEncontradoException;
 import tech.vitalis.caringu.exception.PreferenciasNotificacao.PreferenciasNotificacaoJaExisteException;
 import tech.vitalis.caringu.exception.PreferenciasNotificacao.PreferenciasNotificacaoNaoEncontradaException;
@@ -89,7 +90,6 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(PersonalNaoEncontradoException.class)
-
     public ResponseEntity<Map<String, Object>> handlePersonalNaoEncontrado(PersonalNaoEncontradoException ex, WebRequest request) {
         return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
     }
@@ -167,6 +167,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SenhaInvalidaException.class)
     public ResponseEntity<Map<String, Object>> handleSenhaInvalida(SenhaInvalidaException ex, WebRequest request) {
         return createErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(AlunoSemPlanoContratadoException.class)
+    public ResponseEntity<Map<String, Object>> handleAlunoSemPlanoContratadoException(AlunoSemPlanoContratadoException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, "Unprocessable Entity", ex.getMessage(), request);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
