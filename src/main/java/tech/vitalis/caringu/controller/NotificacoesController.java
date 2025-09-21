@@ -19,14 +19,13 @@ import java.util.List;
 public class NotificacoesController {
 
     private final NotificacoesService notificacoesService;
-    private final NotificacaoTreinoVencimentoService notificacaoTreinoVencimentoService;
     private final NotificacaoPlanoVencimentoService notificacaoPlanoVencimentoService;
 
-    public NotificacoesController(NotificacoesService notificacoesService, NotificacaoTreinoVencimentoService notificacaoTreinoVencimentoService, NotificacaoPlanoVencimentoService notificacaoPlanoVencimentoService) {
+    public NotificacoesController(NotificacoesService notificacoesService, NotificacaoPlanoVencimentoService notificacaoPlanoVencimentoService) {
         this.notificacoesService = notificacoesService;
-        this.notificacaoTreinoVencimentoService = notificacaoTreinoVencimentoService;
         this.notificacaoPlanoVencimentoService = notificacaoPlanoVencimentoService;
     }
+
 
     @PostMapping
     @Operation(summary = "Cadastrar nova notificação")
