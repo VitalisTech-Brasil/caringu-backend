@@ -19,6 +19,7 @@ import tech.vitalis.caringu.dtos.Pessoa.PessoaRequestPostDTO;
 import tech.vitalis.caringu.dtos.Pessoa.security.ControleLogin;
 import tech.vitalis.caringu.dtos.Pessoa.security.PessoaTokenDTO;
 import tech.vitalis.caringu.exception.ApiExceptions;
+import tech.vitalis.caringu.exception.Pessoa.ContaBloqueadaException;
 import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
 import tech.vitalis.caringu.exception.Pessoa.PessoaNaoEncontradaException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
@@ -84,7 +85,7 @@ public class PessoaService {
 
         if (controleLogin.validarBloqueio(pessoa.getEmail())) {
             long tempoRestante = controleLogin.tempoRestante(pessoa.getEmail());
-            throw new ResponseStatusException(423, "Conta bloqueada. Tente novamente em " + tempoRestante + " segundos.", null);
+            throw new ContaBloqueadaException("Conta bloqueada. Tente novamente em " + tempoRestante + " segundos.", tempoRestante);
         }
 
         final UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(pessoa.getEmail(), pessoa.getSenha());
@@ -114,7 +115,7 @@ public class PessoaService {
                 throw new ResponseStatusException(401, "5 tentativas falhas. Conta bloqueada por 15 minutos.", e);
             } else if (controleLogin.validarBloqueio(pessoa.getEmail())) {
                 long timeLeft = controleLogin.tempoRestante(pessoa.getEmail());
-                throw new ResponseStatusException(423, "Conta bloqueada. Tente novamente em " + timeLeft + " segundos.", e);
+                throw new ContaBloqueadaException("Conta bloqueada. Tente novamente em " + timeLeft + " segundos.", timeLeft);
             } else {
                 throw new ResponseStatusException(401, "Usuário ou senha inválidos.", e);
             }
