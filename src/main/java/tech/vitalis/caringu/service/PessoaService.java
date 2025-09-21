@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import tech.vitalis.caringu.config.GerenciadorTokenJwt;
 import tech.vitalis.caringu.dtos.Pessoa.PessoaResponseFotoPerfilGetDTO;
 import tech.vitalis.caringu.dtos.Pessoa.PessoaResponseGetDTO;
 import tech.vitalis.caringu.dtos.Pessoa.PessoaRequestPostDTO;
+import tech.vitalis.caringu.dtos.Pessoa.security.ControleLogin;
 import tech.vitalis.caringu.dtos.Pessoa.security.PessoaTokenDTO;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
@@ -44,6 +46,8 @@ public class PessoaService {
 
     @Autowired
     private Environment env;
+
+    private final ControleLogin controleLogin = new ControleLogin();
 
     private final PessoaRepository pessoaRepository;
 
@@ -78,22 +82,43 @@ public class PessoaService {
 
     public PessoaTokenDTO autenticar(Pessoa pessoa) {
 
-        final UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(
-                pessoa.getEmail(), pessoa.getSenha());
+        if (controleLogin.validarBloqueio(pessoa.getEmail())) {
+            long tempoRestante = controleLogin.tempoRestante(pessoa.getEmail());
+            throw new ResponseStatusException(423, "Conta bloqueada. Tente novamente em " + tempoRestante + " segundos.", null);
+        }
 
-        final Authentication authentication = this.authenticationManager.authenticate(credentials);
+        final UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(pessoa.getEmail(), pessoa.getSenha());
 
-        Pessoa pessoaAutenticado =
-                pessoaRepository.findByEmail(pessoa.getEmail())
-                        .orElseThrow(
-                                () -> new ResponseStatusException(404, "Pessoa não encontrada", null)
-                        );
+        try {
+            final Authentication authentication = this.authenticationManager.authenticate(credentials);
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            controleLogin.registrarSucesso(pessoa.getEmail());
 
-        final String token = gerenciadorTokenJwt.generateToken(authentication);
+            Pessoa pessoaAutenticado =
+                    pessoaRepository.findByEmail(pessoa.getEmail())
+                            .orElseThrow(
+                                    () -> new ResponseStatusException(404, "Pessoa não encontrada", null)
+                            );
 
-        return pessoaMapper.of(pessoaAutenticado, token);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            final String token = gerenciadorTokenJwt.generateToken(authentication);
+
+            return pessoaMapper.of(pessoaAutenticado, token);
+
+        } catch (AuthenticationException e) {
+
+            boolean justLocked = controleLogin.registrarFalha(pessoa.getEmail());
+
+            if (justLocked) {
+                throw new ResponseStatusException(401, "5 tentativas falhas. Conta bloqueada por 15 minutos.", e);
+            } else if (controleLogin.validarBloqueio(pessoa.getEmail())) {
+                long timeLeft = controleLogin.tempoRestante(pessoa.getEmail());
+                throw new ResponseStatusException(423, "Conta bloqueada. Tente novamente em " + timeLeft + " segundos.", e);
+            } else {
+                throw new ResponseStatusException(401, "Usuário ou senha inválidos.", e);
+            }
+        }
     }
 
     public Boolean emailExiste(String email) {
