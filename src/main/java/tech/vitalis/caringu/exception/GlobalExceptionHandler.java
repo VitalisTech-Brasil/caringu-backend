@@ -26,6 +26,7 @@ import tech.vitalis.caringu.exception.EvolucaoCorporal.EvolucaoCorporalJaExisteE
 import tech.vitalis.caringu.exception.EvolucaoCorporal.EvolucaoCorporalNaoEncontradaException;
 import tech.vitalis.caringu.exception.PersonalTrainer.CrefJaExisteException;
 import tech.vitalis.caringu.exception.PersonalTrainer.PersonalNaoEncontradoException;
+import tech.vitalis.caringu.exception.Pessoa.ContaBloqueadaException;
 import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
 import tech.vitalis.caringu.exception.Pessoa.PessoaNaoEncontradaException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
@@ -185,6 +186,18 @@ public class GlobalExceptionHandler {
 
         return createErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", mensagemErro, request);
     }
+
+    @ExceptionHandler(ContaBloqueadaException.class)
+    public ResponseEntity<Map<String, Object>> handleContaBloqueadaException(ContaBloqueadaException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("status", 423);
+        body.put("error", "Locked");
+        body.put("message", ex.getMessage());
+        body.put("tempoRestante", ex.getTempoRestante());
+        body.put("timestamp", LocalDateTime.now());
+        return new ResponseEntity<>(body, HttpStatus.LOCKED);
+    }
+
 
     private ResponseEntity<Map<String, Object>> createErrorResponse(HttpStatus status, String error, String message, WebRequest request) {
         Map<String, Object> response = new HashMap<>();
