@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGetDTO;
+import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.SessaoAulasAgendadasResponseDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoCargaDashboardResponseDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoTreinoCumpridoResponseDTO;
@@ -168,4 +170,48 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
             @Param("alunoId") Integer alunoId,
             @Param("exercicioId") Integer exercicioId
     );
+
+    @Query("""
+            SELECT new tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO(
+                a.id,
+                a.nome,
+                a.celular,
+                ana.objetivoTreino,
+                a.nivelAtividade,
+                pl.nome,
+                pl.quantidadeAulas,
+                SUM(CASE WHEN au.status IN ('AGENDADO', 'REALIZADO', 'REAGENDADO') THEN 1 ELSE 0 END),
+                SUM(CASE WHEN au.status = 'RASCUNHO' THEN 1 ELSE 0 END),
+                CAST(pl.quantidadeAulas - SUM(CASE WHEN au.status IN ('AGENDADO', 'REALIZADO', 'REAGENDADO') THEN 1 END) AS long)
+            )
+            FROM Aluno a
+            JOIN PlanoContratado pc ON a.id = pc.aluno.id
+            JOIN Plano pl ON pl.id = pc.plano.id
+            LEFT JOIN Aula au
+                ON au.planoContratado.id = pc.id
+                AND au.status IN ('AGENDADO', 'REALIZADO', 'REAGENDADO')
+            JOIN Anamnese ana ON ana.aluno.id = a.id
+            WHERE pc.aluno.id = :idAluno
+                AND pc.status = 'ATIVO'
+            GROUP BY a.id, pl.quantidadeAulas, pl.nome, a.nivelAtividade, ana.objetivoTreino, a.celular, a.nome
+            """)
+    TotalAulasAgendamentoResponseGetDTO buscarDisponibilidadeDeAulas(@Param("idAluno") Integer idAluno);
+
+    @Query("""
+    SELECT new tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGetDTO(
+        au.id,
+        au.dataHorarioInicio,
+        au.dataHorarioFim,
+        au.status,
+        pc.id
+    )
+    FROM Aula au
+    JOIN au.planoContratado pc
+    WHERE pc.aluno.id = :idAluno
+      AND pc.status = 'ATIVO'
+      AND au.status = 'RASCUNHO'
+    ORDER BY au.dataHorarioInicio
+""")
+    List<AulaRascunhoResponseGetDTO> buscarAulasRascunho(@Param("idAluno") Integer idAluno);
+
 }

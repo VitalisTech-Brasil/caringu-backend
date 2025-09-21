@@ -1,6 +1,9 @@
 package tech.vitalis.caringu.service;
 
 import org.springframework.stereotype.Service;
+import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGetDTO;
+import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
+import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.*;
 import tech.vitalis.caringu.entity.Aula;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
@@ -53,6 +56,15 @@ public class AulaService {
                 .collect(Collectors.toList());
 
         return new HorasTreinadasResponseDTO(idAluno, idExercicio, dados);
+    }
+
+    public TotalAulasAgendamentoResponseGetDTO buscarDisponibilidadeDeAulas(Integer idAluno) {
+        return aulaRepository.buscarDisponibilidadeDeAulas(idAluno);
+    }
+
+    public AulasRascunhoResponseDTO buscarAulasRascunho(Integer idAluno) {
+        List<AulaRascunhoResponseGetDTO> aulas = aulaRepository.buscarAulasRascunho(idAluno);
+        return new AulasRascunhoResponseDTO(!aulas.isEmpty(), aulas);
     }
 
     public void atualizarStatus(Integer idSessaoTreino, AulaStatusEnum novoStatus) {
