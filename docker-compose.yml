@@ -69,7 +69,7 @@ services:
   # Serviço que consome notificações
   notification-service:
     build:
-      context: ../notificacoes-service
+      context: ../caringu-notificacao
       dockerfile: Dockerfile
     container_name: notification-service
     ports:
