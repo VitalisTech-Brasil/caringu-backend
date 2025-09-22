@@ -3,6 +3,7 @@ package tech.vitalis.caringu.service;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGetDTO;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
+import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoItemDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoRequestPostDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoCriadaDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoResponsePostDTO;
@@ -12,6 +13,7 @@ import tech.vitalis.caringu.entity.Aula;
 import tech.vitalis.caringu.entity.PlanoContratado;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
 import tech.vitalis.caringu.enums.StatusEnum;
+import tech.vitalis.caringu.exception.Aula.AulaConflitanteException;
 import tech.vitalis.caringu.exception.PlanoContratado.AlunoSemPlanoContratadoException;
 import tech.vitalis.caringu.exception.SessaoTreino.SessaoTreinoNaoEncontradoException;
 import tech.vitalis.caringu.mapper.AulaMapper;
@@ -92,6 +94,21 @@ public class AulaService {
         PlanoContratado planoAtivo = planoContratadoRepository
                 .findFirstByAlunoIdAndStatus(idAluno, StatusEnum.ATIVO)
                 .orElseThrow(() -> new AlunoSemPlanoContratadoException("Aluno não possui plano contratado ativo."));
+
+        // 1.1 Validar se as datas e horários de início e fim, já tem alguma aula nesse período
+        for (AulaRascunhoItemDTO dto : requestDTO.aulas()) {
+            List<Aula> aulasConflitantes = aulaRepository.findAulasNoPeriodo(
+                    planoAtivo.getId(),
+                    dto.dataHorarioInicio(),
+                    dto.dataHorarioFim()
+            );
+            if (!aulasConflitantes.isEmpty()) {
+                throw new AulaConflitanteException(
+                        "Já existe uma aula agendada no período: "
+                                + dto.dataHorarioInicio() + " - " + dto.dataHorarioFim()
+                );
+            }
+        }
 
         // 2. Converter DTOs para entidades
         List<Aula> aulas = requestDTO.aulas().stream()

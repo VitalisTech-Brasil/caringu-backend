@@ -17,6 +17,7 @@ import tech.vitalis.caringu.exception.Aluno.AlunoNaoEncontradoException;
 import tech.vitalis.caringu.exception.Anamnese.AnamneseJaCadastradaException;
 import tech.vitalis.caringu.exception.Anamnese.AnamneseNaoEncontradaException;
 import tech.vitalis.caringu.exception.ApiExceptions.BadRequestException;
+import tech.vitalis.caringu.exception.Aula.AulaConflitanteException;
 import tech.vitalis.caringu.exception.Bairro.BairroJaExisteException;
 import tech.vitalis.caringu.exception.Bairro.BairroNaoEncontradoException;
 import tech.vitalis.caringu.exception.Cidade.CidadeJaExisteException;
@@ -131,6 +132,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EvolucaoCorporalJaExisteException.class)
     public ResponseEntity<Map<String, Object>> handleEvolucaoCorporalJaExiste(EvolucaoCorporalJaExisteException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(AulaConflitanteException.class)
+    public ResponseEntity<Map<String, Object>> handleAulaConflitanteException(AulaConflitanteException ex, WebRequest request) {
         return createErrorResponse(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), request);
     }
 

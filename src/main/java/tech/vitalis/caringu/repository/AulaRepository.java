@@ -11,6 +11,7 @@ import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoCargaDashboardResponseDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoTreinoCumpridoResponseDTO;
 import tech.vitalis.caringu.entity.Aula;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -213,5 +214,21 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
     ORDER BY au.dataHorarioInicio
 """)
     List<AulaRascunhoResponseGetDTO> buscarAulasRascunho(@Param("idAluno") Integer idAluno);
+
+    // Retorna qualquer aula do plano que sobreponha o período informado
+    @Query("""
+    SELECT a
+    FROM Aula a
+    WHERE a.planoContratado.id = :planoId 
+      AND a.status IN ('RASCUNHO','AGENDADO','REAGENDADO')
+      AND (
+            (a.dataHorarioInicio <= :fim AND a.dataHorarioFim >= :inicio)
+          )
+""")
+    List<Aula> findAulasNoPeriodo(
+            @Param("planoId") Integer planoId,
+            @Param("inicio") LocalDateTime inicio,
+            @Param("fim") LocalDateTime fim
+    );
 
 }
