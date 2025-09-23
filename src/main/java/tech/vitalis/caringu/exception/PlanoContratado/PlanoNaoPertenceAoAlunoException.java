@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-public class AlunoSemPlanoContratadoException extends RuntimeException {
-    public AlunoSemPlanoContratadoException(String message) {
+public class PlanoNaoPertenceAoAlunoException extends RuntimeException {
+    public PlanoNaoPertenceAoAlunoException(String message) {
         super(message);
     }
 }

@@ -18,6 +18,7 @@ import tech.vitalis.caringu.exception.Anamnese.AnamneseJaCadastradaException;
 import tech.vitalis.caringu.exception.Anamnese.AnamneseNaoEncontradaException;
 import tech.vitalis.caringu.exception.ApiExceptions.BadRequestException;
 import tech.vitalis.caringu.exception.Aula.AulaConflitanteException;
+import tech.vitalis.caringu.exception.Aula.AulaNaoEncontradaException;
 import tech.vitalis.caringu.exception.Bairro.BairroJaExisteException;
 import tech.vitalis.caringu.exception.Bairro.BairroNaoEncontradoException;
 import tech.vitalis.caringu.exception.Cidade.CidadeJaExisteException;
@@ -32,6 +33,7 @@ import tech.vitalis.caringu.exception.Pessoa.PessoaNaoEncontradaException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
 import tech.vitalis.caringu.exception.PlanoContratado.AlunoSemPlanoContratadoException;
 import tech.vitalis.caringu.exception.PlanoContratado.PlanoContratadoNaoEncontradoException;
+import tech.vitalis.caringu.exception.PlanoContratado.PlanoNaoPertenceAoAlunoException;
 import tech.vitalis.caringu.exception.PreferenciasNotificacao.PreferenciasNotificacaoJaExisteException;
 import tech.vitalis.caringu.exception.PreferenciasNotificacao.PreferenciasNotificacaoNaoEncontradaException;
 import tech.vitalis.caringu.exception.SessaoTreino.SessaoTreinoNaoEncontradoException;
@@ -130,6 +132,11 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
     }
 
+    @ExceptionHandler(AulaNaoEncontradaException.class)
+    public ResponseEntity<Map<String, Object>> handleAulaNaoEncontradaException(AulaNaoEncontradaException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+    }
+
     @ExceptionHandler(EvolucaoCorporalJaExisteException.class)
     public ResponseEntity<Map<String, Object>> handleEvolucaoCorporalJaExiste(EvolucaoCorporalJaExisteException ex, WebRequest request) {
         return createErrorResponse(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), request);
@@ -177,6 +184,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AlunoSemPlanoContratadoException.class)
     public ResponseEntity<Map<String, Object>> handleAlunoSemPlanoContratadoException(AlunoSemPlanoContratadoException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, "Unprocessable Entity", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(PlanoNaoPertenceAoAlunoException.class)
+    public ResponseEntity<Map<String, Object>> handlePlanoNaoPertenceAoAlunoException(PlanoNaoPertenceAoAlunoException ex, WebRequest request) {
         return createErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, "Unprocessable Entity", ex.getMessage(), request);
     }
 

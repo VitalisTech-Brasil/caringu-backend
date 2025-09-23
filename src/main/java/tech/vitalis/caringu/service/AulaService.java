@@ -6,10 +6,10 @@ import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDT
 import tech.vitalis.caringu.dtos.Aula.Request.AtribuicaoTreinosAulaRequestPostDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoItemDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoRequestPostDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AtribuicaoTreinosAulaItemDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AtribuicaoTreinosAulaResponsePostDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoCriadaDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoResponsePostDTO;
-import tech.vitalis.caringu.dtos.Aula.Response.AulaTreinoResponsePostDTO;
 import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.*;
 import tech.vitalis.caringu.entity.Aula;
@@ -19,12 +19,16 @@ import tech.vitalis.caringu.entity.TreinoExercicio;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
 import tech.vitalis.caringu.enums.StatusEnum;
 import tech.vitalis.caringu.exception.Aula.AulaConflitanteException;
+import tech.vitalis.caringu.exception.Aula.AulaNaoEncontradaException;
 import tech.vitalis.caringu.exception.PlanoContratado.AlunoSemPlanoContratadoException;
+import tech.vitalis.caringu.exception.PlanoContratado.PlanoNaoPertenceAoAlunoException;
 import tech.vitalis.caringu.exception.SessaoTreino.SessaoTreinoNaoEncontradoException;
 import tech.vitalis.caringu.exception.Treino.TreinoNaoEncontradoException;
 import tech.vitalis.caringu.mapper.AulaMapper;
 import tech.vitalis.caringu.repository.AulaRepository;
+import tech.vitalis.caringu.repository.AulaTreinoExercicioRepository;
 import tech.vitalis.caringu.repository.PlanoContratadoRepository;
+import tech.vitalis.caringu.repository.TreinoExercicioRepository;
 import tech.vitalis.caringu.strategy.SessaoTreino.StatusSessaoTreinoValidationStrategy;
 
 import java.time.LocalDateTime;
@@ -40,15 +44,21 @@ public class AulaService {
     private final AulaRepository aulaRepository;
     private final PlanoContratadoRepository planoContratadoRepository;
     private final AulaMapper aulaMapper;
+    private final TreinoExercicioRepository treinoExercicioRepository;
+    private final AulaTreinoExercicioRepository aulaTreinoExercicioRepository;
 
     public AulaService(
             AulaRepository aulaRepository,
             PlanoContratadoRepository planoContratadoRepository,
-            AulaMapper aulaMapper
+            AulaMapper aulaMapper,
+            TreinoExercicioRepository treinoExercicioRepository,
+            AulaTreinoExercicioRepository aulaTreinoExercicioRepository
     ) {
         this.aulaRepository = aulaRepository;
         this.planoContratadoRepository = planoContratadoRepository;
         this.aulaMapper = aulaMapper;
+        this.treinoExercicioRepository = treinoExercicioRepository;
+        this.aulaTreinoExercicioRepository = aulaTreinoExercicioRepository;
     }
 
     public List<SessaoAulasAgendadasResponseDTO> listarAulasPorPersonal(Integer idPersonal) {
@@ -88,7 +98,7 @@ public class AulaService {
 
     public AulasRascunhoResponseDTO buscarAulasRascunho(Integer idAluno) {
         List<AulaRascunhoResponseGetDTO> aulas = aulaRepository.buscarAulasRascunho(idAluno);
-        return new AulasRascunhoResponseDTO(!aulas.isEmpty(), aulas);
+        return new AulasRascunhoResponseDTO(aulas);
     }
 
     public AulaRascunhoResponsePostDTO criarAulasRascunho(
@@ -110,8 +120,10 @@ public class AulaService {
             );
             if (!aulasConflitantes.isEmpty()) {
                 throw new AulaConflitanteException(
-                        "Já existe uma aula agendada no período: "
-                                + dto.dataHorarioInicio() + " - " + dto.dataHorarioFim()
+                        "Já existe uma aula agendada no período: " +
+                                dto.dataHorarioInicio().toString().replaceAll("T", " ") +
+                                " - " +
+                                dto.dataHorarioFim().toString().replaceAll("T", " ")
                 );
             }
         }
@@ -132,28 +144,60 @@ public class AulaService {
         return new AulaRascunhoResponsePostDTO(aulasCriadas);
     }
 
-    public AtribuicaoTreinosAulaResponsePostDTO atribuirTreinoAAula(Integer idAula, AtribuicaoTreinosAulaRequestPostDTO requestDTO) {
-        // 1. Buscar a aula
-        Aula aula = aulaRepository.findById(idAula)
-                .orElseThrow(() -> new AulaNaoEncontradaException("Aula não encontrada"));
+    public AtribuicaoTreinosAulaResponsePostDTO atribuirTreinoAAula(
+            AtribuicaoTreinosAulaRequestPostDTO requestDTO
+    ) {
+        List<AtribuicaoTreinosAulaItemDTO> itensResponse = requestDTO.aulasTreinos().stream().map(item -> {
 
-        // 2. Buscar o treino
-        TreinoExercicio treinoExercicio = treinoRepository.findById(requestDTO.treinoId())
-                .orElseThrow(() -> new TreinoNaoEncontradoException("Treino não encontrado"));
+            // 1. Validar plano ativo
+            PlanoContratado planoContratado = planoContratadoRepository
+                    .findFirstByAlunoIdAndStatus(item.idAluno(), StatusEnum.ATIVO)
+                    .orElseThrow(() -> new AlunoSemPlanoContratadoException("Aluno sem plano ativo."));
 
-        // 3. Associar o treino à aula
-        AulaTreinoExercicio aulaTreinoExercicio = new AulaTreinoExercicio();
-        aulaTreinoExercicio.setTreinoExercicio(treino);
+            if (!planoContratado.getId().equals(item.idPlanoContratado())) {
+                throw new PlanoNaoPertenceAoAlunoException("Plano informado não pertence ao aluno.");
+            }
 
-        // 4. Persistir
-        Aula aulaAtualizada = aulaRepository.save(aula);
+            // 2. Buscar aula rascunho e alterar para status AGENDADO
+            Aula aula = aulaRepository.findByPlanoContratadoIdAndDataHorarioInicioAndDataHorarioFimAndStatus(
+                    item.idPlanoContratado(),
+                    item.dataHorarioInicio(),
+                    item.dataHorarioFim(),
+                    AulaStatusEnum.RASCUNHO
+            ).orElseThrow(() -> new AulaNaoEncontradaException("Aula rascunho não encontrada."));
 
-        // 5. Retornar resposta
-        return new AtribuicaoTreinosAulaResponsePostDTO(
-                aulaAtualizada.getId(),
-                aulaAtualizada.getTreino().getId(),
-                aulaAtualizada.getStatus().name()
-        );
+            // 2.1 Atualizar status da aula
+            aula.setStatus(AulaStatusEnum.AGENDADO);
+            aulaRepository.save(aula);
+
+            // 3. Buscar treino
+            TreinoExercicio treinoExercicio = treinoExercicioRepository.findById(item.idTreinoExercicio())
+                    .orElseThrow(() -> new TreinoNaoEncontradoException("Treino não encontrado."));
+
+            // 4. Associar
+            AulaTreinoExercicio aulaTreinoExercicio = new AulaTreinoExercicio();
+
+            // 4.1 Calcular ordem
+            Integer proximaOrdem = aulaTreinoExercicioRepository.findMaxOrdemByAulaId(aula.getId()) + 1;
+
+            aulaTreinoExercicio.setAula(aula);
+            aulaTreinoExercicio.setTreinoExercicio(treinoExercicio);
+            aulaTreinoExercicio.setOrdem(proximaOrdem);
+            aulaTreinoExercicio.setCarga(treinoExercicio.getCarga());
+            aulaTreinoExercicio.setRepeticoes(treinoExercicio.getRepeticoes());
+            aulaTreinoExercicio.setSeries(treinoExercicio.getSeries());
+            aulaTreinoExercicio.setDescanso(treinoExercicio.getDescanso());
+
+            return new AtribuicaoTreinosAulaItemDTO(
+                    item.idAluno(),
+                    aula.getId(),
+                    item.idPlanoContratado(),
+                    item.dataHorarioInicio(),
+                    item.dataHorarioFim()
+            );
+        }).toList();
+
+        return new AtribuicaoTreinosAulaResponsePostDTO(itensResponse);
     }
 
     public void atualizarStatus(Integer idSessaoTreino, AulaStatusEnum novoStatus) {

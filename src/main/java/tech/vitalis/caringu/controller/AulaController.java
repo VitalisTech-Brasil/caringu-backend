@@ -10,7 +10,6 @@ import tech.vitalis.caringu.dtos.Aula.Request.AtribuicaoTreinosAulaRequestPostDT
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoRequestPostDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AtribuicaoTreinosAulaResponsePostDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoResponsePostDTO;
-import tech.vitalis.caringu.dtos.Aula.Response.AulaTreinoResponsePostDTO;
 import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.*;
 import tech.vitalis.caringu.service.AulaService;
@@ -86,12 +85,11 @@ public class AulaController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{idAula}/atribuicao/treino")
+    @PostMapping("/atribuicao/treinos")
     public ResponseEntity<AtribuicaoTreinosAulaResponsePostDTO> atribuirTreinoAAula(
-            @PathVariable Integer idAula,
             @Valid @RequestBody AtribuicaoTreinosAulaRequestPostDTO requestDTO
     ) {
-        AtribuicaoTreinosAulaResponsePostDTO response = aulaService.atribuirTreinoAAula(idAula, requestDTO);
+        AtribuicaoTreinosAulaResponsePostDTO response = aulaService.atribuirTreinoAAula(requestDTO);
         return ResponseEntity.ok(response);
     }
 
