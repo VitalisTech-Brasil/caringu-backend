@@ -6,8 +6,11 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
+import tech.vitalis.caringu.dtos.Aula.Request.AtribuicaoTreinosAulaRequestPostDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoRequestPostDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AtribuicaoTreinosAulaResponsePostDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoResponsePostDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AulaTreinoResponsePostDTO;
 import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.*;
 import tech.vitalis.caringu.service.AulaService;
@@ -83,8 +86,15 @@ public class AulaController {
         return ResponseEntity.ok(response);
     }
 
-//    @PostMapping("/{idAula}/treinos")
-//
+    @PostMapping("/{idAula}/atribuicao/treino")
+    public ResponseEntity<AtribuicaoTreinosAulaResponsePostDTO> atribuirTreinoAAula(
+            @PathVariable Integer idAula,
+            @Valid @RequestBody AtribuicaoTreinosAulaRequestPostDTO requestDTO
+    ) {
+        AtribuicaoTreinosAulaResponsePostDTO response = aulaService.atribuirTreinoAAula(idAula, requestDTO);
+        return ResponseEntity.ok(response);
+    }
+
 //    @PatchMapping("/{idAluno}/rascunhos/agendado")
 
     @PatchMapping("/{idSessaoTreino}/status")

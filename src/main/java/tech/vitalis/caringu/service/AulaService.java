@@ -3,19 +3,25 @@ package tech.vitalis.caringu.service;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGetDTO;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
+import tech.vitalis.caringu.dtos.Aula.Request.AtribuicaoTreinosAulaRequestPostDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoItemDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoRequestPostDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AtribuicaoTreinosAulaResponsePostDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoCriadaDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoResponsePostDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AulaTreinoResponsePostDTO;
 import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.*;
 import tech.vitalis.caringu.entity.Aula;
+import tech.vitalis.caringu.entity.AulaTreinoExercicio;
 import tech.vitalis.caringu.entity.PlanoContratado;
+import tech.vitalis.caringu.entity.TreinoExercicio;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
 import tech.vitalis.caringu.enums.StatusEnum;
 import tech.vitalis.caringu.exception.Aula.AulaConflitanteException;
 import tech.vitalis.caringu.exception.PlanoContratado.AlunoSemPlanoContratadoException;
 import tech.vitalis.caringu.exception.SessaoTreino.SessaoTreinoNaoEncontradoException;
+import tech.vitalis.caringu.exception.Treino.TreinoNaoEncontradoException;
 import tech.vitalis.caringu.mapper.AulaMapper;
 import tech.vitalis.caringu.repository.AulaRepository;
 import tech.vitalis.caringu.repository.PlanoContratadoRepository;
@@ -124,6 +130,30 @@ public class AulaService {
                 .toList();
 
         return new AulaRascunhoResponsePostDTO(aulasCriadas);
+    }
+
+    public AtribuicaoTreinosAulaResponsePostDTO atribuirTreinoAAula(Integer idAula, AtribuicaoTreinosAulaRequestPostDTO requestDTO) {
+        // 1. Buscar a aula
+        Aula aula = aulaRepository.findById(idAula)
+                .orElseThrow(() -> new AulaNaoEncontradaException("Aula não encontrada"));
+
+        // 2. Buscar o treino
+        TreinoExercicio treinoExercicio = treinoRepository.findById(requestDTO.treinoId())
+                .orElseThrow(() -> new TreinoNaoEncontradoException("Treino não encontrado"));
+
+        // 3. Associar o treino à aula
+        AulaTreinoExercicio aulaTreinoExercicio = new AulaTreinoExercicio();
+        aulaTreinoExercicio.setTreinoExercicio(treino);
+
+        // 4. Persistir
+        Aula aulaAtualizada = aulaRepository.save(aula);
+
+        // 5. Retornar resposta
+        return new AtribuicaoTreinosAulaResponsePostDTO(
+                aulaAtualizada.getId(),
+                aulaAtualizada.getTreino().getId(),
+                aulaAtualizada.getStatus().name()
+        );
     }
 
     public void atualizarStatus(Integer idSessaoTreino, AulaStatusEnum novoStatus) {

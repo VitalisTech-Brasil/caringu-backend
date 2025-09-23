@@ -219,7 +219,7 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
     @Query("""
     SELECT a
     FROM Aula a
-    WHERE a.planoContratado.id = :planoId 
+    WHERE a.planoContratado.id = :planoId
       AND a.status IN ('RASCUNHO','AGENDADO','REAGENDADO')
       AND (
             (a.dataHorarioInicio <= :fim AND a.dataHorarioFim >= :inicio)
