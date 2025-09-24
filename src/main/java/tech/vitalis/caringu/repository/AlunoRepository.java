@@ -20,7 +20,7 @@ public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
     SELECT new tech.vitalis.caringu.dtos.Aluno.AlunoDetalhadoResponseDTO(
         a.id, a.peso, a.altura, p.nome, p.email, p.celular, p.urlFotoPerfil, a.nivelExperiencia,
         a.nivelAtividade, pl.nome, pl.periodo, pl.quantidadeAulas, pc.dataFim,
-        pc.id,
+        pc.id, au.id,
         SUM(CASE WHEN au.status = 'REALIZADO' AND au.dataHorarioInicio BETWEEN :startOfWeek AND :endOfWeek
                          THEN 1 ELSE 0 END),
         SUM(CASE WHEN au.status = 'REALIZADO' THEN 1 ELSE 0 END),

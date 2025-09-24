@@ -24,7 +24,7 @@ public record AlunoDetalhadoComTreinosDTO(
         Integer totalAulasContratadas,
         LocalDate dataVencimentoPlano,
 
-        Integer idAlunoTreino,
+        Integer idPlanoContratado,
         Long treinosSemana,
         Long treinosTotal,
 

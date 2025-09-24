@@ -71,7 +71,7 @@ public class AlunoMapper {
                 dto.periodoPlano(),
                 dto.totalAulasContratadas(),
                 dto.dataVencimentoPlano(),
-                dto.idAlunoTreino(),
+                dto.idPlanoContratado(),
                 dto.treinosSemana(),
                 dto.treinosTotal(),
                 null, null, null, null, // horários ainda serão adicionados depois
@@ -107,13 +107,13 @@ public class AlunoMapper {
         Long treinosTotal = duplicados.stream().mapToLong(AlunoDetalhadoComTreinosDTO::treinosTotal).sum();
 
         Integer idAlunoTreino = duplicados.stream()
-                .filter(dto -> dto.idAlunoTreino() != null &&
+                .filter(dto -> dto.idPlanoContratado() != null &&
                         (
                                 PeriodoEnum.AVULSO.equals(dto.periodoPlano()) ||
                                         (dto.dataVencimentoPlano() != null && !dto.dataVencimentoPlano().isBefore(LocalDate.now()))
                         )
                 )
-                .map(AlunoDetalhadoComTreinosDTO::idAlunoTreino)
+                .map(AlunoDetalhadoComTreinosDTO::idPlanoContratado)
                 .findFirst()
                 .orElse(null);
 

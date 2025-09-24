@@ -23,7 +23,8 @@ public record AlunoDetalhadoResponseDTO(
         Integer totalAulasContratadas,
         LocalDate dataVencimentoPlano,
 
-        Integer idAlunoTreino,
+        Integer idPlanoContratado,
+        Integer idAula,
         Long treinosSemana,
         Long treinosTotal,
 

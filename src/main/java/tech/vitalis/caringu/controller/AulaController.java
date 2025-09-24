@@ -85,14 +85,6 @@ public class AulaController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/atribuicao/treinos")
-    public ResponseEntity<AtribuicaoTreinosAulaResponsePostDTO> atribuirTreinoAAula(
-            @Valid @RequestBody AtribuicaoTreinosAulaRequestPostDTO requestDTO
-    ) {
-        AtribuicaoTreinosAulaResponsePostDTO response = aulaService.atribuirTreinoAAula(requestDTO);
-        return ResponseEntity.ok(response);
-    }
-
 //    @PatchMapping("/{idAluno}/rascunhos/agendado")
 
     @PatchMapping("/{idSessaoTreino}/status")

@@ -144,62 +144,6 @@ public class AulaService {
         return new AulaRascunhoResponsePostDTO(aulasCriadas);
     }
 
-    public AtribuicaoTreinosAulaResponsePostDTO atribuirTreinoAAula(
-            AtribuicaoTreinosAulaRequestPostDTO requestDTO
-    ) {
-        List<AtribuicaoTreinosAulaItemDTO> itensResponse = requestDTO.aulasTreinos().stream().map(item -> {
-
-            // 1. Validar plano ativo
-            PlanoContratado planoContratado = planoContratadoRepository
-                    .findFirstByAlunoIdAndStatus(item.idAluno(), StatusEnum.ATIVO)
-                    .orElseThrow(() -> new AlunoSemPlanoContratadoException("Aluno sem plano ativo."));
-
-            if (!planoContratado.getId().equals(item.idPlanoContratado())) {
-                throw new PlanoNaoPertenceAoAlunoException("Plano informado não pertence ao aluno.");
-            }
-
-            // 2. Buscar aula rascunho e alterar para status AGENDADO
-            Aula aula = aulaRepository.findByPlanoContratadoIdAndDataHorarioInicioAndDataHorarioFimAndStatus(
-                    item.idPlanoContratado(),
-                    item.dataHorarioInicio(),
-                    item.dataHorarioFim(),
-                    AulaStatusEnum.RASCUNHO
-            ).orElseThrow(() -> new AulaNaoEncontradaException("Aula rascunho não encontrada."));
-
-            // 2.1 Atualizar status da aula
-            aula.setStatus(AulaStatusEnum.AGENDADO);
-            aulaRepository.save(aula);
-
-            // 3. Buscar treino
-            TreinoExercicio treinoExercicio = treinoExercicioRepository.findById(item.idTreinoExercicio())
-                    .orElseThrow(() -> new TreinoNaoEncontradoException("Treino não encontrado."));
-
-            // 4. Associar
-            AulaTreinoExercicio aulaTreinoExercicio = new AulaTreinoExercicio();
-
-            // 4.1 Calcular ordem
-            Integer proximaOrdem = aulaTreinoExercicioRepository.findMaxOrdemByAulaId(aula.getId()) + 1;
-
-            aulaTreinoExercicio.setAula(aula);
-            aulaTreinoExercicio.setTreinoExercicio(treinoExercicio);
-            aulaTreinoExercicio.setOrdem(proximaOrdem);
-            aulaTreinoExercicio.setCarga(treinoExercicio.getCarga());
-            aulaTreinoExercicio.setRepeticoes(treinoExercicio.getRepeticoes());
-            aulaTreinoExercicio.setSeries(treinoExercicio.getSeries());
-            aulaTreinoExercicio.setDescanso(treinoExercicio.getDescanso());
-
-            return new AtribuicaoTreinosAulaItemDTO(
-                    item.idAluno(),
-                    aula.getId(),
-                    item.idPlanoContratado(),
-                    item.dataHorarioInicio(),
-                    item.dataHorarioFim()
-            );
-        }).toList();
-
-        return new AtribuicaoTreinosAulaResponsePostDTO(itensResponse);
-    }
-
     public void atualizarStatus(Integer idSessaoTreino, AulaStatusEnum novoStatus) {
 
         Aula aula = aulaRepository.findById(idSessaoTreino)
