@@ -1,9 +1,13 @@
 package tech.vitalis.caringu.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import tech.vitalis.caringu.dtos.Aula.Request.AtribuicaoTreinosAulaRequestPostDTO;
-import tech.vitalis.caringu.dtos.Aula.Response.AtribuicaoTreinosAulaItemDTO;
-import tech.vitalis.caringu.dtos.Aula.Response.AtribuicaoTreinosAulaResponsePostDTO;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.AtribuicaoTreinosAulaRequestPostDTO;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.AtribuicaoTreinosAulaTreinoDTO;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.HorarioAulaDTO;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.AtribuicaoTreinosAulaResponsePostDTO;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.AtribuicaoTreinosAulaTreinoResponseDTO;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.AulaCriadaDTO;
 import tech.vitalis.caringu.entity.Aula;
 import tech.vitalis.caringu.entity.AulaTreinoExercicio;
 import tech.vitalis.caringu.entity.PlanoContratado;
@@ -14,37 +18,40 @@ import tech.vitalis.caringu.exception.Aula.AulaNaoEncontradaException;
 import tech.vitalis.caringu.exception.PlanoContratado.AlunoSemPlanoContratadoException;
 import tech.vitalis.caringu.exception.PlanoContratado.PlanoNaoPertenceAoAlunoException;
 import tech.vitalis.caringu.exception.Treino.TreinoNaoEncontradoException;
-import tech.vitalis.caringu.repository.AulaRepository;
-import tech.vitalis.caringu.repository.AulaTreinoExercicioRepository;
-import tech.vitalis.caringu.repository.PlanoContratadoRepository;
-import tech.vitalis.caringu.repository.TreinoExercicioRepository;
+import tech.vitalis.caringu.repository.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class AulaTreinoExercicioService {
 
     private final AulaRepository aulaRepository;
+    private final TreinoRepository treinoRepository;
     private final AulaTreinoExercicioRepository aulaTreinoExercicioRepository;
     private final PlanoContratadoRepository planoContratadoRepository;
     private final TreinoExercicioRepository treinoExercicioRepository;
 
     public AulaTreinoExercicioService(
-            AulaRepository aulaRepository,
+            AulaRepository aulaRepository, TreinoRepository treinoRepository,
             AulaTreinoExercicioRepository aulaTreinoExercicioRepository,
             PlanoContratadoRepository planoContratadoRepository,
             TreinoExercicioRepository treinoExercicioRepository
     ) {
         this.aulaRepository = aulaRepository;
+        this.treinoRepository = treinoRepository;
         this.aulaTreinoExercicioRepository = aulaTreinoExercicioRepository;
         this.planoContratadoRepository = planoContratadoRepository;
         this.treinoExercicioRepository = treinoExercicioRepository;
     }
 
+    @Transactional
     public AtribuicaoTreinosAulaResponsePostDTO atribuirTreinoAAula(
             AtribuicaoTreinosAulaRequestPostDTO requestDTO
     ) {
-        List<AtribuicaoTreinosAulaItemDTO> itensResponse = requestDTO.aulasTreinos().stream().map(item -> {
+        List<AtribuicaoTreinosAulaTreinoResponseDTO> itensResponse = new ArrayList<>();
+
+        for (AtribuicaoTreinosAulaTreinoDTO item : requestDTO.aulasTreinos()) {
 
             // 1. Validar plano ativo
             PlanoContratado planoContratado = planoContratadoRepository
@@ -55,47 +62,63 @@ public class AulaTreinoExercicioService {
                 throw new PlanoNaoPertenceAoAlunoException("Plano informado não pertence ao aluno.");
             }
 
-            // 2. Buscar aula rascunho e alterar para status AGENDADO
-            Aula aula = aulaRepository.findByPlanoContratadoIdAndDataHorarioInicioAndDataHorarioFimAndStatus(
-                    item.idPlanoContratado(),
-                    item.dataHorarioInicio(),
-                    item.dataHorarioFim(),
-                    AulaStatusEnum.RASCUNHO
-            ).orElseThrow(() -> new AulaNaoEncontradaException("Aula rascunho não encontrada."));
+            // 2. Buscar exercícios do treino
+            List<TreinoExercicio> treinoExercicios = treinoExercicioRepository.findByTreino_Id(item.idTreino());
+            if (treinoExercicios.isEmpty()) {
+                throw new TreinoNaoEncontradoException("Treino não encontrado.");
+            }
 
-            // 2.1 Atualizar status da aula
-            aula.setStatus(AulaStatusEnum.AGENDADO);
-            aulaRepository.save(aula);
+            // Lista de aulas criadas (vai dentro do response agrupado)
+            List<AulaCriadaDTO> aulasCriadas = new ArrayList<>();
 
-            // 3. Buscar treino
-            TreinoExercicio treinoExercicio = treinoExercicioRepository.findById(item.idTreinoExercicio())
-                    .orElseThrow(() -> new TreinoNaoEncontradoException("Treino não encontrado."));
+            // 3. Iterar pelas aulas informadas no payload
+            for (HorarioAulaDTO horario : item.listaHorariosAula()) {
 
-            // 4. Associar
-            AulaTreinoExercicio aulaTreinoExercicio = new AulaTreinoExercicio();
+                // 3.1 Buscar aula rascunho
+                Aula aula = aulaRepository.findByPlanoContratadoIdAndDataHorarioInicioAndDataHorarioFimAndStatus(
+                        item.idPlanoContratado(),
+                        horario.dataHorarioInicio(),
+                        horario.dataHorarioFim(),
+                        AulaStatusEnum.RASCUNHO
+                ).orElseThrow(() -> new AulaNaoEncontradaException("Aula rascunho não encontrada."));
 
-            // 4.1 Calcular ordem
-            Integer proximaOrdem = aulaTreinoExercicioRepository.findMaxOrdemByAulaId(aula.getId()) + 1;
+                // 3.2 Atualizar status
+                aula.setStatus(AulaStatusEnum.AGENDADO);
+                aulaRepository.save(aula);
 
-            // 5 Salvar aula treino exercício
-            aulaTreinoExercicio.setAula(aula);
-            aulaTreinoExercicio.setTreinoExercicio(treinoExercicio);
-            aulaTreinoExercicio.setOrdem(proximaOrdem);
-            aulaTreinoExercicio.setCarga(treinoExercicio.getCarga());
-            aulaTreinoExercicio.setRepeticoes(treinoExercicio.getRepeticoes());
-            aulaTreinoExercicio.setSeries(treinoExercicio.getSeries());
-            aulaTreinoExercicio.setDescanso(treinoExercicio.getDescanso());
+                // 3.3 Criar AulaTreinoExercicio para cada exercício do treino
+                for (TreinoExercicio te : treinoExercicios) {
+                    Integer proximaOrdem = aulaTreinoExercicioRepository
+                            .findMaxOrdemByAulaId(aula.getId()) + 1;
 
-            aulaTreinoExercicioRepository.save(aulaTreinoExercicio);
+                    AulaTreinoExercicio ate = new AulaTreinoExercicio();
+                    ate.setAula(aula);
+                    ate.setTreinoExercicio(te);
+                    ate.setOrdem(proximaOrdem);
+                    ate.setCarga(te.getCarga());
+                    ate.setRepeticoes(te.getRepeticoes());
+                    ate.setSeries(te.getSeries());
+                    ate.setDescanso(te.getDescanso());
 
-            return new AtribuicaoTreinosAulaItemDTO(
+                    aulaTreinoExercicioRepository.save(ate);
+                }
+
+                // 3.4 Adicionar ao agrupamento de aulasCriadas
+                aulasCriadas.add(new AulaCriadaDTO(
+                        aula.getId(),
+                        aula.getDataHorarioInicio(),
+                        aula.getDataHorarioFim()
+                ));
+            }
+
+            // 4. Montar o agrupamento do response
+            itensResponse.add(new AtribuicaoTreinosAulaTreinoResponseDTO(
                     item.idAluno(),
-                    aula.getId(),
                     item.idPlanoContratado(),
-                    item.dataHorarioInicio(),
-                    item.dataHorarioFim()
-            );
-        }).toList();
+                    item.idTreino(),
+                    aulasCriadas
+            ));
+        }
 
         return new AtribuicaoTreinosAulaResponsePostDTO(itensResponse);
     }
