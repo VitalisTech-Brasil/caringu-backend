@@ -178,10 +178,6 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
             SELECT new tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO(
                 a.id,
                 a.nome,
-                a.celular,
-                ana.objetivoTreino,
-                a.nivelAtividade,
-                pl.nome,
                 pl.quantidadeAulas,
                 SUM(CASE WHEN au.status IN ('AGENDADO', 'REALIZADO', 'REAGENDADO') THEN 1 ELSE 0 END),
                 SUM(CASE WHEN au.status = 'RASCUNHO' THEN 1 ELSE 0 END),
