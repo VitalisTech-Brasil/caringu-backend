@@ -2,13 +2,14 @@ package tech.vitalis.caringu.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.vitalis.caringu.dtos.SessaoTreino.AtualizarStatusSessaoTreinoDTO;
-import tech.vitalis.caringu.dtos.SessaoTreino.SessaoAulasAgendadasResponseDTO;
-import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoCargaDashboardResponseDTO;
-import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoTreinoCumpridoResponseDTO;
-import tech.vitalis.caringu.dtos.SessaoTreino.HorasTreinadasResponseDTO;
+import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
+import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoRequestPostDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoResponsePostDTO;
+import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
+import tech.vitalis.caringu.dtos.SessaoTreino.*;
 import tech.vitalis.caringu.service.AulaService;
 
 import java.util.List;
@@ -32,11 +33,13 @@ public class AulaController {
     }
 
     @GetMapping("/evolucao-carga")
-    public List<EvolucaoCargaDashboardResponseDTO> buscarEvolucaoCarga(
+    public ResponseEntity<List<EvolucaoCargaDashboardResponseDTO>> buscarEvolucaoCarga(
             @RequestParam Integer idAluno,
             @RequestParam Integer idExercicio
     ) {
-        return aulaService.buscarEvolucaoCarga(idAluno, idExercicio);
+        List<EvolucaoCargaDashboardResponseDTO> resultado = aulaService.buscarEvolucaoCarga(idAluno, idExercicio);
+
+        return ResponseEntity.ok(resultado);
     }
 
     @GetMapping("/evolucao-treinos-cumpridos")
@@ -55,6 +58,29 @@ public class AulaController {
     ) {
         HorasTreinadasResponseDTO resultado = aulaService.buscarHorasTreinadas(idAluno, idExercicio);
         return ResponseEntity.ok(resultado);
+    }
+
+    @GetMapping("/{idAluno}/disponibilidade")
+    public ResponseEntity<TotalAulasAgendamentoResponseGetDTO> buscarDisponibilidadeDeAulas(
+            @PathVariable Integer idAluno
+    ) {
+        TotalAulasAgendamentoResponseGetDTO infoTotalAulas = aulaService.buscarDisponibilidadeDeAulas(idAluno);
+        return ResponseEntity.ok(infoTotalAulas);
+    }
+
+    @GetMapping("/{idAluno}/rascunhos")
+    public ResponseEntity<AulasRascunhoResponseDTO> buscarAulasRascunho(@PathVariable Integer idAluno) {
+        AulasRascunhoResponseDTO aulas = aulaService.buscarAulasRascunho(idAluno);
+        return ResponseEntity.ok(aulas);
+    }
+
+    @PostMapping("/{idAluno}/rascunhos")
+    public ResponseEntity<AulaRascunhoResponsePostDTO> criarAulasRascunho(
+            @PathVariable Integer idAluno,
+            @Valid @RequestBody AulaRascunhoRequestPostDTO requestDTO
+    ) {
+        AulaRascunhoResponsePostDTO response = aulaService.criarAulasRascunho(idAluno, requestDTO);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{idSessaoTreino}/status")

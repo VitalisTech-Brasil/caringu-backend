@@ -1,6 +1,7 @@
 package tech.vitalis.caringu.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/treinos-exercicios")
+@SecurityRequirement(name = "Bearer")
 public class TreinoExercicioController {
 
     private final TreinoExercicioService treinoExercicioService;

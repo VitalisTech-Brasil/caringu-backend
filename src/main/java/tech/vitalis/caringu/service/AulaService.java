@@ -1,11 +1,26 @@
 package tech.vitalis.caringu.service;
 
 import org.springframework.stereotype.Service;
+import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGetDTO;
+import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
+import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoItemDTO;
+import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoRequestPostDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoCriadaDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoResponsePostDTO;
+import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.*;
 import tech.vitalis.caringu.entity.Aula;
+import tech.vitalis.caringu.entity.PlanoContratado;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
+import tech.vitalis.caringu.enums.StatusEnum;
+import tech.vitalis.caringu.exception.Aula.AulaConflitanteException;
+import tech.vitalis.caringu.exception.PlanoContratado.AlunoSemPlanoContratadoException;
 import tech.vitalis.caringu.exception.SessaoTreino.SessaoTreinoNaoEncontradoException;
+import tech.vitalis.caringu.mapper.AulaMapper;
 import tech.vitalis.caringu.repository.AulaRepository;
+import tech.vitalis.caringu.repository.AulaTreinoExercicioRepository;
+import tech.vitalis.caringu.repository.PlanoContratadoRepository;
+import tech.vitalis.caringu.repository.TreinoExercicioRepository;
 import tech.vitalis.caringu.strategy.SessaoTreino.StatusSessaoTreinoValidationStrategy;
 
 import java.time.LocalDateTime;
@@ -19,9 +34,23 @@ import static tech.vitalis.caringu.strategy.EnumValidador.validarEnums;
 public class AulaService {
 
     private final AulaRepository aulaRepository;
+    private final PlanoContratadoRepository planoContratadoRepository;
+    private final AulaMapper aulaMapper;
+    private final TreinoExercicioRepository treinoExercicioRepository;
+    private final AulaTreinoExercicioRepository aulaTreinoExercicioRepository;
 
-    public AulaService(AulaRepository aulaRepository) {
+    public AulaService(
+            AulaRepository aulaRepository,
+            PlanoContratadoRepository planoContratadoRepository,
+            AulaMapper aulaMapper,
+            TreinoExercicioRepository treinoExercicioRepository,
+            AulaTreinoExercicioRepository aulaTreinoExercicioRepository
+    ) {
         this.aulaRepository = aulaRepository;
+        this.planoContratadoRepository = planoContratadoRepository;
+        this.aulaMapper = aulaMapper;
+        this.treinoExercicioRepository = treinoExercicioRepository;
+        this.aulaTreinoExercicioRepository = aulaTreinoExercicioRepository;
     }
 
     public List<SessaoAulasAgendadasResponseDTO> listarAulasPorPersonal(Integer idPersonal) {
@@ -53,6 +82,79 @@ public class AulaService {
                 .collect(Collectors.toList());
 
         return new HorasTreinadasResponseDTO(idAluno, idExercicio, dados);
+    }
+
+    public TotalAulasAgendamentoResponseGetDTO buscarDisponibilidadeDeAulas(Integer idAluno) {
+        return aulaRepository.buscarDisponibilidadeDeAulas(idAluno);
+    }
+
+    public AulasRascunhoResponseDTO buscarAulasRascunho(Integer idAluno) {
+        List<AulaRascunhoResponseGetDTO> aulas = aulaRepository.buscarAulasRascunho(idAluno);
+        return new AulasRascunhoResponseDTO(aulas);
+    }
+
+    public AulaRascunhoResponsePostDTO criarAulasRascunho(
+            Integer idAluno,
+            AulaRascunhoRequestPostDTO requestDTO
+    ) {
+
+        // 1. Buscar plano ativo do aluno
+        PlanoContratado planoAtivo = planoContratadoRepository
+                .findFirstByAlunoIdAndStatus(idAluno, StatusEnum.ATIVO)
+                .orElseThrow(() -> new AlunoSemPlanoContratadoException("Aluno não possui plano contratado ativo."));
+
+        List<AulaRascunhoItemDTO> aulasDTO = requestDTO.aulas();
+
+        // 1.1 Validar conflitos entre as aulas da requisição
+        for (int i = 0; i < aulasDTO.size(); i++) {
+            AulaRascunhoItemDTO atual = aulasDTO.get(i);
+            for (int j = i + 1; j < aulasDTO.size(); j++) {
+                AulaRascunhoItemDTO outra = aulasDTO.get(j);
+
+                boolean sobrepoe = !atual.dataHorarioFim().isBefore(outra.dataHorarioInicio())
+                        && !outra.dataHorarioFim().isBefore(atual.dataHorarioInicio());
+
+                if (sobrepoe) {
+                    throw new AulaConflitanteException(
+                            "Conflito entre aulas da requisição: " +
+                                    atual.dataHorarioInicio() + " - " + atual.dataHorarioFim() +
+                                    " e " + outra.dataHorarioInicio() + " - " + outra.dataHorarioFim()
+                    );
+                }
+            }
+        }
+
+        // 1.2 Validar conflitos com aulas já cadastradas no banco
+        for (AulaRascunhoItemDTO dto : aulasDTO) {
+            List<Aula> aulasConflitantes = aulaRepository.findAulasNoPeriodo(
+                    planoAtivo.getId(),
+                    dto.dataHorarioInicio(),
+                    dto.dataHorarioFim()
+            );
+            if (!aulasConflitantes.isEmpty()) {
+                throw new AulaConflitanteException(
+                        "Já existe uma aula agendada no período: " +
+                                dto.dataHorarioInicio().toString().replaceAll("T", " ") +
+                                " - " +
+                                dto.dataHorarioFim().toString().replaceAll("T", " ")
+                );
+            }
+        }
+
+        // 2. Converter DTOs para entidades
+        List<Aula> aulas = aulasDTO.stream()
+                .map(dto -> aulaMapper.toEntity(dto, planoAtivo))
+                .toList();
+
+        // 3. Salvar todas
+        List<Aula> aulasSalvas = aulaRepository.saveAll(aulas);
+
+        // 4. Converter para resposta
+        List<AulaRascunhoCriadaDTO> aulasCriadas = aulasSalvas.stream()
+                .map(aulaMapper::toResponse)
+                .toList();
+
+        return new AulaRascunhoResponsePostDTO(aulasCriadas);
     }
 
     public void atualizarStatus(Integer idSessaoTreino, AulaStatusEnum novoStatus) {
