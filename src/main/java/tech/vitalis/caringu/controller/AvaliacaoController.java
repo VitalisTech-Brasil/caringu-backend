@@ -1,5 +1,6 @@
 package tech.vitalis.caringu.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ public class AvaliacaoController {
     }
 
     @PostMapping()
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<AvaliacaoResponseDTO> criarAvaliacao(@RequestBody AvaliacaoRequestDTO avaliacaoRequestDTO) {
         // Implementar a lógica para criar uma nova avaliação
         return avaliacaoService.cadastrarAvaliacao(avaliacaoRequestDTO);

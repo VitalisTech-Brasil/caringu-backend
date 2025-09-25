@@ -53,6 +53,7 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/personal-trainers/disponiveis", "GET"),
             new AntPathRequestMatcher("/personal-trainers/disponiveis/{personalId}", "GET"),
             new AntPathRequestMatcher("/alunos", "POST"),
+            new AntPathRequestMatcher("/avaliacoes/personal/{idPersonal}", "GET"),
             new AntPathRequestMatcher("/fale-conosco", "POST"),
             new AntPathRequestMatcher("/pessoas/verificacao-email", "GET"),
             new AntPathRequestMatcher("/pessoas/fotos-perfil/{nomeArquivo}", "GET"),
