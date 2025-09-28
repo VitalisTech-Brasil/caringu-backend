@@ -92,4 +92,12 @@ public class AulaController {
         aulaService.atualizarStatus(idSessaoTreino, dto.status());
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/rascunhos")
+    public ResponseEntity<Void> deletarAulasRascunhos(
+            @Valid @RequestBody List<Integer> listaIdsAulaRequestDTO
+    ) {
+        aulaService.deletarAulasRascunhos(listaIdsAulaRequestDTO);
+        return ResponseEntity.noContent().build();
+    }
 }

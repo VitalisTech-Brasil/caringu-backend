@@ -5,7 +5,7 @@ import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
 import java.time.LocalDateTime;
 
 public record AulaRascunhoResponseGetDTO(
-        Integer aulaId,
+        Integer idAula,
         LocalDateTime dataHorarioInicio,
         LocalDateTime dataHorarioFim,
         AulaStatusEnum status,

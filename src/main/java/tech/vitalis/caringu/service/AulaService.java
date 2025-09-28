@@ -1,6 +1,10 @@
 package tech.vitalis.caringu.service;
 
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGetDTO;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoItemDTO;
@@ -176,5 +180,24 @@ public class AulaService {
 
         aula.setStatus(novoStatus);
         aulaRepository.save(aula);
+    }
+
+    @Transactional
+    public void deletarAulasRascunhos(List<Integer> listaIdsAula) {
+        if (listaIdsAula == null || listaIdsAula.isEmpty()) {
+            return; // nada a deletar
+        }
+
+        // Validação: só permite excluir aulas que estejam em rascunho
+        List<Aula> aulasParaExcluir = aulaRepository.findAllById(listaIdsAula)
+                .stream()
+                .filter(aula -> aula.getStatus() == AulaStatusEnum.RASCUNHO)
+                .toList();
+
+        if (aulasParaExcluir.isEmpty()) {
+            return;
+        }
+
+        aulaRepository.deleteAll(aulasParaExcluir);
     }
 }

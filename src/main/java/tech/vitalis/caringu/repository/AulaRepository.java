@@ -181,14 +181,14 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
                 pl.quantidadeAulas,
                 SUM(CASE WHEN au.status IN ('AGENDADO', 'REALIZADO', 'REAGENDADO') THEN 1 ELSE 0 END),
                 SUM(CASE WHEN au.status = 'RASCUNHO' THEN 1 ELSE 0 END),
-                CAST(pl.quantidadeAulas - SUM(CASE WHEN au.status IN ('AGENDADO', 'REALIZADO', 'REAGENDADO') THEN 1 END) AS long)
+                CAST(pl.quantidadeAulas - SUM(CASE WHEN au.status IN ('AGENDADO', 'REALIZADO', 'REAGENDADO') THEN 1 ELSE 0 END) AS long)
             )
             FROM Aluno a
             JOIN PlanoContratado pc ON a.id = pc.aluno.id
             JOIN Plano pl ON pl.id = pc.plano.id
             LEFT JOIN Aula au
                 ON au.planoContratado.id = pc.id
-                AND au.status IN ('AGENDADO', 'REALIZADO', 'REAGENDADO')
+                AND au.status IN ('AGENDADO', 'REALIZADO', 'REAGENDADO', 'RASCUNHO')
             JOIN Anamnese ana ON ana.aluno.id = a.id
             WHERE pc.aluno.id = :idAluno
                 AND pc.status = 'ATIVO'
