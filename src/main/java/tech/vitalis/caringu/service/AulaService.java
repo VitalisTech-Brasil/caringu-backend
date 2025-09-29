@@ -1,10 +1,7 @@
 package tech.vitalis.caringu.service;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGetDTO;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoItemDTO;
@@ -135,7 +132,18 @@ public class AulaService {
                     dto.dataHorarioInicio(),
                     dto.dataHorarioFim()
             );
-            if (!aulasConflitantes.isEmpty()) {
+
+            // Verifica se existe algum conflito real (ignora rascunhos idênticos)
+            boolean temConflito = aulasConflitantes.stream().anyMatch(a ->
+                    // se não for rascunho, já é conflito
+                    a.getStatus() != AulaStatusEnum.RASCUNHO
+                            ||
+                            // se for rascunho, mas em período diferente, também conflito
+                            !(a.getDataHorarioInicio().equals(dto.dataHorarioInicio())
+                                    && a.getDataHorarioFim().equals(dto.dataHorarioFim()))
+            );
+
+            if (temConflito) {
                 throw new AulaConflitanteException(
                         "Já existe uma aula agendada no período: " +
                                 dto.dataHorarioInicio().toString().replaceAll("T", " ") +
@@ -147,6 +155,15 @@ public class AulaService {
 
         // 2. Converter DTOs para entidades
         List<Aula> aulas = aulasDTO.stream()
+                .filter(dto -> {
+                    List<Aula> existentes = aulaRepository.findAulasNoPeriodo(
+                            planoAtivo.getId(),
+                            dto.dataHorarioInicio(),
+                            dto.dataHorarioFim()
+                    );
+                    // só permite criar se não existe nenhuma aula RASCUNHO exatamente nesse intervalo
+                    return existentes.stream().noneMatch(a -> a.getStatus() == AulaStatusEnum.RASCUNHO);
+                })
                 .map(dto -> aulaMapper.toEntity(dto, planoAtivo))
                 .toList();
 
