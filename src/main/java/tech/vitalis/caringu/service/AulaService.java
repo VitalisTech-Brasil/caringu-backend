@@ -1,5 +1,6 @@
 package tech.vitalis.caringu.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGetDTO;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
@@ -131,7 +132,18 @@ public class AulaService {
                     dto.dataHorarioInicio(),
                     dto.dataHorarioFim()
             );
-            if (!aulasConflitantes.isEmpty()) {
+
+            // Verifica se existe algum conflito real (ignora rascunhos idênticos)
+            boolean temConflito = aulasConflitantes.stream().anyMatch(a ->
+                    // se não for rascunho, já é conflito
+                    a.getStatus() != AulaStatusEnum.RASCUNHO
+                            ||
+                            // se for rascunho, mas em período diferente, também conflito
+                            !(a.getDataHorarioInicio().equals(dto.dataHorarioInicio())
+                                    && a.getDataHorarioFim().equals(dto.dataHorarioFim()))
+            );
+
+            if (temConflito) {
                 throw new AulaConflitanteException(
                         "Já existe uma aula agendada no período: " +
                                 dto.dataHorarioInicio().toString().replaceAll("T", " ") +
@@ -143,6 +155,15 @@ public class AulaService {
 
         // 2. Converter DTOs para entidades
         List<Aula> aulas = aulasDTO.stream()
+                .filter(dto -> {
+                    List<Aula> existentes = aulaRepository.findAulasNoPeriodo(
+                            planoAtivo.getId(),
+                            dto.dataHorarioInicio(),
+                            dto.dataHorarioFim()
+                    );
+                    // só permite criar se não existe nenhuma aula RASCUNHO exatamente nesse intervalo
+                    return existentes.stream().noneMatch(a -> a.getStatus() == AulaStatusEnum.RASCUNHO);
+                })
                 .map(dto -> aulaMapper.toEntity(dto, planoAtivo))
                 .toList();
 
@@ -176,5 +197,24 @@ public class AulaService {
 
         aula.setStatus(novoStatus);
         aulaRepository.save(aula);
+    }
+
+    @Transactional
+    public void deletarAulasRascunhos(List<Integer> listaIdsAula) {
+        if (listaIdsAula == null || listaIdsAula.isEmpty()) {
+            return; // nada a deletar
+        }
+
+        // Validação: só permite excluir aulas que estejam em rascunho
+        List<Aula> aulasParaExcluir = aulaRepository.findAllById(listaIdsAula)
+                .stream()
+                .filter(aula -> aula.getStatus() == AulaStatusEnum.RASCUNHO)
+                .toList();
+
+        if (aulasParaExcluir.isEmpty()) {
+            return;
+        }
+
+        aulaRepository.deleteAll(aulasParaExcluir);
     }
 }

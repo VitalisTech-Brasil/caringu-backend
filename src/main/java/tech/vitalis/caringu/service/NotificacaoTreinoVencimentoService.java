@@ -1,31 +1,17 @@
 package tech.vitalis.caringu.service;
 
 import org.springframework.stereotype.Service;
-import tech.vitalis.caringu.dtos.Notificacoes.NotificacaoTreinoPersonalDTO;
-import tech.vitalis.caringu.entity.*;
-import tech.vitalis.caringu.enums.Notificacoes.TipoNotificacaoEnum;
-import tech.vitalis.caringu.enums.PreferenciaNotificacao.TipoPreferenciaEnum;
-import tech.vitalis.caringu.repository.AlunoTreinoRepository;
 import tech.vitalis.caringu.repository.NotificacoesRepository;
 import tech.vitalis.caringu.repository.PreferenciaNotificacaoRepository;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class NotificacaoTreinoVencimentoService {
 
-    private final AlunoTreinoRepository alunoTreinoRepository;
     private final NotificacoesRepository notificacoesRepository;
     private final PreferenciaNotificacaoRepository preferenciaNotificacaoRepository;
     private final NotificacaoEnviarService notificacaoEnviarService;
 
-    public NotificacaoTreinoVencimentoService(AlunoTreinoRepository alunoTreinoRepository, NotificacoesRepository notificacoesRepository, PreferenciaNotificacaoRepository preferenciaNotificacaoRepository, NotificacaoEnviarService notificacaoEnviarService) {
-        this.alunoTreinoRepository = alunoTreinoRepository;
+    public NotificacaoTreinoVencimentoService(NotificacoesRepository notificacoesRepository, PreferenciaNotificacaoRepository preferenciaNotificacaoRepository, NotificacaoEnviarService notificacaoEnviarService) {
         this.notificacoesRepository = notificacoesRepository;
         this.preferenciaNotificacaoRepository = preferenciaNotificacaoRepository;
         this.notificacaoEnviarService = notificacaoEnviarService;

@@ -8,10 +8,7 @@ import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.HorarioAulaDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.AtribuicaoTreinosAulaResponsePostDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.AtribuicaoTreinosAulaTreinoResponseDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.AulaCriadaDTO;
-import tech.vitalis.caringu.entity.Aula;
-import tech.vitalis.caringu.entity.AulaTreinoExercicio;
-import tech.vitalis.caringu.entity.PlanoContratado;
-import tech.vitalis.caringu.entity.TreinoExercicio;
+import tech.vitalis.caringu.entity.*;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
 import tech.vitalis.caringu.enums.StatusEnum;
 import tech.vitalis.caringu.exception.Aula.AulaNaoEncontradaException;
@@ -27,19 +24,20 @@ import java.util.List;
 public class AulaTreinoExercicioService {
 
     private final AulaRepository aulaRepository;
-    private final TreinoRepository treinoRepository;
+    private final ExecucaoExercicioRepository execucaoExercicioRepository;
     private final AulaTreinoExercicioRepository aulaTreinoExercicioRepository;
     private final PlanoContratadoRepository planoContratadoRepository;
     private final TreinoExercicioRepository treinoExercicioRepository;
 
     public AulaTreinoExercicioService(
-            AulaRepository aulaRepository, TreinoRepository treinoRepository,
+            AulaRepository aulaRepository,
+            ExecucaoExercicioRepository execucaoExercicioRepository,
             AulaTreinoExercicioRepository aulaTreinoExercicioRepository,
             PlanoContratadoRepository planoContratadoRepository,
             TreinoExercicioRepository treinoExercicioRepository
     ) {
         this.aulaRepository = aulaRepository;
-        this.treinoRepository = treinoRepository;
+        this.execucaoExercicioRepository = execucaoExercicioRepository;
         this.aulaTreinoExercicioRepository = aulaTreinoExercicioRepository;
         this.planoContratadoRepository = planoContratadoRepository;
         this.treinoExercicioRepository = treinoExercicioRepository;
@@ -101,6 +99,17 @@ public class AulaTreinoExercicioService {
                     ate.setDescanso(te.getDescanso());
 
                     aulaTreinoExercicioRepository.save(ate);
+
+                    // Criando uma execução vinculada
+                    ExecucaoExercicio execucao = new ExecucaoExercicio();
+                    execucao.setAulaTreinoExercicio(ate);
+                    execucao.setCargaExecutada(te.getCarga());
+                    execucao.setRepeticoesExecutadas(te.getRepeticoes());
+                    execucao.setSeriesExecutadas(te.getSeries());
+                    execucao.setDescansoExecutado(te.getDescanso());
+                    execucao.setFinalizado(false);
+
+                    execucaoExercicioRepository.save(execucao);
                 }
 
                 // 3.4 Adicionar ao agrupamento de aulasCriadas
