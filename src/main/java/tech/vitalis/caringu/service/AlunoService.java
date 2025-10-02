@@ -1,35 +1,23 @@
 package tech.vitalis.caringu.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Aluno.*;
-import tech.vitalis.caringu.dtos.PerfilAluno.AlunoGetPerfilDetalhesDTO;
-import tech.vitalis.caringu.dtos.PerfilAluno.AlunoResponseGetPerfilDetalhesDTO;
-import tech.vitalis.caringu.dtos.PerfilAluno.AnamneseGetPerfilDetalhesDTO;
-import tech.vitalis.caringu.dtos.PerfilAluno.PessoaGetPerfilDetalhesDTO;
 import tech.vitalis.caringu.entity.Aluno;
-import tech.vitalis.caringu.entity.Anamnese;
 import tech.vitalis.caringu.entity.Pessoa;
 import tech.vitalis.caringu.enums.Aluno.NivelAtividadeEnum;
 import tech.vitalis.caringu.enums.Aluno.NivelExperienciaEnum;
 import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
 import tech.vitalis.caringu.exception.Aluno.AlunoNaoEncontradoException;
-import tech.vitalis.caringu.exception.Anamnese.AnamneseNaoEncontradaException;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
-import tech.vitalis.caringu.exception.Pessoa.PessoaNaoEncontradaException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
 import tech.vitalis.caringu.mapper.AlunoMapper;
-import tech.vitalis.caringu.mapper.AnamneseMapper;
-import tech.vitalis.caringu.mapper.PessoaMapper;
 import tech.vitalis.caringu.repository.AlunoRepository;
-import tech.vitalis.caringu.repository.AnamneseRepository;
 import tech.vitalis.caringu.repository.PessoaRepository;
-import tech.vitalis.caringu.repository.TreinoFinalizadoRepository;
 import tech.vitalis.caringu.strategy.Aluno.*;
 import tech.vitalis.caringu.strategy.EnumValidationStrategy;
 import tech.vitalis.caringu.strategy.Pessoa.GeneroEnumValidationStrategy;
@@ -37,9 +25,7 @@ import static tech.vitalis.caringu.strategy.EnumValidador.validarEnums;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.regex.Pattern;
 
