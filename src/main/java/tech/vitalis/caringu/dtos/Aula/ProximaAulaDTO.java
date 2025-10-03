@@ -1,12 +1,18 @@
 package tech.vitalis.caringu.dtos.Aula;
 
-import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
-
 import java.time.LocalDateTime;
 
-public record ProximasAulasDTO(Integer aulaId,
-                               Integer planoContratadoId,
-                               LocalDateTime dataHorarioInicio,
-                               LocalDateTime dataHorarioFim,
-                               AulaStatusEnum status
+public record ProximaAulaDTO(
+        Integer aulaTreinoExercicioId,
+        Integer aulaId,
+        LocalDateTime dataHorarioInicio,
+        LocalDateTime dataHorarioFim,
+        Integer treinoId,
+        String nomeTreino,
+        Integer exercicioId,
+        String nomeExercicio,
+        Integer personalId,
+        String nomePersonal,
+        String urlFotoPerfil
 ) {}
+
