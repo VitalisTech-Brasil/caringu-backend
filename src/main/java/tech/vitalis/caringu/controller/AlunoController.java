@@ -95,7 +95,8 @@ public class AlunoController {
     @PostMapping
     @Operation(summary = "Cadastrar aluno")
     public ResponseEntity<AlunoResponseGetDTO> cadastrar(@Valid @RequestBody AlunoRequestPostDTO cadastroDTO) {
-        AlunoResponseGetDTO respostaDTO = service.cadastrar(cadastroDTO);
+        Aluno aluno = mapper.toEntity(cadastroDTO);
+        AlunoResponseGetDTO respostaDTO = service.cadastrar(aluno);
 
         return ResponseEntity.status(201).body(respostaDTO);
     }

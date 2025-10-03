@@ -1,16 +1,17 @@
 package tech.vitalis.caringu.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.AtribuicaoTreinosAulaRequestPostDTO;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.RemarcarAulaTreinoRequestDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.AtribuicaoTreinosAulaResponsePostDTO;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.RemarcarAulaTreinoResponseDTO;
 import tech.vitalis.caringu.service.AulaTreinoExercicioService;
 
 @RestController
+@SecurityRequirement(name = "Bearer")
 @RequestMapping("/aulas-treinos-exercicios")
 public class AulaTreinoExercicioController {
 
@@ -27,6 +28,14 @@ public class AulaTreinoExercicioController {
             @Valid @RequestBody AtribuicaoTreinosAulaRequestPostDTO requestDTO
     ) {
         AtribuicaoTreinosAulaResponsePostDTO response = aulaTreinoExercicioService.atribuirTreinoAAula(requestDTO);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/remarcar")
+    public ResponseEntity<RemarcarAulaTreinoResponseDTO> remarcarAulaTreino(
+            @Valid @RequestBody RemarcarAulaTreinoRequestDTO request
+    ) {
+        RemarcarAulaTreinoResponseDTO response = aulaTreinoExercicioService.remarcarAulaTreino(request);
         return ResponseEntity.ok(response);
     }
 }
