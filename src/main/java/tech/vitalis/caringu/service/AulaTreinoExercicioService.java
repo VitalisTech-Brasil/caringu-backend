@@ -7,9 +7,8 @@ import tech.vitalis.caringu.dtos.Aula.ProximaAulaDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.AtribuicaoTreinosAulaRequestPostDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.AtribuicaoTreinosAulaTreinoDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.HorarioAulaDTO;
-import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.AtribuicaoTreinosAulaResponsePostDTO;
-import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.AtribuicaoTreinosAulaTreinoResponseDTO;
-import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.AulaCriadaDTO;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.RemarcarAulaTreinoRequestDTO;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.*;
 import tech.vitalis.caringu.entity.*;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
 import tech.vitalis.caringu.enums.StatusEnum;
@@ -17,33 +16,45 @@ import tech.vitalis.caringu.exception.Aula.AulaNaoEncontradaException;
 import tech.vitalis.caringu.exception.PlanoContratado.AlunoSemPlanoContratadoException;
 import tech.vitalis.caringu.exception.PlanoContratado.PlanoNaoPertenceAoAlunoException;
 import tech.vitalis.caringu.exception.Treino.TreinoNaoEncontradoException;
+import tech.vitalis.caringu.mapper.AulaTreinoExercicioMapper;
+import tech.vitalis.caringu.mapper.ExecucaoExercicioMapper;
 import tech.vitalis.caringu.repository.*;
 
 import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class AulaTreinoExercicioService {
 
     private final AulaRepository aulaRepository;
+    private final AulaTreinoExercicioMapper aulaTreinoExercicioMapper;
+    private final ExecucaoExercicioMapper execucaoExercicioMapper;
     private final ExecucaoExercicioRepository execucaoExercicioRepository;
     private final AulaTreinoExercicioRepository aulaTreinoExercicioRepository;
     private final PlanoContratadoRepository planoContratadoRepository;
     private final TreinoExercicioRepository treinoExercicioRepository;
+    private final TreinoRepository treinoRepository;
 
     public AulaTreinoExercicioService(
             AulaRepository aulaRepository,
+            AulaTreinoExercicioMapper aulaTreinoExercicioMapper,
+            ExecucaoExercicioMapper execucaoExercicioMapper,
             ExecucaoExercicioRepository execucaoExercicioRepository,
             AulaTreinoExercicioRepository aulaTreinoExercicioRepository,
             PlanoContratadoRepository planoContratadoRepository,
-            TreinoExercicioRepository treinoExercicioRepository
+            TreinoExercicioRepository treinoExercicioRepository,
+            TreinoRepository treinoRepository
     ) {
         this.aulaRepository = aulaRepository;
+        this.aulaTreinoExercicioMapper = aulaTreinoExercicioMapper;
+        this.execucaoExercicioMapper = execucaoExercicioMapper;
         this.execucaoExercicioRepository = execucaoExercicioRepository;
         this.aulaTreinoExercicioRepository = aulaTreinoExercicioRepository;
         this.planoContratadoRepository = planoContratadoRepository;
         this.treinoExercicioRepository = treinoExercicioRepository;
+        this.treinoRepository = treinoRepository;
     }
 
     public List<ProximaAulaDTO> listarProximasAulas(int idAluno){
@@ -138,5 +149,58 @@ public class AulaTreinoExercicioService {
         }
 
         return new AtribuicaoTreinosAulaResponsePostDTO(itensResponse);
+    }
+
+    @Transactional
+    public RemarcarAulaTreinoResponseDTO remarcarAulaTreino(RemarcarAulaTreinoRequestDTO request) {
+        // 1. Buscar aula
+        Aula aula = aulaRepository.findById(request.idAula())
+                .orElseThrow(() -> new AulaNaoEncontradaException("Aula não encontrada"));
+
+        // 2. Atualizar horário
+        aula.setDataHorarioInicio(request.novoHorarioInicio());
+        aula.setDataHorarioFim(request.novoHorarioFim());
+        aulaRepository.save(aula);
+
+        // 3. Validar treino novo
+        Treino treinoNovo = treinoRepository.findById(request.idTreinoNovo())
+                .orElseThrow(() -> new TreinoNaoEncontradoException("Treino novo não encontrado"));
+
+        // 4. Apagar execuções e vínculos antigos
+        List<AulaTreinoExercicio> antigos = aulaTreinoExercicioRepository.findByAulaId(aula.getId());
+        if (!antigos.isEmpty()) {
+            List<Integer> idsAntigos = antigos.stream().map(AulaTreinoExercicio::getId).toList();
+            execucaoExercicioRepository.deleteByAulaTreinoExercicioIdIn(idsAntigos);
+            aulaTreinoExercicioRepository.deleteAll(antigos);
+            aulaTreinoExercicioRepository.flush(); // força envio imediato do delete
+        }
+
+        // 5. Criar vínculos com treino novo
+        List<TreinoExercicio> exercicios = treinoExercicioRepository.findByTreinoId(treinoNovo.getId());
+        AtomicInteger ordemCounter = new AtomicInteger(1);
+
+        List<AulaTreinoExercicio> novos = exercicios.stream()
+                .map(ex -> aulaTreinoExercicioMapper.toEntity(aula, ex, ordemCounter.getAndIncrement()))
+                .toList();
+
+        List<AulaTreinoExercicio> salvos = aulaTreinoExercicioRepository.saveAll(novos);
+
+        // 6. Criar execuções “em branco”
+        List<ExecucaoExercicio> execucoes = salvos.stream()
+                .map(execucaoExercicioMapper::toNovaExecucao)
+                .toList();
+        execucaoExercicioRepository.saveAll(execucoes);
+
+        // 7. Resposta
+        List<AulaTreinoExercicioRemarcarAulaResponseDTO> exerciciosDTO =
+                salvos.stream().map(aulaTreinoExercicioMapper::toResponse).toList();
+
+        return new RemarcarAulaTreinoResponseDTO(
+                aula.getId(),
+                treinoNovo.getId(),
+                aula.getDataHorarioInicio(),
+                aula.getDataHorarioFim(),
+                exerciciosDTO
+        );
     }
 }

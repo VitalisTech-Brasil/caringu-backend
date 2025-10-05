@@ -106,8 +106,7 @@ public class AlunoService {
         return alunoMapper.toResponseDTO(aluno);
     }
 
-    public AlunoResponseGetDTO cadastrar(AlunoRequestPostDTO alunoDTO) {
-        Aluno aluno = alunoMapper.toEntity(alunoDTO);
+    public AlunoResponseGetDTO cadastrar(Aluno aluno) {
 
         validarSenha(aluno.getSenha());
         validarEnumsAluno(aluno);

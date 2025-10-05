@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import tech.vitalis.caringu.entity.AulaTreinoExercicio;
 
+import java.util.List;
+
 public interface AulaTreinoExercicioRepository extends JpaRepository<AulaTreinoExercicio, Integer> {
 
     @Query("""
@@ -14,4 +16,6 @@ public interface AulaTreinoExercicioRepository extends JpaRepository<AulaTreinoE
                 WHERE ate.aula.id = :idAula
             """)
     Integer findMaxOrdemByAulaId(@Param("idAula") Integer idAula);
+
+    List<AulaTreinoExercicio> findByAulaId(Integer aulaId);
 }
