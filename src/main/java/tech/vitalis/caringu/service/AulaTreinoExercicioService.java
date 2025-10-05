@@ -1,7 +1,9 @@
 package tech.vitalis.caringu.service;
 
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import tech.vitalis.caringu.dtos.Aula.ProximaAulaDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.AtribuicaoTreinosAulaRequestPostDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.AtribuicaoTreinosAulaTreinoDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.HorarioAulaDTO;
@@ -17,6 +19,7 @@ import tech.vitalis.caringu.exception.PlanoContratado.PlanoNaoPertenceAoAlunoExc
 import tech.vitalis.caringu.exception.Treino.TreinoNaoEncontradoException;
 import tech.vitalis.caringu.repository.*;
 
+import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +44,11 @@ public class AulaTreinoExercicioService {
         this.aulaTreinoExercicioRepository = aulaTreinoExercicioRepository;
         this.planoContratadoRepository = planoContratadoRepository;
         this.treinoExercicioRepository = treinoExercicioRepository;
+    }
+
+    public List<ProximaAulaDTO> listarProximasAulas(int idAluno){
+        Pageable pageable = PageRequest.of(0, 2);
+        return aulaRepository.listarProximasAulas(idAluno, pageable);
     }
 
     @Transactional
