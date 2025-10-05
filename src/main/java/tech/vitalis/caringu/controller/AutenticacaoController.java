@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.servlet.http.HttpServletResponse;
 import tech.vitalis.caringu.config.GerenciadorTokenJwt;
+import tech.vitalis.caringu.config.CookieJwtUtil;
 import tech.vitalis.caringu.dtos.Pessoa.security.PessoaLoginDTO;
 import tech.vitalis.caringu.dtos.Pessoa.security.PessoaTokenDTO;
 import tech.vitalis.caringu.entity.Aluno;
@@ -52,6 +54,9 @@ public class AutenticacaoController {
     @Autowired
     private AlunoRepository alunoRepository;
 
+    @Autowired
+    private CookieJwtUtil cookieJwtUtil;
+
     @PostMapping("/login")
     @Operation(
             summary = "Autentica o usuário e retorna o token JWT",
@@ -76,16 +81,19 @@ public class AutenticacaoController {
                     )
             }
     )
-    public ResponseEntity<PessoaTokenDTO> login(@RequestBody PessoaLoginDTO pessoaLoginDto) {
+    public ResponseEntity<PessoaTokenDTO> login(@RequestBody PessoaLoginDTO pessoaLoginDto, HttpServletResponse response) {
 
         final Pessoa pessoa = PessoaMapper.of(pessoaLoginDto);
         PessoaTokenDTO pessoaTokenDto = this.pessoaService.autenticar(pessoa);
+
+        // Define o cookie JWT (mais seguro que localStorage)
+        cookieJwtUtil.createJwtCookie(response, pessoaTokenDto.getToken());
 
         return ResponseEntity.status(200).body(pessoaTokenDto);
     }
 
     @PostMapping("/login/google")
-    public ResponseEntity<?> loginGoogle(@RequestBody Map<String, String> request) {
+    public ResponseEntity<?> loginGoogle(@RequestBody Map<String, String> request, HttpServletResponse response) {
         String code = request.get("code");
 
         return tokenVerifier.exchangeCodeForPayload(code)
@@ -117,6 +125,9 @@ public class AutenticacaoController {
 
                     String appToken = jwtService.generateToken(authentication);
 
+                    // Define o cookie JWT (mais seguro que localStorage)
+                    cookieJwtUtil.createJwtCookie(response, appToken);
+
                     return ResponseEntity.ok(Map.of(
                             "token", appToken,
                             "pessoaId", pessoa.getId(),
@@ -126,6 +137,24 @@ public class AutenticacaoController {
                     ));
                 })
                 .orElse(ResponseEntity.status(401).body(Map.of("erro", "Token inválido do Google.")));
+    }
+
+    @PostMapping("/logout")
+    @Operation(
+            summary = "Logout do usuário",
+            description = "Este endpoint remove o cookie JWT do usuário, efetivando o logout seguro.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Logout realizado com sucesso"
+                    )
+            }
+    )
+    public ResponseEntity<Map<String, String>> logout(HttpServletResponse response) {
+        // Remove o cookie JWT
+        cookieJwtUtil.removeJwtCookie(response);
+        
+        return ResponseEntity.ok(Map.of("message", "Logout realizado com sucesso"));
     }
 
 }
