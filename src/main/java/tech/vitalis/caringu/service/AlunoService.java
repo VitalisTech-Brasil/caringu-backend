@@ -6,6 +6,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Aluno.*;
+import tech.vitalis.caringu.dtos.EvolucaoExercicioDTO;
+import tech.vitalis.caringu.dtos.ProgressoAulasDTO;
+import tech.vitalis.caringu.dtos.TopTreinosDTO;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.entity.Pessoa;
 import tech.vitalis.caringu.enums.Aluno.NivelAtividadeEnum;
@@ -102,11 +105,12 @@ public class AlunoService {
 
     public AlunoResponseGetDTO buscarPorId(Integer id) {
         Aluno aluno = buscarAlunoOuLancarExcecao(id);
-      
+
         return alunoMapper.toResponseDTO(aluno);
     }
 
-    public AlunoResponseGetDTO cadastrar(Aluno aluno) {
+    public AlunoResponseGetDTO cadastrar(AlunoRequestPostDTO alunoDTO) {
+        Aluno aluno = alunoMapper.toEntity(alunoDTO);
 
         validarSenha(aluno.getSenha());
         validarEnumsAluno(aluno);
@@ -260,5 +264,54 @@ public class AlunoService {
         }
 
         return listaRespostaAlunos;
+    }
+
+    public List<TopTreinosDTO> buscarTopTreinosPorAluno(Long alunosId) {
+        buscarAlunoOuLancarExcecao(alunosId.intValue());
+
+        List<Object[]> results = alunoRepository.findTopTreinosByAlunosIdCurrentMonth(alunosId);
+        return results.stream()
+                .map(obj -> new TopTreinosDTO(
+                        obj[0] != null ? ((Number) obj[0]).longValue() : null,
+                        obj[1] != null ? ((Number) obj[1]).longValue() : null,
+                        obj[2] != null ? obj[2].toString() : null,
+                        obj[3] != null ? ((Number) obj[3]).longValue() : null
+                ))
+                .toList();
+    }
+
+    public ProgressoAulasDTO buscarProgressoAulasPorAluno(Long alunoId) {
+        buscarAlunoOuLancarExcecao(alunoId.intValue());
+
+        List<Object[]> results = alunoRepository.findProgressoAulasByAlunoId(alunoId);
+
+        if (results.isEmpty()) {
+            return new ProgressoAulasDTO(alunoId, 0L, 0L);
+        }
+
+        Object[] result = results.get(0);
+        Long alunoIdResult = result[0] != null ? ((Number) result[0]).longValue() : alunoId;
+        Long totalAulas = result[1] != null ? ((Number) result[1]).longValue() : 0L;
+        Long aulasRealizadas = result[2] != null ? ((Number) result[2]).longValue() : 0L;
+
+        return new ProgressoAulasDTO(alunoIdResult, totalAulas, aulasRealizadas);
+    }
+
+    public EvolucaoExercicioDTO buscarMaiorEvolucaoExercicioPorAluno(Long alunoId) {
+        buscarAlunoOuLancarExcecao(alunoId.intValue());
+
+        List<Object[]> results = alunoRepository.findMaiorEvolucaoExercicioPorAlunoMesAtual(alunoId);
+
+        if (results.isEmpty()) {
+            return null;
+        }
+
+        Object[] result = results.get(0);
+        Long exercicioId = result[0] != null ? ((Number) result[0]).longValue() : null;
+        String nomeExercicio = result[1] != null ? result[1].toString() : null;
+        Double cargaAntiga = result[2] != null ? ((Number) result[2]).doubleValue() : null;
+        Double cargaAtual = result[3] != null ? ((Number) result[3]).doubleValue() : null;
+
+        return new EvolucaoExercicioDTO(exercicioId, nomeExercicio, cargaAntiga, cargaAtual);
     }
 }

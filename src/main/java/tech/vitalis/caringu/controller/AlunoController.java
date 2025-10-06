@@ -8,6 +8,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Aluno.*;
+import tech.vitalis.caringu.dtos.EvolucaoExercicioDTO;
+import tech.vitalis.caringu.dtos.ProgressoAulasDTO;
+import tech.vitalis.caringu.dtos.TopTreinosDTO;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.mapper.AlunoMapper;
 import tech.vitalis.caringu.service.AlunoService;
@@ -70,7 +73,7 @@ public class AlunoController {
             @PathVariable Integer personalId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "4") int size
-            ) {
+    ) {
         Page<AlunoDetalhadoComTreinosDTO> dados = service.buscarAlunosDetalhadosPaginado(personalId, PageRequest.of(page, size));
         return ResponseEntity.ok(dados);
     }
@@ -95,8 +98,7 @@ public class AlunoController {
     @PostMapping
     @Operation(summary = "Cadastrar aluno")
     public ResponseEntity<AlunoResponseGetDTO> cadastrar(@Valid @RequestBody AlunoRequestPostDTO cadastroDTO) {
-        Aluno aluno = mapper.toEntity(cadastroDTO);
-        AlunoResponseGetDTO respostaDTO = service.cadastrar(aluno);
+        AlunoResponseGetDTO respostaDTO = service.cadastrar(cadastroDTO);
 
         return ResponseEntity.status(201).body(respostaDTO);
     }
@@ -142,5 +144,34 @@ public class AlunoController {
     public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         service.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{alunoId}/top-treinos")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "Top 3 treinos mais realizados pelo aluno no mês atual")
+    public ResponseEntity<List<TopTreinosDTO>> getTopTreinosByAluno(@PathVariable Integer alunoId) {
+        List<TopTreinosDTO> topTreinos = service.buscarTopTreinosPorAluno(alunoId.longValue());
+        return ResponseEntity.ok(topTreinos);
+    }
+
+    @GetMapping("/{alunoId}/progresso-aulas")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "Progresso de aulas do aluno (total, realizadas, pendentes e percentual)")
+    public ResponseEntity<ProgressoAulasDTO> getProgressoAulasByAluno(@PathVariable Integer alunoId) {
+        ProgressoAulasDTO progresso = service.buscarProgressoAulasPorAluno(alunoId.longValue());
+        return ResponseEntity.ok(progresso);
+    }
+
+    @GetMapping("/{alunoId}/maior-evolucao-exercicio")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "Exercício com maior evolução de carga do aluno no mês atual")
+    public ResponseEntity<EvolucaoExercicioDTO> getMaiorEvolucaoExercicioByAluno(@PathVariable Integer alunoId) {
+        EvolucaoExercicioDTO evolucao = service.buscarMaiorEvolucaoExercicioPorAluno(alunoId.longValue());
+
+        if (evolucao == null) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(evolucao);
     }
 }

@@ -53,6 +53,57 @@ public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
                                                               @Param("endOfWeek") LocalDateTime endOfWeek);
 
 
+    @Query("""
+            SELECT pc.aluno.id as alunosId, 
+                   t.id as treinoId, 
+                   t.nome as treinoNome, 
+                   COUNT(DISTINCT a.id) as qtdVezesRealizado
+            FROM PlanoContratado pc
+            JOIN Aula a ON pc.id = a.planoContratado.id
+            JOIN AulaTreinoExercicio ate ON a.id = ate.aula.id
+            JOIN TreinoExercicio te ON te.id = ate.treinoExercicio.id
+            JOIN Treino t ON t.id = te.treino.id
+            WHERE pc.aluno.id = :alunosId
+            AND YEAR(a.dataHorarioInicio) = YEAR(CURRENT_DATE)
+            AND MONTH(a.dataHorarioInicio) = MONTH(CURRENT_DATE)
+            GROUP BY pc.aluno.id, t.id, t.nome
+            ORDER BY qtdVezesRealizado DESC
+            """)
+    List<Object[]> findTopTreinosByAlunosIdCurrentMonth(@Param("alunosId") Long alunosId);
+
+    @Query("""
+            SELECT pc.aluno.id as alunoId,
+                   COUNT(a.id) as totalAulas,
+                   COUNT(CASE WHEN a.status = 'REALIZADO' THEN 1 END) as aulasRealizadas
+            FROM PlanoContratado pc
+            LEFT JOIN Aula a ON a.planoContratado.id = pc.id
+            WHERE pc.aluno.id = :alunoId
+            GROUP BY pc.aluno.id
+            """)
+    List<Object[]> findProgressoAulasByAlunoId(@Param("alunoId") Long alunoId);
+
+    @Query("""
+            SELECT e.id as exercicioId,
+                   e.nome as nomeExercicio,
+                   MIN(ee.cargaExecutada) as cargaAntiga,
+                   MAX(ee.cargaExecutada) as cargaAtual
+            FROM PlanoContratado pc
+            INNER JOIN Aula a ON a.planoContratado.id = pc.id
+            INNER JOIN AulaTreinoExercicio ate ON ate.aula.id = a.id
+            INNER JOIN ExecucaoExercicio ee ON ee.aulaTreinoExercicio.id = ate.id
+            INNER JOIN TreinoExercicio te ON te.id = ate.treinoExercicio.id
+            INNER JOIN Exercicio e ON e.id = te.exercicio.id
+            WHERE pc.aluno.id = :alunoId
+            AND a.status = 'REALIZADO'
+            AND YEAR(a.dataHorarioInicio) = YEAR(CURRENT_DATE)
+            AND MONTH(a.dataHorarioInicio) = MONTH(CURRENT_DATE)
+            AND ee.cargaExecutada IS NOT NULL
+            GROUP BY e.id, e.nome
+            HAVING MAX(ee.cargaExecutada) > MIN(ee.cargaExecutada)
+            ORDER BY (MAX(ee.cargaExecutada) - MIN(ee.cargaExecutada)) DESC
+            """)
+    List<Object[]> findMaiorEvolucaoExercicioPorAlunoMesAtual(@Param("alunoId") Long alunoId);
+
     // NÃO ESTAVA SENDO UTILIZADO -> Resolvi comentar
 //    @Query("""
 //    SELECT new tech.vitalis.caringu.dtos.Aluno.AlunoDetalhadoResponseDTO(
