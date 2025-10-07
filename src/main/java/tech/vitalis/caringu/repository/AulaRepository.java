@@ -266,4 +266,6 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
 """)
     List<ProximaAulaDTO> listarProximasAulas(@Param("alunoId") Integer alunoId, Pageable pageable);
 
+    listarAulasComTreinosExercicios
+
 }

@@ -10,6 +10,7 @@ import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.AtribuicaoTreinosAu
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.RemarcarAulaTreinoRequestDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.AtribuicaoTreinosAulaResponsePostDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.RemarcarAulaTreinoResponseDTO;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.VisualizarAulasResponseDTO;
 import tech.vitalis.caringu.service.AulaTreinoExercicioService;
 
 import java.util.List;
@@ -27,6 +28,14 @@ public class AulaTreinoExercicioController {
         this.aulaTreinoExercicioService = aulaTreinoExercicioService;
     }
 
+    @GetMapping("/visualizar-aula/{idAula}")
+    public ResponseEntity<VisualizarAulasResponseDTO> listarAulasComTreinosExercicios(
+            @PathVariable Integer idAula,
+            @RequestParam Integer idAluno
+    ) {
+        aulaTreinoExercicioService.listarAulasComTreinosExercicios(idAula, idAluno);
+    }
+
     @PostMapping("/atribuicao/treinos")
     public ResponseEntity<AtribuicaoTreinosAulaResponsePostDTO> atribuirTreinoAAula(
             @Valid @RequestBody AtribuicaoTreinosAulaRequestPostDTO requestDTO
@@ -42,7 +51,7 @@ public class AulaTreinoExercicioController {
         RemarcarAulaTreinoResponseDTO response = aulaTreinoExercicioService.remarcarAulaTreino(request);
         return ResponseEntity.ok(response);
     }
-  
+
     @GetMapping("/buscar-aulas/{id}")
     @Operation(summary = "Listar próximas 2 aulas do aluno")
     public ResponseEntity<List<ProximaAulaDTO>> listarProximasAulas(@PathVariable Integer id) {

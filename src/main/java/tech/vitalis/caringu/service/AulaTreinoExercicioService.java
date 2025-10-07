@@ -57,6 +57,10 @@ public class AulaTreinoExercicioService {
         this.treinoRepository = treinoRepository;
     }
 
+    public VisualizarAulasResponseDTO listarAulasComTreinosExercicios(Integer idAula, Integer idAluno) {
+        var aulaComTreinosExercicios = aulaTreinoExercicioRepository.listarAulasComTreinosExercicios(idAula, idAluno);
+    }
+
     public List<ProximaAulaDTO> listarProximasAulas(int idAluno){
         Pageable pageable = PageRequest.of(0, 2);
         return aulaRepository.listarProximasAulas(idAluno, pageable);
@@ -160,6 +164,7 @@ public class AulaTreinoExercicioService {
         // 2. Atualizar horário
         aula.setDataHorarioInicio(request.novoHorarioInicio());
         aula.setDataHorarioFim(request.novoHorarioFim());
+        aula.setStatus(AulaStatusEnum.REAGENDADO);
         aulaRepository.save(aula);
 
         // 3. Validar treino novo
