@@ -25,6 +25,16 @@ public class AulaController {
         this.aulaService = aulaService;
     }
 
+    @GetMapping("/{idPersonal}")
+    public ResponseEntity<SessaoAulasAgendadasResponseDTO> listarInfoAulaPorPersonal(
+            @PathVariable Integer idPersonal,
+            @RequestParam Integer idAula
+    ) {
+        SessaoAulasAgendadasResponseDTO aulasAgendadas = aulaService.listarInfoAulaPorPersonal(idPersonal, idAula);
+
+        return ResponseEntity.ok(aulasAgendadas);
+    }
+
     @GetMapping("/personal-aulas/{idPersonal}")
     public ResponseEntity<List<SessaoAulasAgendadasResponseDTO>> listarAulasPorPersonal(@PathVariable Integer idPersonal) {
         List<SessaoAulasAgendadasResponseDTO> aulasAgendadas = aulaService.listarAulasPorPersonal(idPersonal);
