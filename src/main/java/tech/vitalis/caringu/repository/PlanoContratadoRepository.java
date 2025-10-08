@@ -129,4 +129,14 @@ public interface PlanoContratadoRepository extends JpaRepository<PlanoContratado
             @Param("duasSemanasDepois") LocalDate duasSemanasDepois
     );
 
+    @Query("""
+        SELECT count(pc)
+        FROM PlanoContratado pc
+        JOIN pc.plano p
+        JOIN p.personalTrainer pt
+        WHERE pt.id = :personalId
+        AND pc.dataFim <= :limite
+        AND pc.status NOT IN ('INATIVO', 'PENDENTE')
+    """)
+    Integer buscarDataFimIgualOuAntesDataLimite(LocalDate limite, Integer personalId);
 }

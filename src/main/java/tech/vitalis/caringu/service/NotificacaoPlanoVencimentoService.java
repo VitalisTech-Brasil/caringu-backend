@@ -77,8 +77,7 @@ public class NotificacaoPlanoVencimentoService {
     }
 
     public void notificarPersonais(){
-        LocalDate hoje = LocalDate.now();
-        LocalDate daquiDuasSemanas = hoje.plusWeeks(2);
+        LocalDate daquiDuasSemanas = LocalDate.now().plusWeeks(2);
 
         List<NotificacaoPlanoVencimentoDto> notificacoes =
                 planoContratadoRepository.findNotificacoesPlanoVencimento(daquiDuasSemanas);

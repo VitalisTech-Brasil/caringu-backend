@@ -11,6 +11,7 @@ import tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoRespostaRecord;
 import tech.vitalis.caringu.service.PlanoContratadoService;
 import tech.vitalis.caringu.service.PlanoService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -28,6 +29,12 @@ public class PlanoContratadoController {
     @GetMapping("/kpis/alunos-ativos/{personalId}")
     public Integer contarAlunosComPlanosAtivos(@PathVariable Integer personalId) {
         return planoService.contarAlunosAtivos(personalId);
+    }
+
+    @GetMapping("/qtd-planos-vencendo/{personalId}")
+    public Integer buscarQtdPlanosVencendo(@PathVariable Integer personalId) {
+        LocalDate limite = LocalDate.now().plusWeeks(2);
+        return planoContratadoService.buscarQtdPlanosVencendo(limite, personalId);
     }
 
     @GetMapping("/solicitacoes-pendentes/{personalId}")

@@ -42,6 +42,10 @@ public class PlanoContratadoService {
         return planoContratadoRepository.listarSolicitacoesPendentes(personalId);
     }
 
+    public Integer buscarQtdPlanosVencendo(LocalDate limite, Integer personalId){
+        return planoContratadoRepository.buscarDataFimIgualOuAntesDataLimite(limite, personalId);
+    }
+
     public void atualizarStatus(Integer idPlanoContratado, StatusEnum novoStatus) {
         PlanoContratado planoContratado = planoContratadoRepository.findById(idPlanoContratado)
                 .orElseThrow(() -> new PlanoContratadoNaoEncontradoException("Plano contratado com id %d não encontrado.".formatted(idPlanoContratado)));
