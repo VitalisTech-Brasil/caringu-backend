@@ -42,7 +42,8 @@ public class NotificacaoPlanoVencimentoService {
     }
 
     public void enviarNotificacoesPlanoVencimento(){
-        LocalDate daquiDuasSemanas =  LocalDate.now().plusWeeks(2);
+        LocalDate hoje = LocalDate.now();
+        LocalDate daquiDuasSemanas =  hoje.plusWeeks(2);
 
         logger.info("🔍 Verificando planos vencendo entre {} e {}", hoje, daquiDuasSemanas);
 
