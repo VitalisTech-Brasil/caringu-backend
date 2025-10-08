@@ -55,6 +55,10 @@ public class AulaService {
         this.aulaTreinoExercicioRepository = aulaTreinoExercicioRepository;
     }
 
+    public SessaoAulasAgendadasResponseDTO listarInfoAulaPorPersonal(Integer idPersonal, Integer idAula) {
+        return aulaRepository.findAllInfoAulaPorPersonal(idPersonal, idAula);
+    }
+
     public List<SessaoAulasAgendadasResponseDTO> listarAulasPorPersonal(Integer idPersonal) {
         return aulaRepository.findAllAulasPorPersonal(idPersonal);
     }

@@ -82,6 +82,36 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
                 WHERE pc.status = 'ATIVO'
                   AND NOW() BETWEEN pc.dataContratacao AND pc.dataFim
                   AND pt.id = :idPersonal
+                  AND au.id = :idAula
+            """)
+    SessaoAulasAgendadasResponseDTO findAllInfoAulaPorPersonal(@Param("idPersonal") Integer idPersonal, @Param("idAula") Integer idAula);
+
+    @Query("""
+                SELECT new tech.vitalis.caringu.dtos.SessaoTreino.SessaoAulasAgendadasResponseDTO(
+                    a.id,
+                    pa.nome,
+                    pa.urlFotoPerfil,
+                    au.id,
+                    au.dataHorarioInicio,
+                    au.dataHorarioFim,
+                    au.status
+                )
+                FROM PlanoContratado pc
+                JOIN Plano pl
+                    ON pc.plano.id = pl.id
+                JOIN PersonalTrainer pt
+                    ON pl.personalTrainer.id = pt.id
+                JOIN Pessoa pp
+                    ON pt.id = pp.id
+                JOIN Aluno a
+                    ON pc.aluno.id = a.id
+                JOIN Pessoa pa
+                    ON a.id = pa.id
+                JOIN Aula au
+                    ON pc.id = au.planoContratado.id
+                WHERE pc.status = 'ATIVO'
+                  AND NOW() BETWEEN pc.dataContratacao AND pc.dataFim
+                  AND pt.id = :idPersonal
             """)
     List<SessaoAulasAgendadasResponseDTO> findAllAulasPorPersonal(@Param("idPersonal") Integer idPersonal);
 
