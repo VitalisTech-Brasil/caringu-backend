@@ -5,11 +5,11 @@ import tech.vitalis.caringu.enums.Exercicio.OrigemEnum;
 
 public record ExercicioResponseGetDTO(
          Integer id,
+         Integer idPersonal,
          String nome,
          GrupoMuscularEnum grupoMuscular,
          String urlVideo,
          String observacoes,
          Boolean favorito,
          OrigemEnum origem
-
 ){}

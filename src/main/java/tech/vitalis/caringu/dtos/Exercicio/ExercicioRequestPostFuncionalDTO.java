@@ -6,10 +6,15 @@ import tech.vitalis.caringu.enums.Exercicio.GrupoMuscularEnum;
 import tech.vitalis.caringu.enums.Exercicio.OrigemEnum;
 
 public record ExercicioRequestPostFuncionalDTO(
+
+        Integer idPersonal,
+
         @NotBlank(message = "O nome é obrigatório")
         String nome,
+
         @NotNull(message = "O grupo muscular é obrigatório")
         GrupoMuscularEnum grupoMuscular,
+
         String urlVideo,
         String observacoes
 ) {}

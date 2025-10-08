@@ -19,14 +19,13 @@ import java.util.List;
 public class NotificacoesController {
 
     private final NotificacoesService notificacoesService;
-    private final NotificacaoTreinoVencimentoService notificacaoTreinoVencimentoService;
     private final NotificacaoPlanoVencimentoService notificacaoPlanoVencimentoService;
 
-    public NotificacoesController(NotificacoesService notificacoesService, NotificacaoTreinoVencimentoService notificacaoTreinoVencimentoService, NotificacaoPlanoVencimentoService notificacaoPlanoVencimentoService) {
+    public NotificacoesController(NotificacoesService notificacoesService, NotificacaoPlanoVencimentoService notificacaoPlanoVencimentoService) {
         this.notificacoesService = notificacoesService;
-        this.notificacaoTreinoVencimentoService = notificacaoTreinoVencimentoService;
         this.notificacaoPlanoVencimentoService = notificacaoPlanoVencimentoService;
     }
+
 
     @PostMapping
     @Operation(summary = "Cadastrar nova notificação")
@@ -59,60 +58,12 @@ public class NotificacoesController {
     public ResponseEntity<NotificacoesResponseGetDto> atualizar(@PathVariable Integer id, @Valid @RequestBody NotificacoesRequestPatchDto notificacoesDto){
         return ResponseEntity.ok(notificacoesService.atualizar(id, notificacoesDto));
     }
-
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Remover Notificação")
-    public ResponseEntity<Void> removerNotificacao(@PathVariable Integer id){
-        notificacoesService.removerAssociacaoComPessoa(id);
-        notificacoesService.remover(id);
-        return ResponseEntity.noContent().build();
-    }
-
-
-    @GetMapping("/treinos-vencendo")
-    public List<NotificacaoTreinoPersonalDTO> listarTreinosVencendo() {
-        LocalDate limite = LocalDate.now().plusWeeks(2);
-        return notificacaoTreinoVencimentoService.buscarTreinosVencendo(limite);
-    }
-
-    @GetMapping("/treinos-vencendo/{personalId}")
-    public List<NotificacaoTreinoPersonalDTO> listarTreinosVencendoPorPersonal(@PathVariable Integer personalId) {
-        LocalDate limite = LocalDate.now().plusWeeks(2);
-        return notificacaoTreinoVencimentoService.buscarTreinosVencendoPorPersonal(limite, personalId);
-    }
-
-    @GetMapping("/planos-vencendo/{personalId}")
-    public List<NotificacaoPlanoVencimentoDto> buscarNotificacoesPlanoVencimentoPorPersonal(@PathVariable Integer personalId){
-        LocalDate limite = LocalDate.now().plusWeeks(2);
-        return notificacaoPlanoVencimentoService.buscarNotificacoesPlanoVencimentoPorPersonal(limite, personalId);
-    }
       
    @PatchMapping("/{id}/visualizada")
    @Operation(summary = "Visualizar notificação")
     public ResponseEntity<Void> atualizarVisualizada(@PathVariable Integer id, @RequestBody NotificacaoVisualizadaRequestPatchDto dto){
         notificacoesService.atualizarVisualizada(id, dto.visualizada());
         return ResponseEntity.status(204).build();
-    }
-
-    @GetMapping("/testar/notificacoes")
-    public ResponseEntity<String> testarNotificacoesManual() {
-        notificacaoTreinoVencimentoService.enviarNotificacoesTreinosVencendo();
-        notificacaoTreinoVencimentoService.notificarPersonaisTreinadores();
-        return ResponseEntity.ok("Notificações enviadas com sucesso!");
-    }
-
-    @GetMapping("/testar/notificacoes-plano")
-    public ResponseEntity<String> testarNotificacoesManualPlano() {
-        notificacaoPlanoVencimentoService.enviarNotificacoesPlanoVencimento();
-        notificacaoPlanoVencimentoService.notificarPersonais();
-        return ResponseEntity.ok("Notificações enviadas com sucesso!");
-    }
-
-    @GetMapping("/pessoas/notificacoes-nao-visualizada/treino-vencimento/{id}")
-    @Operation(summary = "Buscar todas as Notificações não visualizadas por pessoa do treino vencimento")
-    public ResponseEntity<List<NotificacoesResponseGetDto>> buscarPorPessoaIdENaoVisualzaTreinoVencimento(@PathVariable Integer id){
-        List<NotificacoesResponseGetDto> notificacoes = notificacoesService.buscarPorPessoaIdENaoVisualzaTreinoVencimento(id);
-        return ResponseEntity.ok(notificacoes);
     }
 
     @GetMapping("/pessoas/notificacoes-nao-visualizada/{id}")
@@ -128,4 +79,60 @@ public class NotificacoesController {
         notificacoesService.marcarTodasComoVisualizadasPorPessoaId(pessoaId);
         return ResponseEntity.status(204).build();
     }
+
+    /*
+          @GetMapping("/testar/notificacoes-plano")
+    public ResponseEntity<String> testarNotificacoesManualPlano() {
+        notificacaoPlanoVencimentoService.enviarNotificacoesPlanoVencimento();
+
+        return ResponseEntity.ok("Notificações enviadas com sucesso!");
+    }
+
+        @GetMapping("/pessoas/notificacoes-nao-visualizada/treino-vencimento/{id}")
+    @Operation(summary = "Buscar todas as Notificações não visualizadas por pessoa do treino vencimento")
+    public ResponseEntity<List<NotificacoesResponseGetDto>> buscarPorPessoaIdENaoVisualzaTreinoVencimento(@PathVariable Integer id){
+        List<NotificacoesResponseGetDto> notificacoes = notificacoesService.buscarPorPessoaIdENaoVisualzaTreinoVencimento(id);
+        return ResponseEntity.ok(notificacoes);
+    }
+
+    //    @GetMapping("/testar/notificacoes") public ResponseEntity<String> testarNotificacoesManual() {
+//        notificacaoTreinoVencimentoService.enviarNotificacoesTreinosVencendo();
+//        notificacaoTreinoVencimentoService.notificarPersonaisTreinadores();
+//        return ResponseEntity.ok("Notificações enviadas com sucesso!");
+//    }
+
+
+//    @GetMapping("/testar/notificacoes-plano")
+//    public ResponseEntity<String> testarNotificacoesManualPlano() {
+//        notificacaoPlanoVencimentoService.enviarNotificacoesPlanoVencimento();
+//        notificacaoPlanoVencimentoService.notificarPersonais();
+//        return ResponseEntity.ok("Notificações enviadas com sucesso!");
+//    }
+
+    //    @GetMapping("/treinos-vencendo")
+//    public List<NotificacaoTreinoPersonalDTO> listarTreinosVencendo() {
+//        LocalDate limite = LocalDate.now().plusWeeks(2);
+//        return notificacaoTreinoVencimentoService.buscarTreinosVencendo(limite);
+//    }
+//
+//    @GetMapping("/treinos-vencendo/{personalId}")
+//    public List<NotificacaoTreinoPersonalDTO> listarTreinosVencendoPorPersonal(@PathVariable Integer personalId) {
+//        LocalDate limite = LocalDate.now().plusWeeks(2);
+//        return notificacaoTreinoVencimentoService.buscarTreinosVencendoPorPersonal(limite, personalId);
+//    }
+
+//    @GetMapping("/planos-vencendo/{personalId}")
+//    public List<NotificacaoPlanoVencimentoDto> buscarNotificacoesPlanoVencimentoPorPersonal(@PathVariable Integer personalId){
+//        LocalDate limite = LocalDate.now().plusWeeks(2);
+//        return notificacaoPlanoVencimentoService.buscarNotificacoesPlanoVencimentoPorPersonal(limite, personalId);
+//    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Remover Notificação")
+    public ResponseEntity<Void> removerNotificacao(@PathVariable Integer id){
+        notificacoesService.removerAssociacaoComPessoa(id);
+        notificacoesService.remover(id);
+        return ResponseEntity.noContent().build();
+    }
+     */
 }

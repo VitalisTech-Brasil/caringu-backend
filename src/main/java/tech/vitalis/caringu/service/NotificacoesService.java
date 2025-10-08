@@ -104,47 +104,12 @@ public class NotificacoesService {
         return notificacoesMapper.toResponseDTO(notificacoesAtualizada);
     }
 
-    public void remover(Integer id){
-        Notificacoes notificacoesExistente = notificacoesRepository.findById(id).
-                orElseThrow(() -> new ApiExceptions.BadRequestException("Notificação com ID" + id + "não encontrado"));
-
-        notificacoesRepository.deleteById(id);
-    }
-
-    public void removerAssociacaoComPessoa(Integer id){
-        Notificacoes notificacoesExistente = notificacoesRepository.findById(id)
-                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Notificação com ID" + id + "não encontrado"));
-
-        notificacoesExistente.setPessoa(null);
-        notificacoesRepository.save(notificacoesExistente);
-    }
-
     @Transactional
     public void atualizarVisualizada(Integer id, boolean visualizada){
         Notificacoes notificacoesVisualizada = notificacoesRepository.findById(id)
                 .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Notificação não encontrada"));
 
         notificacoesVisualizada.setVisualizada(visualizada);
-    }
-
-    public List<NotificacoesResponseGetDto> buscarPorPessoaIdENaoVisualzaTreinoVencimento(Integer pessoaId) {
-        Pessoa pessoa = pessoaRepository.findById(pessoaId)
-                .orElseThrow(() -> new ApiExceptions.BadRequestException(
-                        "Pessoa com o ID " + pessoaId + " não foi encontrada."
-                ));
-
-        List<Notificacoes> notificacoes = notificacoesRepository
-                .findByPessoaAndTipoAndVisualizadaFalse(pessoa, TipoNotificacaoEnum.TREINO_PROXIMO_VENCIMENTO);
-
-        if (notificacoes.isEmpty()) {
-            throw new ApiExceptions.ResourceNotFoundException(
-                    "Nenhuma notificação não visualizada encontrada para a pessoa com ID " + pessoaId
-            );
-        }
-
-        return notificacoes.stream()
-                .map(notificacoesMapper::toResponseDTO)
-                .collect(Collectors.toList());
     }
 
     public List<NotificacoesResponseGetDto> buscarPorPessoaIdENaoVisualza(Integer pessoaId) {
@@ -188,4 +153,42 @@ public class NotificacoesService {
 
         notificacoesRepository.saveAll(notificacoes);
     }
+
+    /*
+        public List<NotificacoesResponseGetDto> buscarPorPessoaIdENaoVisualzaTreinoVencimento(Integer pessoaId) {
+        Pessoa pessoa = pessoaRepository.findById(pessoaId)
+                .orElseThrow(() -> new ApiExceptions.BadRequestException(
+                        "Pessoa com o ID " + pessoaId + " não foi encontrada."
+                ));
+
+        List<Notificacoes> notificacoes = notificacoesRepository
+                .findByPessoaAndTipoAndVisualizadaFalse(pessoa, TipoNotificacaoEnum.TREINO_PROXIMO_VENCIMENTO);
+
+        if (notificacoes.isEmpty()) {
+            throw new ApiExceptions.ResourceNotFoundException(
+                    "Nenhuma notificação não visualizada encontrada para a pessoa com ID " + pessoaId
+            );
+        }
+
+        return notificacoes.stream()
+                .map(notificacoesMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+        public void remover(Integer id){
+        Notificacoes notificacoesExistente = notificacoesRepository.findById(id).
+                orElseThrow(() -> new ApiExceptions.BadRequestException("Notificação com ID" + id + "não encontrado"));
+
+        notificacoesRepository.deleteById(id);
+    }
+
+    public void removerAssociacaoComPessoa(Integer id){
+        Notificacoes notificacoesExistente = notificacoesRepository.findById(id)
+                .orElseThrow(() -> new ApiExceptions.ResourceNotFoundException("Notificação com ID" + id + "não encontrado"));
+
+        notificacoesExistente.setPessoa(null);
+        notificacoesRepository.save(notificacoesExistente);
+    }
+
+     */
 }

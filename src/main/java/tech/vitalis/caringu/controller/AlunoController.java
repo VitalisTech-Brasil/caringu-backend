@@ -3,6 +3,8 @@ package tech.vitalis.caringu.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Aluno.*;
@@ -33,6 +35,18 @@ public class AlunoController {
         return ResponseEntity.status(200).body(listaAlunos);
     }
 
+    @GetMapping("/paginado")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "Listar alunos paginado")
+    public ResponseEntity<Page<AlunoResponseGetDTO>> listarPaginado(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "4") int size
+    ) {
+        Page<AlunoResponseGetDTO> paginadoAlunos = service.listarPaginado(PageRequest.of(page, size));
+
+        return ResponseEntity.status(200).body(paginadoAlunos);
+    }
+
     @GetMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     @Operation(summary = "Buscar aluno por ID")
@@ -45,6 +59,19 @@ public class AlunoController {
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<AlunoDetalhadoComTreinosDTO>> buscarPorPersonal(@PathVariable Integer personalId) {
         var dados = service.buscarAlunosDetalhados(personalId);
+        return ResponseEntity.ok(dados);
+    }
+
+    // Esse endpoint vai ser usado pra listar os alunos com planos ativos do personal
+    // (na tela de Gerenciar Alunos -> No lado direito da tela: Alunos Ativos
+    @GetMapping("/detalhes/personal/paginado/{personalId}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Page<AlunoDetalhadoComTreinosDTO>> buscarPorPersonalPaginado(
+            @PathVariable Integer personalId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "4") int size
+            ) {
+        Page<AlunoDetalhadoComTreinosDTO> dados = service.buscarAlunosDetalhadosPaginado(personalId, PageRequest.of(page, size));
         return ResponseEntity.ok(dados);
     }
 

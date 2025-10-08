@@ -1,18 +1,20 @@
 package tech.vitalis.caringu.dtos.Notificacoes;
 
+import tech.vitalis.caringu.entity.Aluno;
+import tech.vitalis.caringu.entity.PersonalTrainer;
+import tech.vitalis.caringu.entity.PlanoContratado;
 import tech.vitalis.caringu.enums.StatusEnum;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public record NotificacaoPlanoVencimentoDto(
-        Integer personalTrainerId,
+        PersonalTrainer personalTrainer,
         String nomePersonal,
-        Integer alunoId,
+        Aluno alunoId,
         String alunoNome,
         Integer idPlano,
         String nomePlano,
-        Integer idPlanoContratado,
+        PlanoContratado idPlanoContratado,
         StatusEnum status,
         LocalDate dataContratacao,
         LocalDate dataFim,

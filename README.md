@@ -20,6 +20,11 @@ Antes de começar, você vai precisar ter instalado:
 - Postman (Insomnia ou qualquer cliente REST)
 - Git
 
+## ✔️ Pré-requisitos para rodar com mensageria
+- Docker
+- Distribuição Linux
+- Repositorio de notificação (caringu-notificacao)
+
 # 💻 Passos para rodar em ambiente de desenvolvimento
 
 ```
@@ -27,6 +32,16 @@ Antes de começar, você vai precisar ter instalado:
 
 git clone https://github.com/VitalisTech-Brasil/caringu-backend.git
 cd caringu-backend
+```
+# 💻 Passos para rodar em ambiente de docker
+```
+#Clone também o repositório da notificação e deixe no mesmo caminho do de backend
+
+git clone https://github.com/VitalisTech-Brasil/caringu-notificacao.git
+
+# Pelo terminal da aplicação rodar o comando:
+
+docker compose up --build
 ```
 
 # 🔑 Passo adicional para configurar a variável de ambiente SENHA no IntelliJ:
@@ -58,6 +73,10 @@ Para rodar o projeto em ambiente de desenvolvimento, você precisa configurar a 
 
 ```http://localhost:8080/swagger-ui/index.html ou http://localhost:8080/docs```
 
+### 🖥 A aplicação da mensageria estará disponível em:
+
+```http://localhost:15672/```
+
 # 🛠️ Tecnologias e ferramentas utilizadas
 
 - Java 21
@@ -82,6 +101,10 @@ Para rodar o projeto em ambiente de desenvolvimento, você precisa configurar a 
 
 - Maven
 
+- Docker
+
+- Linux (Ubuntu)
+
 # 🧱 Estrutura do Projeto
 
 ```
@@ -90,6 +113,7 @@ src
 │   ├── java
 │   │   └── tech.vitalis.caringu
 │   │       ├── config                  # Configurações globais da aplicação, como Swagger e Security
+│   │       ├── consumer                # Implementação de consumidores de mensagens (ex.: RabbitMQ, Kafka)
 │   │       ├── controller              # Endpoints RESTful que expõem os serviços da aplicação
 │   │       ├── dtos                    # Objetos de Transferência de Dados usados para entrada e saída nas APIs
 │   │       ├── entity                  # Entidades JPA que representam as tabelas do banco de dados
@@ -102,7 +126,10 @@ src
 │   │       └── strategy                # Implementações do padrão Strategy para regras de negócio variáveis (ex: cálculos, filtros, validações dinâmicas)
 │   └── resources
 │       └── application.properties      # Arquivo de configuração principal da aplicação 
+│       └── application.yml  # Arquivo de configuração de desenvolvimento da aplicação
 │       └── application-dev.properties  # Arquivo de configuração de desenvolvimento da aplicação
+│       └── application-docker.properties  # Arquivo de configuração para aplicação rodando no docker
+│       └── application-prod.properties  # Arquivo de configuração de produção da aplicação
 └── test
     └── java
         └── tech.vitalis.caringu        # Testes unitários e de integração

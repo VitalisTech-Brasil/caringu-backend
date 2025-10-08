@@ -1,14 +1,12 @@
 package tech.vitalis.caringu.entity;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
 import tech.vitalis.caringu.enums.Notificacoes.TipoNotificacaoEnum;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notificacoes")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Notificacoes {
 
     @Id

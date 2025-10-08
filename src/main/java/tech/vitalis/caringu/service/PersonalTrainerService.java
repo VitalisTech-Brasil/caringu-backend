@@ -1,5 +1,6 @@
 package tech.vitalis.caringu.service;
 
+import org.springframework.data.domain.Page;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import tech.vitalis.caringu.mapper.PersonalTrainerMapper;
 import tech.vitalis.caringu.repository.*;
 import tech.vitalis.caringu.strategy.Pessoa.GeneroEnumValidationStrategy;
 
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,6 +83,12 @@ public class PersonalTrainerService {
         }
 
         return listaRespostaPersonalTrainer;
+    }
+
+    public Page<PersonalTrainerResponseGetDTO> listarPaginado(Pageable pageable){
+        Page<PersonalTrainer> page = personalTrainerRepository.findAll(pageable);
+
+        return page.map(personalTrainerMapper::toResponseDTO);
     }
 
     public PersonalTrainerResponseGetDTO buscarPorId(Integer id) {

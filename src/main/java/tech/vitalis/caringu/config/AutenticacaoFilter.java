@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,6 +32,9 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
 
     private final GerenciadorTokenJwt jwtTokenManager;
 
+    @Autowired
+    private CookieJwtUtil cookieJwtUtil;
+
     public AutenticacaoFilter(AutenticacaoService autenticacaoService, GerenciadorTokenJwt jwtTokenManager) {
         this.autenticacaoService = autenticacaoService;
         this.jwtTokenManager = jwtTokenManager;
@@ -41,11 +45,18 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
         String username = null;
         String jwtToken = null;
 
-        String requestTokenHeader = request.getHeader("Authorization");
+        // Primeiro tenta obter o token do cookie (mais seguro)
+        jwtToken = cookieJwtUtil.getJwtFromCookie(request);
+        
+        // Se não encontrar no cookie, tenta no header Authorization (compatibilidade)
+        if (jwtToken == null) {
+            String requestTokenHeader = request.getHeader("Authorization");
+            if (Objects.nonNull(requestTokenHeader) && requestTokenHeader.startsWith("Bearer ")) {
+                jwtToken = requestTokenHeader.substring(7);
+            }
+        }
 
-        if (Objects.nonNull(requestTokenHeader) && requestTokenHeader.startsWith("Bearer ")) {
-            jwtToken = requestTokenHeader.substring(7);
-
+        if (jwtToken != null) {
             try {
                 username = jwtTokenManager.getUsernameFromToken(jwtToken);
             } catch (ExpiredJwtException exception) {
@@ -54,6 +65,9 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
                         exception.getClaims().getSubject(), exception.getMessage());
 
                 LOGGER.trace("[FALHA AUTENTICACAO] - stack trace: %s", exception);
+
+                // Remove o cookie expirado se existir
+                cookieJwtUtil.removeJwtCookie(response);
 
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("application/json");
@@ -70,7 +84,6 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
                 response.getWriter().write(responseBody);
                 return;
             }
-
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

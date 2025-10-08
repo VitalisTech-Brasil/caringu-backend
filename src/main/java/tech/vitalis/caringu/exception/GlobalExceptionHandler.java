@@ -3,37 +3,43 @@ package tech.vitalis.caringu.exception;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 import tech.vitalis.caringu.exception.Aluno.AlunoNaoEncontradoException;
 import tech.vitalis.caringu.exception.Anamnese.AnamneseJaCadastradaException;
 import tech.vitalis.caringu.exception.Anamnese.AnamneseNaoEncontradaException;
 import tech.vitalis.caringu.exception.ApiExceptions.BadRequestException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
+import tech.vitalis.caringu.exception.Aula.AulaConflitanteException;
+import tech.vitalis.caringu.exception.Aula.AulaNaoEncontradaException;
 import tech.vitalis.caringu.exception.Bairro.BairroJaExisteException;
 import tech.vitalis.caringu.exception.Bairro.BairroNaoEncontradoException;
 import tech.vitalis.caringu.exception.Cidade.CidadeJaExisteException;
 import tech.vitalis.caringu.exception.Cidade.CidadeNaoEncontradaException;
 import tech.vitalis.caringu.exception.Especialidade.EspecialidadeNaoEncontrada;
-import tech.vitalis.caringu.exception.Estado.EstadoJaExisteException;
-import tech.vitalis.caringu.exception.Estado.EstadoNaoEncontradoException;
 import tech.vitalis.caringu.exception.EvolucaoCorporal.EvolucaoCorporalJaExisteException;
 import tech.vitalis.caringu.exception.EvolucaoCorporal.EvolucaoCorporalNaoEncontradaException;
 import tech.vitalis.caringu.exception.PersonalTrainer.CrefJaExisteException;
 import tech.vitalis.caringu.exception.PersonalTrainer.PersonalNaoEncontradoException;
+import tech.vitalis.caringu.exception.Pessoa.ContaBloqueadaException;
 import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
 import tech.vitalis.caringu.exception.Pessoa.PessoaNaoEncontradaException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
+import tech.vitalis.caringu.exception.PlanoContratado.AlunoSemPlanoContratadoException;
 import tech.vitalis.caringu.exception.PlanoContratado.PlanoContratadoNaoEncontradoException;
+import tech.vitalis.caringu.exception.PlanoContratado.PlanoNaoPertenceAoAlunoException;
 import tech.vitalis.caringu.exception.PreferenciasNotificacao.PreferenciasNotificacaoJaExisteException;
 import tech.vitalis.caringu.exception.PreferenciasNotificacao.PreferenciasNotificacaoNaoEncontradaException;
+import tech.vitalis.caringu.exception.SessaoTreino.SessaoTreinoNaoEncontradoException;
+import tech.vitalis.caringu.exception.generics.IdsRequisicaoIncompativeisException;
+import tech.vitalis.caringu.exception.Treino.TreinoNaoEncontradoException;
 import tech.vitalis.caringu.exception.TreinoFinalizado.TreinoFinalizadoNaoEncontradoException;
 
 import java.time.LocalDate;
@@ -72,6 +78,21 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
     }
 
+    @ExceptionHandler(SessaoTreinoNaoEncontradoException.class)
+    public ResponseEntity<Map<String, Object>> handleSessaoTreinoNaoEncontrado(SessaoTreinoNaoEncontradoException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(TreinoNaoEncontradoException.class)
+    public ResponseEntity<Map<String, Object>> handleTreinoNaoEncontrado(TreinoNaoEncontradoException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(IdsRequisicaoIncompativeisException.class)
+    public ResponseEntity<Map<String, Object>> handleIdsRequisicaoIncompativeisException(IdsRequisicaoIncompativeisException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.BAD_REQUEST, "Not Found", ex.getMessage(), request);
+    }
+
     @ExceptionHandler(PersonalNaoEncontradoException.class)
     public ResponseEntity<Map<String, Object>> handlePersonalNaoEncontrado(PersonalNaoEncontradoException ex, WebRequest request) {
         return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
@@ -97,11 +118,6 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
     }
 
-    @ExceptionHandler(EstadoNaoEncontradoException.class)
-    public ResponseEntity<Map<String, Object>> handleEstadoNaoEncontrado(EstadoNaoEncontradoException ex, WebRequest request) {
-        return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
-    }
-
     @ExceptionHandler(PreferenciasNotificacaoNaoEncontradaException.class)
     public ResponseEntity<Map<String, Object>> handlePreferenciasNotificacaoNaoEncontrada(PreferenciasNotificacaoNaoEncontradaException ex, WebRequest request) {
         return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
@@ -117,8 +133,18 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
     }
 
+    @ExceptionHandler(AulaNaoEncontradaException.class)
+    public ResponseEntity<Map<String, Object>> handleAulaNaoEncontradaException(AulaNaoEncontradaException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+    }
+
     @ExceptionHandler(EvolucaoCorporalJaExisteException.class)
     public ResponseEntity<Map<String, Object>> handleEvolucaoCorporalJaExiste(EvolucaoCorporalJaExisteException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(AulaConflitanteException.class)
+    public ResponseEntity<Map<String, Object>> handleAulaConflitanteException(AulaConflitanteException ex, WebRequest request) {
         return createErrorResponse(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), request);
     }
 
@@ -134,11 +160,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CidadeJaExisteException.class)
     public ResponseEntity<Map<String, Object>> handleCidadeJaExiste(CidadeJaExisteException ex, WebRequest request) {
-        return createErrorResponse(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), request);
-    }
-
-    @ExceptionHandler(EstadoJaExisteException.class)
-    public ResponseEntity<Map<String, Object>> handleEstadoJaExiste(EstadoJaExisteException ex, WebRequest request) {
         return createErrorResponse(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), request);
     }
 
@@ -162,6 +183,16 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage(), request);
     }
 
+    @ExceptionHandler(AlunoSemPlanoContratadoException.class)
+    public ResponseEntity<Map<String, Object>> handleAlunoSemPlanoContratadoException(AlunoSemPlanoContratadoException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, "Unprocessable Entity", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(PlanoNaoPertenceAoAlunoException.class)
+    public ResponseEntity<Map<String, Object>> handlePlanoNaoPertenceAoAlunoException(PlanoNaoPertenceAoAlunoException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, "Unprocessable Entity", ex.getMessage(), request);
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, Object>> handleEnumInvalido(HttpMessageNotReadableException exception, WebRequest request) {
         Throwable causa = exception.getCause();
@@ -178,6 +209,18 @@ public class GlobalExceptionHandler {
 
         return createErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", mensagemErro, request);
     }
+
+    @ExceptionHandler(ContaBloqueadaException.class)
+    public ResponseEntity<Map<String, Object>> handleContaBloqueadaException(ContaBloqueadaException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("status", 423);
+        body.put("error", "Locked");
+        body.put("message", ex.getMessage());
+        body.put("tempoRestante", ex.getTempoRestante());
+        body.put("timestamp", LocalDateTime.now());
+        return new ResponseEntity<>(body, HttpStatus.LOCKED);
+    }
+
 
     private ResponseEntity<Map<String, Object>> createErrorResponse(HttpStatus status, String error, String message, WebRequest request) {
         Map<String, Object> response = new HashMap<>();

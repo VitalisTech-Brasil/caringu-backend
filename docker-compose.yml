@@ -1,0 +1,95 @@
+services:
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"    # porta do broker
+      - "15672:15672"  # porta da interface web
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - caringu-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: vitalis
+      MYSQL_USER: vitalis
+      MYSQL_PASSWORD: vitalis123
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./mysql-init:/docker-entrypoint-initdb.d   # monta os scripts
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+    networks:
+      - caringu-network
+
+  # Serviço que envia notificações (CaringU)
+  caringu-service:
+    build:
+      context: ../caringu-backend
+      dockerfile: Dockerfile
+    container_name: caringu-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      SPRING_PROFILES_ACTIVE: docker
+      # Exchange que o CaringU usa
+      APP_RABBITMQ_EXCHANGE: notificacoes.exchange
+      JWT_SECRET: zXhpc3RlIHVtYSB0ZW9yaWEgcXVlIGRpeiBxdWUsIHNlIHVtIGRpYSBhbGd16W0gZGVzY29icmlyIGV4YXRhbWVudGUgcGFyYSBxdWUgc2VydmUgbyBVbml2ZXJzbyBlIHBvciBxdWUgZWxlIGVzdOEgYXF1aSwgZWxlIGRlc2FwYXJlY2Vy4SBpbnN0YW50YW5lYW1lbnRlIGUgc2Vy4SBzdWJzdGl0de1kbyBwb3IgYWxnbyBhaW5kYSBtYWlzIGVzdHJhbmhvIGUgaW5leHBsaWPhdmVsLiBFeGlzdGUgdW1hIHNlZ3VuZGEgdGVvcmlhIHF1ZSBkaXogcXVlIGlzc28gauEgYWNvbnRlY2V1Li4u
+      JWT_VALIDITY: 3600
+      GOOGLE_CLIENT_ID: 186536025328-cgkr8nqmcbmp7kjkgqm70polq891qipi.apps.googleusercontent.com
+      GOOGLE_CLIENT_SECRET: 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
+      # Adicionando as configurações do banco
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/vitalis?useSSL=false&serverTimezone=America/Sao_Paulo&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    networks:
+      - caringu-network
+
+  # Serviço que consome notificações
+  notification-service:
+    build:
+      context: ../caringu-notificacao
+      dockerfile: Dockerfile
+    container_name: notification-service
+    ports:
+      - "8081:8080"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      APP_RABBITMQ_EXCHANGE: notificacoes.exchange
+      # Configurações do banco se este serviço também usar MySQL
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/vitalis?useSSL=false&serverTimezone=America/Sao_Paulo&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    networks:
+      - caringu-network
+
+networks:
+  caringu-network:
+    driver: bridge

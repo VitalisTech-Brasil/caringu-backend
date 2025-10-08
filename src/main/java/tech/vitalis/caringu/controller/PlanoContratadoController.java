@@ -67,6 +67,7 @@ public class PlanoContratadoController {
     }
 
     @PatchMapping("/{idPlanoContratado}/status")
+    @Operation(summary = "Atualizar status do plano contratado")
     public ResponseEntity<Void> atualizarStatus(
             @PathVariable Integer idPlanoContratado,
             @RequestBody AtualizarStatusPlanoDTO dto

@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -53,6 +52,7 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/personal-trainers/disponiveis", "GET"),
             new AntPathRequestMatcher("/personal-trainers/disponiveis/{personalId}", "GET"),
             new AntPathRequestMatcher("/alunos", "POST"),
+            new AntPathRequestMatcher("/avaliacoes/personal/{idPersonal}", "GET"),
             new AntPathRequestMatcher("/fale-conosco", "POST"),
             new AntPathRequestMatcher("/pessoas/verificacao-email", "GET"),
             new AntPathRequestMatcher("/pessoas/fotos-perfil/{nomeArquivo}", "GET"),
@@ -62,7 +62,8 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/h2-console/**"),
             new AntPathRequestMatcher("/h2-console/**/**"),
             new AntPathRequestMatcher("/error/**"),
-            new AntPathRequestMatcher("/esqueci-senha/**")
+            new AntPathRequestMatcher("/esqueci-senha/**"),
+            new AntPathRequestMatcher("/auth/logout", "POST")
     };
 
     @Bean
@@ -70,7 +71,7 @@ public class SecurityConfiguracao {
         http
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
-                .cors(Customizer.withDefaults())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(CsrfConfigurer<HttpSecurity>::disable)
                 .authorizeHttpRequests(authorize -> authorize.requestMatchers(URLS_PERMITIDAS)
                         .permitAll()
@@ -118,7 +119,7 @@ public class SecurityConfiguracao {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuracao = new CorsConfiguration();
-        configuracao.applyPermitDefaultValues();
+        configuracao.setAllowedOrigins(List.of("http://localhost:5173"));
         configuracao.setAllowedMethods(
                 Arrays.asList(
                         HttpMethod.GET.name(),
@@ -130,7 +131,11 @@ public class SecurityConfiguracao {
                         HttpMethod.HEAD.name(),
                         HttpMethod.TRACE.name()));
 
-        configuracao.setExposedHeaders(List.of(HttpHeaders.CONTENT_DISPOSITION));
+        configuracao.setAllowedHeaders(List.of("*"));
+        configuracao.setExposedHeaders(List.of(HttpHeaders.CONTENT_DISPOSITION, "Set-Cookie"));
+
+        // Configurações para suportar cookies
+        configuracao.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource origem = new UrlBasedCorsConfigurationSource();
         origem.registerCorsConfiguration("/**", configuracao);
