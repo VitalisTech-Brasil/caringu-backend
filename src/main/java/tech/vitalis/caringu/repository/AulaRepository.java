@@ -1,20 +1,20 @@
 package tech.vitalis.caringu.repository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGetDTO;
 import tech.vitalis.caringu.dtos.Aula.ProximaAulaDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AulasAgendadasResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoCargaDashboardResponseDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoTreinoCumpridoResponseDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.SessaoAulasAgendadasResponseDTO;
 import tech.vitalis.caringu.entity.Aula;
-import tech.vitalis.caringu.entity.AulaTreinoExercicio;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
 
-import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -57,10 +57,13 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
     List<String> buscarHorariosFimTotal(@Param("alunoId") Integer alunoId);
 
     @Query("""
-                SELECT new tech.vitalis.caringu.dtos.SessaoTreino.SessaoAulasAgendadasResponseDTO(
+                SELECT DISTINCT new tech.vitalis.caringu.dtos.Aula.Response.AulasAgendadasResponseDTO(
                     a.id,
                     pa.nome,
+                    pa.email,
                     pa.urlFotoPerfil,
+                    t.id,
+                    t.nome,
                     au.id,
                     au.dataHorarioInicio,
                     au.dataHorarioFim,
@@ -79,12 +82,18 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
                     ON a.id = pa.id
                 JOIN Aula au
                     ON pc.id = au.planoContratado.id
+                JOIN AulaTreinoExercicio ate
+                   ON ate.aula.id = au.id
+               JOIN TreinoExercicio te
+                   ON ate.treinoExercicio.id = te.id
+               JOIN Treino t
+                   ON te.treino.id = t.id
                 WHERE pc.status = 'ATIVO'
                   AND NOW() BETWEEN pc.dataContratacao AND pc.dataFim
                   AND pt.id = :idPersonal
                   AND au.id = :idAula
             """)
-    SessaoAulasAgendadasResponseDTO findAllInfoAulaPorPersonal(@Param("idPersonal") Integer idPersonal, @Param("idAula") Integer idAula);
+    AulasAgendadasResponseDTO findAllInfoAulaPorPersonal(@Param("idPersonal") Integer idPersonal, @Param("idAula") Integer idAula);
 
     @Query("""
                 SELECT new tech.vitalis.caringu.dtos.SessaoTreino.SessaoAulasAgendadasResponseDTO(
@@ -270,30 +279,30 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
     );
 
     @Query("""
-    SELECT new tech.vitalis.caringu.dtos.Aula.ProximaAulaDTO(
-        ate.id,
-        ate.aula.id,
-        a.dataHorarioInicio,
-        a.dataHorarioFim,
-        t.id,
-        t.nome,
-        e.id,
-        e.nome,
-        p.id,
-        p.nome,
-        p.urlFotoPerfil
-    )
-    FROM AulaTreinoExercicio ate
-    JOIN ate.aula a
-    JOIN ate.treinoExercicio te
-    JOIN te.treino t
-    JOIN te.exercicio e
-    JOIN t.personal p
-    WHERE a.planoContratado.aluno.id = :alunoId
-      AND a.dataHorarioInicio > CURRENT_TIMESTAMP
-      AND a.status = tech.vitalis.caringu.enums.Aula.AulaStatusEnum.AGENDADO
-    ORDER BY a.dataHorarioInicio ASC
-""")
+                SELECT new tech.vitalis.caringu.dtos.Aula.ProximaAulaDTO(
+                    ate.id,
+                    ate.aula.id,
+                    a.dataHorarioInicio,
+                    a.dataHorarioFim,
+                    t.id,
+                    t.nome,
+                    e.id,
+                    e.nome,
+                    p.id,
+                    p.nome,
+                    p.urlFotoPerfil
+                )
+                FROM AulaTreinoExercicio ate
+                JOIN ate.aula a
+                JOIN ate.treinoExercicio te
+                JOIN te.treino t
+                JOIN te.exercicio e
+                JOIN t.personal p
+                WHERE a.planoContratado.aluno.id = :alunoId
+                  AND a.dataHorarioInicio > CURRENT_TIMESTAMP
+                  AND a.status = tech.vitalis.caringu.enums.Aula.AulaStatusEnum.AGENDADO
+                ORDER BY a.dataHorarioInicio ASC
+            """)
     List<ProximaAulaDTO> listarProximasAulas(@Param("alunoId") Integer alunoId, Pageable pageable);
 
 }

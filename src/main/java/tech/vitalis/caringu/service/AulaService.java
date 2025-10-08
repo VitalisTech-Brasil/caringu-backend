@@ -4,11 +4,11 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGetDTO;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
-import tech.vitalis.caringu.dtos.Aula.ProximaAulaDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoItemDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoRequestPostDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoCriadaDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoResponsePostDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AulasAgendadasResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.*;
 import tech.vitalis.caringu.entity.Aula;
@@ -55,7 +55,7 @@ public class AulaService {
         this.aulaTreinoExercicioRepository = aulaTreinoExercicioRepository;
     }
 
-    public SessaoAulasAgendadasResponseDTO listarInfoAulaPorPersonal(Integer idPersonal, Integer idAula) {
+    public AulasAgendadasResponseDTO listarInfoAulaPorPersonal(Integer idPersonal, Integer idAula) {
         return aulaRepository.findAllInfoAulaPorPersonal(idPersonal, idAula);
     }
 
