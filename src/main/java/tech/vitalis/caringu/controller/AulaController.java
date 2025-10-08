@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoRequestPostDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoResponsePostDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AulasAgendadasResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.*;
 import tech.vitalis.caringu.service.AulaService;
@@ -26,11 +27,11 @@ public class AulaController {
     }
 
     @GetMapping("/{idPersonal}")
-    public ResponseEntity<SessaoAulasAgendadasResponseDTO> listarInfoAulaPorPersonal(
+    public ResponseEntity<AulasAgendadasResponseDTO> listarInfoAulaPorPersonal(
             @PathVariable Integer idPersonal,
             @RequestParam Integer idAula
     ) {
-        SessaoAulasAgendadasResponseDTO aulasAgendadas = aulaService.listarInfoAulaPorPersonal(idPersonal, idAula);
+        AulasAgendadasResponseDTO aulasAgendadas = aulaService.listarInfoAulaPorPersonal(idPersonal, idAula);
 
         return ResponseEntity.ok(aulasAgendadas);
     }
