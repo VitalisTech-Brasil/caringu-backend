@@ -132,7 +132,7 @@ public interface PlanoContratadoRepository extends JpaRepository<PlanoContratado
         JOIN p.personalTrainer pt
         WHERE pt.id = :personalId
         AND pc.dataFim <= :limite
-        AND pc.status NOT IN ('INATIVO', 'PENDENTE')
+        AND pc.status IN ('ATIVO')
     """)
     Integer buscarDataFimIgualOuAntesDataLimite(LocalDate limite, Integer personalId);
 }
