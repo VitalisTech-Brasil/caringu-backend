@@ -8,7 +8,7 @@ public record SessaoAulasAgendadasResponseDTO(
         Integer idAluno,
         String nomeAluno,
         String urlFotoPerfil,
-        Integer idSessaoTreino,
+        Integer idAula,
         LocalDateTime dataHorarioInicio,
         LocalDateTime dataHorarioFim,
         AulaStatusEnum status

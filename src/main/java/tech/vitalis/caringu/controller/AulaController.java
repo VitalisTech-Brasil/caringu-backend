@@ -94,13 +94,13 @@ public class AulaController {
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/{idSessaoTreino}/status")
+    @PatchMapping("/{idAula}/status")
     @Operation(summary = "Atualizar status da sessão do treino")
     public ResponseEntity<Void> atualizarStatus(
-            @PathVariable("idSessaoTreino") Integer idSessaoTreino,
+            @PathVariable("idAula") Integer idAula,
             @RequestBody AtualizarStatusSessaoTreinoDTO dto
     ) {
-        aulaService.atualizarStatus(idSessaoTreino, dto.status());
+        aulaService.atualizarStatus(idAula, dto.status());
         return ResponseEntity.noContent().build();
     }
 

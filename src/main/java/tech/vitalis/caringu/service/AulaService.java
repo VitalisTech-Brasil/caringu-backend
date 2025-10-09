@@ -183,10 +183,10 @@ public class AulaService {
         return new AulaRascunhoResponsePostDTO(aulasCriadas);
     }
 
-    public void atualizarStatus(Integer idSessaoTreino, AulaStatusEnum novoStatus) {
+    public void atualizarStatus(Integer idAula, AulaStatusEnum novoStatus) {
 
-        Aula aula = aulaRepository.findById(idSessaoTreino)
-                .orElseThrow(() -> new SessaoTreinoNaoEncontradoException("Sessão treino com id %d não encontrado.".formatted(idSessaoTreino)));
+        Aula aula = aulaRepository.findById(idAula)
+                .orElseThrow(() -> new SessaoTreinoNaoEncontradoException("Sessão treino com id %d não encontrado.".formatted(idAula)));
 
         validarEnums(Map.of(
                 new StatusSessaoTreinoValidationStrategy(), novoStatus
