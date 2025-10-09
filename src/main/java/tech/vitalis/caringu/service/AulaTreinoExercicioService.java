@@ -9,6 +9,7 @@ import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.AtribuicaoTreinosAu
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.HorarioAulaDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.RemarcarAulaTreinoRequestDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.*;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.TreinoDetalhadoRepositoryDTO;
 import tech.vitalis.caringu.entity.*;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
 import tech.vitalis.caringu.enums.StatusEnum;
@@ -58,7 +59,34 @@ public class AulaTreinoExercicioService {
     }
 
     public VisualizarAulasResponseDTO listarAulasComTreinosExercicios(Integer idAula, Integer idAluno) {
-        var aulaComTreinosExercicios = aulaTreinoExercicioRepository.listarAulasComTreinosExercicios(idAula, idAluno);
+        List<TreinoDetalhadoRepositoryDTO> aulaComTreinosExercicios = aulaTreinoExercicioRepository
+                .listarAulasComTreinosExercicios(idAula, idAluno);
+
+        if (aulaComTreinosExercicios.isEmpty()) {
+            throw new AulaNaoEncontradaException("Aula não encontrada para o aluno informado");
+        }
+
+        TreinoDetalhadoRepositoryDTO primeiro = aulaComTreinosExercicios.getFirst();
+
+        List<VisualizarAulasItemResponseDTO> exercicios = aulaComTreinosExercicios.stream()
+                .map(d -> new VisualizarAulasItemResponseDTO(
+                        d.idAula(),
+                        d.idExecucaoExercicio(),
+                        d.nomeExercicio(),
+                        d.carga(),
+                        d.repeticoesSeries(),
+                        d.grupoMuscular(),
+                        d.observacoes(),
+                        d.urlVideoExecucao(),
+                        d.aulaRealizada()
+                ))
+                .toList();
+
+        return new VisualizarAulasResponseDTO(
+                primeiro.idTreino(),
+                primeiro.nomeTreino(),
+                exercicios
+        );
     }
 
     public List<ProximaAulaDTO> listarProximasAulas(int idAluno){

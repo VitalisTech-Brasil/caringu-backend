@@ -265,7 +265,4 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
     ORDER BY a.dataHorarioInicio ASC
 """)
     List<ProximaAulaDTO> listarProximasAulas(@Param("alunoId") Integer alunoId, Pageable pageable);
-
-    listarAulasComTreinosExercicios
-
 }

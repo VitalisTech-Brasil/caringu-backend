@@ -33,7 +33,10 @@ public class AulaTreinoExercicioController {
             @PathVariable Integer idAula,
             @RequestParam Integer idAluno
     ) {
-        aulaTreinoExercicioService.listarAulasComTreinosExercicios(idAula, idAluno);
+        VisualizarAulasResponseDTO responseDTO = aulaTreinoExercicioService
+                .listarAulasComTreinosExercicios(idAula, idAluno);
+
+        return ResponseEntity.ok(responseDTO);
     }
 
     @PostMapping("/atribuicao/treinos")
