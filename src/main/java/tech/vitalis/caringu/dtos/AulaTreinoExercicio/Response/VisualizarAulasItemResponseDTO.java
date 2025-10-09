@@ -10,7 +10,7 @@ public record VisualizarAulasItemResponseDTO(
         String nomeExercicio,
         String carga,
         String repeticoesSeries,
-        GrupoMuscularEnum grupoMuscular,
+        String grupoMuscular,
         String observacoes,
         String urlVideoExecucao,
         boolean aulaRealizada

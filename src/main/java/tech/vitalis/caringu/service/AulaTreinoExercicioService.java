@@ -75,7 +75,7 @@ public class AulaTreinoExercicioService {
                         d.nomeExercicio(),
                         d.carga(),
                         d.repeticoesSeries(),
-                        d.grupoMuscular(),
+                        d.grupoMuscular().getValue(),
                         d.observacoes(),
                         d.urlVideoExecucao(),
                         d.aulaRealizada()
