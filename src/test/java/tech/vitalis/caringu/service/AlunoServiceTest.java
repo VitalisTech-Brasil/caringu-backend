@@ -52,6 +52,8 @@ class AlunoServiceTest {
 
     private Aluno aluno;
 
+    private AlunoRequestPostDTO dtoAluno;
+
     @BeforeEach
     void setUp() {
         aluno = new Aluno();

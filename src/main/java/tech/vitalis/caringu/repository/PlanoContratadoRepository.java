@@ -124,4 +124,15 @@ public interface PlanoContratadoRepository extends JpaRepository<PlanoContratado
     List<NotificacaoPlanoVencimentoDto> findNotificacoesPlanoVencimento(
             @Param("duasSemanasDepois") LocalDate duasSemanasDepois
     );
+
+    @Query("""
+        SELECT count(pc)
+        FROM PlanoContratado pc
+        JOIN pc.plano p
+        JOIN p.personalTrainer pt
+        WHERE pt.id = :personalId
+        AND pc.dataFim <= :limite
+        AND pc.status IN ('ATIVO')
+    """)
+    Integer buscarDataFimIgualOuAntesDataLimite(LocalDate limite, Integer personalId);
 }

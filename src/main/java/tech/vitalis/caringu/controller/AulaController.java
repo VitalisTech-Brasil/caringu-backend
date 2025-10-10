@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoRequestPostDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoResponsePostDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AulasAgendadasResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.*;
 import tech.vitalis.caringu.service.AulaService;
@@ -23,6 +24,16 @@ public class AulaController {
 
     public AulaController(AulaService aulaService) {
         this.aulaService = aulaService;
+    }
+
+    @GetMapping("/{idPersonal}")
+    public ResponseEntity<AulasAgendadasResponseDTO> listarInfoAulaPorPersonal(
+            @PathVariable Integer idPersonal,
+            @RequestParam Integer idAula
+    ) {
+        AulasAgendadasResponseDTO aulasAgendadas = aulaService.listarInfoAulaPorPersonal(idPersonal, idAula);
+
+        return ResponseEntity.ok(aulasAgendadas);
     }
 
     @GetMapping("/personal-aulas/{idPersonal}")
@@ -83,13 +94,13 @@ public class AulaController {
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/{idSessaoTreino}/status")
+    @PatchMapping("/{idAula}/status")
     @Operation(summary = "Atualizar status da sessão do treino")
     public ResponseEntity<Void> atualizarStatus(
-            @PathVariable("idSessaoTreino") Integer idSessaoTreino,
+            @PathVariable("idAula") Integer idAula,
             @RequestBody AtualizarStatusSessaoTreinoDTO dto
     ) {
-        aulaService.atualizarStatus(idSessaoTreino, dto.status());
+        aulaService.atualizarStatus(idAula, dto.status());
         return ResponseEntity.noContent().build();
     }
 

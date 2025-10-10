@@ -8,6 +8,7 @@ import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoItemDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoRequestPostDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoCriadaDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoResponsePostDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AulasAgendadasResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.*;
 import tech.vitalis.caringu.entity.Aula;
@@ -52,6 +53,10 @@ public class AulaService {
         this.aulaMapper = aulaMapper;
         this.treinoExercicioRepository = treinoExercicioRepository;
         this.aulaTreinoExercicioRepository = aulaTreinoExercicioRepository;
+    }
+
+    public AulasAgendadasResponseDTO listarInfoAulaPorPersonal(Integer idPersonal, Integer idAula) {
+        return aulaRepository.findAllInfoAulaPorPersonal(idPersonal, idAula);
     }
 
     public List<SessaoAulasAgendadasResponseDTO> listarAulasPorPersonal(Integer idPersonal) {
@@ -178,10 +183,10 @@ public class AulaService {
         return new AulaRascunhoResponsePostDTO(aulasCriadas);
     }
 
-    public void atualizarStatus(Integer idSessaoTreino, AulaStatusEnum novoStatus) {
+    public void atualizarStatus(Integer idAula, AulaStatusEnum novoStatus) {
 
-        Aula aula = aulaRepository.findById(idSessaoTreino)
-                .orElseThrow(() -> new SessaoTreinoNaoEncontradoException("Sessão treino com id %d não encontrado.".formatted(idSessaoTreino)));
+        Aula aula = aulaRepository.findById(idAula)
+                .orElseThrow(() -> new SessaoTreinoNaoEncontradoException("Sessão treino com id %d não encontrado.".formatted(idAula)));
 
         validarEnums(Map.of(
                 new StatusSessaoTreinoValidationStrategy(), novoStatus
