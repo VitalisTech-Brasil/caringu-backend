@@ -22,6 +22,7 @@ public class SchedulingConfig {
         this.notificacaoPlanoVencimentoService = notificacaoPlanoVencimentoService;
     }
 
+    //@Scheduled(fixedDelay = 30000)
     @Scheduled(cron = "0 0 8,13,22 * * *")
     public void verificarTreinosVencendo(){
         logger.info("Executando verificarTreinosVencendo em {}", LocalDateTime.now());
