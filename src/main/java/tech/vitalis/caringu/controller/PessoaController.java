@@ -46,6 +46,7 @@ public class PessoaController {
     }
 
     @GetMapping("/{id}/foto-perfil")
+    @SecurityRequirement(name = "Bearer")
     @Operation(summary = "Buscar nome, email e URL da foto de perfil por ID")
     public ResponseEntity<PessoaResponseFotoPerfilGetDTO> buscarFotoPerfilPorId(@PathVariable Integer id) {
         PessoaResponseFotoPerfilGetDTO dto = pessoaService.buscarFotoPerfilPorId(id);
@@ -75,7 +76,7 @@ public class PessoaController {
     }
 
     // ---------- POST ----------
-    @PostMapping("/{id}/upload-foto-perfil")
+    @PostMapping(value = "/{id}/upload-foto-perfil")
     @SecurityRequirement(name = "Bearer")
     @Operation(summary = "Fazer upload da foto de perfil da pessoa")
     public ResponseEntity<String> uploadFotoPerfil(
@@ -118,6 +119,7 @@ public class PessoaController {
     }
 
     @DeleteMapping("/{id}/remover-foto-perfil")
+    @SecurityRequirement(name = "Bearer")
     @Operation(summary = "Remover a foto de perfil da pessoa")
     public ResponseEntity<Void> removerFotoPerfil(@PathVariable Integer id) {
         pessoaService.removerFotoPerfil(id);

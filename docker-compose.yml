@@ -77,6 +77,8 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+      mysql:
+        condition: service_healthy
     environment:
       SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_RABBITMQ_PORT: 5672
