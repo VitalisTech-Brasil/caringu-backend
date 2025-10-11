@@ -8,8 +8,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Aluno.*;
+import tech.vitalis.caringu.dtos.EvolucaoExercicioDTO;
+import tech.vitalis.caringu.dtos.ProgressoAulasDTO;
+import tech.vitalis.caringu.dtos.TopTreinosDTO;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.mapper.AlunoMapper;
+import tech.vitalis.caringu.repository.AlunoRepository;
 import tech.vitalis.caringu.service.AlunoService;
 
 import java.util.List;
@@ -70,7 +74,7 @@ public class AlunoController {
             @PathVariable Integer personalId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "4") int size
-            ) {
+    ) {
         Page<AlunoDetalhadoComTreinosDTO> dados = service.buscarAlunosDetalhadosPaginado(personalId, PageRequest.of(page, size));
         return ResponseEntity.ok(dados);
     }
@@ -95,8 +99,7 @@ public class AlunoController {
     @PostMapping
     @Operation(summary = "Cadastrar aluno")
     public ResponseEntity<AlunoResponseGetDTO> cadastrar(@Valid @RequestBody AlunoRequestPostDTO cadastroDTO) {
-        Aluno aluno = mapper.toEntity(cadastroDTO);
-        AlunoResponseGetDTO respostaDTO = service.cadastrar(aluno);
+        AlunoResponseGetDTO respostaDTO = service.cadastrar(cadastroDTO);
 
         return ResponseEntity.status(201).body(respostaDTO);
     }
@@ -142,5 +145,66 @@ public class AlunoController {
     public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         service.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{alunoId}/top-treinos")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "Top 3 treinos mais realizados pelo aluno no mês atual")
+    public ResponseEntity<List<TopTreinosDTO>> getTopTreinosByAluno(@PathVariable Integer alunoId) {
+        List<TopTreinosDTO> topTreinos = service.buscarTopTreinosPorAluno(alunoId.longValue());
+        return ResponseEntity.ok(topTreinos);
+    }
+
+    @GetMapping("/{alunoId}/progresso-aulas")
+    @SecurityRequirement(name = "Bearer")
+    @Operation(summary = "Progresso de aulas do aluno (total, realizadas, pendentes e percentual)")
+    public ResponseEntity<ProgressoAulasDTO> getProgressoAulasByAluno(@PathVariable Integer alunoId) {
+        ProgressoAulasDTO progresso = service.buscarProgressoAulasPorAluno(alunoId.longValue());
+        return ResponseEntity.ok(progresso);
+    }
+
+    @GetMapping("/{alunoId}/maior-evolucao-exercicio")
+    @Operation(summary = "Busca a maior evolução de exercício do aluno no mês atual")
+    public ResponseEntity<EvolucaoExercicioDTO> buscarMaiorEvolucao(@PathVariable Integer alunoId) {
+        EvolucaoExercicioDTO evolucao = service.buscarMaiorEvolucaoExercicioPorAluno(alunoId.longValue());
+        return ResponseEntity.ok(evolucao);
+    }
+
+    @GetMapping("/teste-evolucao/{alunoId}")
+    public ResponseEntity<?> testeEvolucao(@PathVariable Long alunoId) {
+        AlunoRepository repository = null;
+        List<Object[]> resultado = repository.findMaiorEvolucaoExercicioPorAlunoMesAtual(alunoId);
+
+        System.out.println("=== DEBUG EVOLUÇÃO ===");
+        System.out.println("Resultado é null? " + (resultado == null));
+        System.out.println("Resultado está vazio? " + (resultado != null && resultado.isEmpty()));
+        System.out.println("Tamanho: " + (resultado != null ? resultado.size() : "N/A"));
+
+        if (resultado != null && !resultado.isEmpty()) {
+            Object[] row = resultado.get(0);
+            System.out.println("Linha encontrada com " + row.length + " colunas:");
+            for (int i = 0; i < row.length; i++) {
+                System.out.println("  [" + i + "] = " + row[i] + " (tipo: " +
+                        (row[i] != null ? row[i].getClass().getSimpleName() : "null") + ")");
+            }
+
+            // Tenta criar o DTO
+            try {
+                EvolucaoExercicioDTO dto = new EvolucaoExercicioDTO(
+                        ((Number) row[0]).longValue(),
+                        (String) row[1],
+                        ((Number) row[2]).doubleValue(),
+                        ((Number) row[3]).doubleValue()
+                );
+                System.out.println("DTO criado com sucesso!");
+                return ResponseEntity.ok(dto);
+            } catch (Exception e) {
+                System.out.println("ERRO ao criar DTO: " + e.getMessage());
+                e.printStackTrace();
+                return ResponseEntity.status(500).body("Erro: " + e.getMessage());
+            }
+        }
+
+        return ResponseEntity.ok("Nenhum resultado encontrado");
     }
 }
