@@ -1,5 +1,6 @@
 package tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -23,4 +24,13 @@ public record RemarcarAulaTreinoRequestDTO(
         @Future(message = "O horário de fim deve estar no futuro")
         LocalDateTime novoHorarioFim
 ) {
+    @AssertTrue(message = "Data/hora de fim deve ser após a data/hora de início.")
+    public boolean isDataFimDepoisDeInicio() {
+        if (novoHorarioInicio == null || novoHorarioFim == null) {
+            return true;
+        }
+        return novoHorarioFim.isAfter(novoHorarioInicio);
+    }
 }
+
+
