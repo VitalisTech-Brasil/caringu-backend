@@ -196,7 +196,7 @@ public class AulaTreinoExercicioService {
         aulaRepository.save(aula);
 
         // 3. Validar treino novo
-        Treino treinoNovo = treinoRepository.findById(request.idTreinoNovo())
+        Treino treinoNovo = treinoRepository.findByIdComPersonal(request.idTreinoNovo())
                 .orElseThrow(() -> new TreinoNaoEncontradoException("Treino novo não encontrado"));
 
         // 4. Apagar execuções e vínculos antigos
