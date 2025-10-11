@@ -13,6 +13,7 @@ import tech.vitalis.caringu.dtos.ProgressoAulasDTO;
 import tech.vitalis.caringu.dtos.TopTreinosDTO;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.mapper.AlunoMapper;
+import tech.vitalis.caringu.repository.AlunoRepository;
 import tech.vitalis.caringu.service.AlunoService;
 
 import java.util.List;
@@ -163,15 +164,47 @@ public class AlunoController {
     }
 
     @GetMapping("/{alunoId}/maior-evolucao-exercicio")
-    @SecurityRequirement(name = "Bearer")
-    @Operation(summary = "Exercício com maior evolução de carga do aluno no mês atual")
-    public ResponseEntity<EvolucaoExercicioDTO> getMaiorEvolucaoExercicioByAluno(@PathVariable Integer alunoId) {
+    @Operation(summary = "Busca a maior evolução de exercício do aluno no mês atual")
+    public ResponseEntity<EvolucaoExercicioDTO> buscarMaiorEvolucao(@PathVariable Integer alunoId) {
         EvolucaoExercicioDTO evolucao = service.buscarMaiorEvolucaoExercicioPorAluno(alunoId.longValue());
+        return ResponseEntity.ok(evolucao);
+    }
 
-        if (evolucao == null) {
-            return ResponseEntity.noContent().build();
+    @GetMapping("/teste-evolucao/{alunoId}")
+    public ResponseEntity<?> testeEvolucao(@PathVariable Long alunoId) {
+        AlunoRepository repository = null;
+        List<Object[]> resultado = repository.findMaiorEvolucaoExercicioPorAlunoMesAtual(alunoId);
+
+        System.out.println("=== DEBUG EVOLUÇÃO ===");
+        System.out.println("Resultado é null? " + (resultado == null));
+        System.out.println("Resultado está vazio? " + (resultado != null && resultado.isEmpty()));
+        System.out.println("Tamanho: " + (resultado != null ? resultado.size() : "N/A"));
+
+        if (resultado != null && !resultado.isEmpty()) {
+            Object[] row = resultado.get(0);
+            System.out.println("Linha encontrada com " + row.length + " colunas:");
+            for (int i = 0; i < row.length; i++) {
+                System.out.println("  [" + i + "] = " + row[i] + " (tipo: " +
+                        (row[i] != null ? row[i].getClass().getSimpleName() : "null") + ")");
+            }
+
+            // Tenta criar o DTO
+            try {
+                EvolucaoExercicioDTO dto = new EvolucaoExercicioDTO(
+                        ((Number) row[0]).longValue(),
+                        (String) row[1],
+                        ((Number) row[2]).doubleValue(),
+                        ((Number) row[3]).doubleValue()
+                );
+                System.out.println("DTO criado com sucesso!");
+                return ResponseEntity.ok(dto);
+            } catch (Exception e) {
+                System.out.println("ERRO ao criar DTO: " + e.getMessage());
+                e.printStackTrace();
+                return ResponseEntity.status(500).body("Erro: " + e.getMessage());
+            }
         }
 
-        return ResponseEntity.ok(evolucao);
+        return ResponseEntity.ok("Nenhum resultado encontrado");
     }
 }

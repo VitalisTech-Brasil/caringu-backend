@@ -302,16 +302,19 @@ public class AlunoService {
 
         List<Object[]> results = alunoRepository.findMaiorEvolucaoExercicioPorAlunoMesAtual(alunoId);
 
-        if (results.isEmpty()) {
+        if (results == null || results.isEmpty()) {
             return null;
         }
 
         Object[] result = results.get(0);
-        Long exercicioId = result[0] != null ? ((Number) result[0]).longValue() : null;
-        String nomeExercicio = result[1] != null ? result[1].toString() : null;
-        Double cargaAntiga = result[2] != null ? ((Number) result[2]).doubleValue() : null;
-        Double cargaAtual = result[3] != null ? ((Number) result[3]).doubleValue() : null;
 
-        return new EvolucaoExercicioDTO(exercicioId, nomeExercicio, cargaAntiga, cargaAtual);
+        return new EvolucaoExercicioDTO(
+                result[0] != null ? ((Number) result[0]).longValue() : null,
+                result[1] != null ? result[1].toString() : "",
+                result[2] != null ? ((Number) result[2]).doubleValue() : 0.0,
+                result[3] != null ? ((Number) result[3]).doubleValue() : 0.0
+        );
     }
+
+
 }

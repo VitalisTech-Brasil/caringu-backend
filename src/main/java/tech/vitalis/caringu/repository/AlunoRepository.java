@@ -10,7 +10,6 @@ import tech.vitalis.caringu.entity.Aluno;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Repository
 public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
     @Query("""
@@ -54,7 +53,7 @@ public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
 
 
     @Query("""
-            SELECT pc.aluno.id as alunosId, 
+            SELECT pc.aluno.id as alunosId,
                    t.id as treinoId, 
                    t.nome as treinoNome, 
                    COUNT(DISTINCT a.id) as qtdVezesRealizado
@@ -82,63 +81,50 @@ public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
             """)
     List<Object[]> findProgressoAulasByAlunoId(@Param("alunoId") Long alunoId);
 
-    @Query("""
-            SELECT e.id as exercicioId,
-                   e.nome as nomeExercicio,
-                   MIN(ee.cargaExecutada) as cargaAntiga,
-                   MAX(ee.cargaExecutada) as cargaAtual
-            FROM PlanoContratado pc
-            INNER JOIN Aula a ON a.planoContratado.id = pc.id
-            INNER JOIN AulaTreinoExercicio ate ON ate.aula.id = a.id
-            INNER JOIN ExecucaoExercicio ee ON ee.aulaTreinoExercicio.id = ate.id
-            INNER JOIN TreinoExercicio te ON te.id = ate.treinoExercicio.id
-            INNER JOIN Exercicio e ON e.id = te.exercicio.id
-            WHERE pc.aluno.id = :alunoId
-            AND a.status = 'REALIZADO'
-            AND YEAR(a.dataHorarioInicio) = YEAR(CURRENT_DATE)
-            AND MONTH(a.dataHorarioInicio) = MONTH(CURRENT_DATE)
-            AND ee.cargaExecutada IS NOT NULL
-            GROUP BY e.id, e.nome
-            HAVING MAX(ee.cargaExecutada) > MIN(ee.cargaExecutada)
-            ORDER BY (MAX(ee.cargaExecutada) - MIN(ee.cargaExecutada)) DESC
-            """)
+    @Query(value = """
+SELECT 
+    e.id as exercicioId,
+    e.nome as nomeExercicio,
+    MIN(ee.carga_executada) as cargaAntiga,
+    MAX(ee.carga_executada) as cargaAtual,
+    (MAX(ee.carga_executada) - MIN(ee.carga_executada)) as evolucao
+FROM planos_contratados pc
+JOIN alunos al ON al.id = pc.alunos_id
+JOIN aulas a ON a.planos_contratados_id = pc.id
+JOIN aulas_treinos_exercicios ate ON ate.aulas_id = a.id
+JOIN execucoes_exercicios ee ON ee.aulas_treinos_exercicios_id = ate.id
+JOIN treinos_exercicios te ON te.id = ate.treinos_exercicios_id
+JOIN exercicios e ON e.id = te.exercicios_id
+WHERE al.id = :alunoId
+AND a.status = 'REALIZADO'
+AND YEAR(a.data_horario_inicio) = YEAR(CURRENT_DATE())
+AND MONTH(a.data_horario_inicio) = MONTH(CURRENT_DATE())
+AND ee.carga_executada > 0
+AND ee.finalizado = true
+GROUP BY e.id, e.nome
+HAVING COUNT(ee.id) > 1
+AND MAX(ee.carga_executada) > MIN(ee.carga_executada)
+ORDER BY evolucao DESC
+LIMIT 1
+""", nativeQuery = true)
     List<Object[]> findMaiorEvolucaoExercicioPorAlunoMesAtual(@Param("alunoId") Long alunoId);
 
-    // NÃO ESTAVA SENDO UTILIZADO -> Resolvi comentar
-//    @Query("""
-//    SELECT new tech.vitalis.caringu.dtos.Aluno.AlunoDetalhadoResponseDTO(
-//        a.id, a.peso, a.altura, a.nome, a.email, a.celular, a.urlFotoPerfil, a.nivelExperiencia, a.nivelAtividade,
-//        pl.nome, pl.periodo, pl.quantidadeAulas, pc.dataFim,
-//        at.id,
-//        COUNT(DISTINCT tfSemana.id),
-//        COUNT(DISTINCT tfTotal.id),
-//        ana.id, ana.objetivoTreino, ana.lesao, ana.lesaoDescricao, ana.frequenciaTreino,
-//        ana.experiencia, ana.experienciaDescricao, ana.desconforto, ana.desconfortoDescricao,
-//        ana.fumante, ana.proteses, ana.protesesDescricao,
-//        ana.doencaMetabolica, ana.doencaMetabolicaDescricao,
-//        ana.deficiencia, ana.deficienciaDescricao
-//    )
-//    FROM PlanoContratado pc
-//    JOIN pc.plano pl
-//    JOIN pl.personalTrainer pt
-//    JOIN pc.aluno a
-//    LEFT JOIN Anamnese ana ON ana.aluno.id = a.id
-//    LEFT JOIN AlunoTreino at ON at.alunos.id = a.id
-//    LEFT JOIN TreinoFinalizado tfSemana
-//        ON tfSemana.alunoTreino.id = at.id
-//        AND FUNCTION('YEARWEEK', tfSemana.dataHorarioInicio, 1) = FUNCTION('YEARWEEK', CURRENT_DATE, 1)
-//    LEFT JOIN TreinoFinalizado tfTotal ON tfTotal.alunoTreino.id = at.id
-//    WHERE pt.id = :personalId
-//      AND pc.status = 'ATIVO'
-//      AND pc.dataContratacao = (
-//        SELECT MAX(p2.dataContratacao)
-//        FROM PlanoContratado p2
-//        WHERE p2.aluno.id = pc.aluno.id AND p2.status = 'ATIVO'
-//    )
-//    GROUP BY a.id, a.nome, a.celular, a.urlFotoPerfil, a.nivelExperiencia,
-//             pl.nome, pl.periodo, pl.quantidadeAulas, pc.dataFim,
-//             at.id, ana.id
-//""")
-//    Page<AlunoDetalhadoResponseDTO> buscarDetalhesPorPersonal(@Param("personalId") Integer personalId, Pageable pageable);
-
+    @Query(value = """
+            SELECT 
+                CURRENT_DATE() as data_atual,
+                YEAR(CURRENT_DATE()) as ano_atual,
+                MONTH(CURRENT_DATE()) as mes_atual,
+                COUNT(ee.id) as total_execucoes,
+                COUNT(CASE WHEN ee.carga_executada > 0 THEN 1 END) as execucoes_com_carga,
+                GROUP_CONCAT(DISTINCT DATE(a.data_horario_inicio)) as datas_aulas,
+                GROUP_CONCAT(DISTINCT ee.carga_executada ORDER BY ee.carga_executada) as cargas_executadas
+            FROM plano_contratado pc
+            JOIN aluno al ON al.id = pc.aluno_id
+            JOIN aula a ON a.plano_contratado_id = pc.id
+            JOIN aula_treino_exercicio ate ON ate.aula_id = a.id
+            JOIN execucao_exercicio ee ON ee.aula_treino_exercicio_id = ate.id
+            WHERE al.id = :alunoId
+            AND a.status = 'REALIZADO'
+            """, nativeQuery = true)
+    List<Object[]> diagnosticoDataECargasPorAluno(@Param("alunoId") Long alunoId);
 }
