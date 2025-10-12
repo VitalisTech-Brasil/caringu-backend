@@ -42,6 +42,10 @@ public class PlanoContratadoService {
         return planoContratadoRepository.listarSolicitacoesPendentes(personalId);
     }
 
+    public Integer buscarQtdPlanosVencendo(LocalDate limite, Integer personalId){
+        return planoContratadoRepository.buscarDataFimIgualOuAntesDataLimite(limite, personalId);
+    }
+
     public void atualizarStatus(Integer idPlanoContratado, StatusEnum novoStatus) {
         PlanoContratado planoContratado = planoContratadoRepository.findById(idPlanoContratado)
                 .orElseThrow(() -> new PlanoContratadoNaoEncontradoException("Plano contratado com id %d não encontrado.".formatted(idPlanoContratado)));
@@ -86,6 +90,10 @@ public class PlanoContratadoService {
                     planoContratado.setDataFim(LocalDate.now().plusMonths(6));
                 }
             }
+        }
+
+        if (novoStatus.equals(StatusEnum.CANCELADO)) {
+            planoContratado.setDataFim(LocalDate.now());
         }
 
         planoContratado.setStatus(novoStatus);

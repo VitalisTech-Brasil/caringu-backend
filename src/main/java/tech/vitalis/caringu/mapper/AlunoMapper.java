@@ -2,25 +2,21 @@ package tech.vitalis.caringu.mapper;
 
 import org.springframework.stereotype.Component;
 import tech.vitalis.caringu.dtos.Aluno.*;
-import tech.vitalis.caringu.dtos.PerfilAluno.AlunoGetPerfilDetalhesDTO;
-import tech.vitalis.caringu.dtos.PerfilAluno.PessoaGetPerfilDetalhesDTO;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.enums.PeriodoEnum;
-import tech.vitalis.caringu.repository.TreinoFinalizadoRepository;
+import tech.vitalis.caringu.repository.AulaRepository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
 public class AlunoMapper {
 
-    private final TreinoFinalizadoRepository treinoFinalizadoRepository;
+    private final AulaRepository aulaRepository;
 
-    public AlunoMapper(TreinoFinalizadoRepository treinoFinalizadoRepository) {
-        this.treinoFinalizadoRepository = treinoFinalizadoRepository;
+    public AlunoMapper(AulaRepository aulaRepository) {
+        this.aulaRepository = aulaRepository;
     }
 
     public Aluno toEntity(AlunoRequestPostDTO cadastroDTO) {
@@ -55,6 +51,11 @@ public class AlunoMapper {
                 .toList();
     }
 
+    public AlunoDetalhadoComTreinosDTO toAlunoDetalhadoComTreinosDTO(AlunoDetalhadoResponseDTO dto) {
+        return mapParaDTOComTreinosBase(dto);
+    }
+
+
     private AlunoDetalhadoComTreinosDTO mapParaDTOComTreinosBase(AlunoDetalhadoResponseDTO dto) {
         return new AlunoDetalhadoComTreinosDTO(
                 dto.idAluno(),
@@ -70,7 +71,8 @@ public class AlunoMapper {
                 dto.periodoPlano(),
                 dto.totalAulasContratadas(),
                 dto.dataVencimentoPlano(),
-                dto.idAlunoTreino(),
+                dto.idPlanoContratado(),
+                dto.idAula(),
                 dto.treinosSemana(),
                 dto.treinosTotal(),
                 null, null, null, null, // horários ainda serão adicionados depois
@@ -97,22 +99,22 @@ public class AlunoMapper {
         AlunoDetalhadoComTreinosDTO base = duplicados.getFirst(); // os dados são iguais entre os duplicados
 
         // Horários e contagens agregadas por aluno (não por treino)
-        List<String> horariosInicioSemana = treinoFinalizadoRepository.buscarHorariosInicioSemana(base.idAluno());
-        List<String> horariosFimSemana = treinoFinalizadoRepository.buscarHorariosFimSemana(base.idAluno());
-        List<String> horariosInicioTotal = treinoFinalizadoRepository.buscarHorariosInicioTotal(base.idAluno());
-        List<String> horariosFimTotal = treinoFinalizadoRepository.buscarHorariosFimTotal(base.idAluno());
+        List<String> horariosInicioSemana = aulaRepository.buscarHorariosInicioSemana(base.idAluno());
+        List<String> horariosFimSemana = aulaRepository.buscarHorariosFimSemana(base.idAluno());
+        List<String> horariosInicioTotal = aulaRepository.buscarHorariosInicioTotal(base.idAluno());
+        List<String> horariosFimTotal = aulaRepository.buscarHorariosFimTotal(base.idAluno());
 
         Long treinosSemana = duplicados.stream().mapToLong(AlunoDetalhadoComTreinosDTO::treinosSemana).sum();
         Long treinosTotal = duplicados.stream().mapToLong(AlunoDetalhadoComTreinosDTO::treinosTotal).sum();
 
-        Integer idAlunoTreino = duplicados.stream()
-                .filter(dto -> dto.idAlunoTreino() != null &&
+        Integer idPlanoContratado = duplicados.stream()
+                .filter(dto -> dto.idPlanoContratado() != null &&
                         (
                                 PeriodoEnum.AVULSO.equals(dto.periodoPlano()) ||
                                         (dto.dataVencimentoPlano() != null && !dto.dataVencimentoPlano().isBefore(LocalDate.now()))
                         )
                 )
-                .map(AlunoDetalhadoComTreinosDTO::idAlunoTreino)
+                .map(AlunoDetalhadoComTreinosDTO::idPlanoContratado)
                 .findFirst()
                 .orElse(null);
 
@@ -130,7 +132,8 @@ public class AlunoMapper {
                 base.periodoPlano(),
                 base.totalAulasContratadas(),
                 base.dataVencimentoPlano(),
-                idAlunoTreino,
+                idPlanoContratado,
+                base.idAula(),
                 treinosSemana,
                 treinosTotal,
                 horariosInicioSemana,

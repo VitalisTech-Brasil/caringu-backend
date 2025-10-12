@@ -3,9 +3,12 @@ package tech.vitalis.caringu.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Exercicio.*;
+import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoDTO;
 import tech.vitalis.caringu.service.ExercicioService;
 
 import java.util.List;
@@ -21,19 +24,10 @@ public class ExercicioController {
         this.exercicioService = exercicioService;
     }
 
-    @PostMapping
-    @Operation(summary = "Cadastrar novo exercício")
-    public ResponseEntity<ExercicioResponseGetDTO> cadastrar(@RequestBody @Valid ExercicioRequestPostDTO exercicioDto) {
-        ExercicioResponseGetDTO exercicioCriado = exercicioService.cadastrar(exercicioDto);
-        return ResponseEntity.status(201).body(exercicioCriado);
-    }
-
-    @PostMapping("/campos-essenciais")
-    @Operation(summary = "Cadastrar novo exercício apenas com payload essencial")
-    public ResponseEntity<ExercicioResponseGetDTO> cadastrarComCamposEssenciais(@RequestBody @Valid ExercicioRequestPostFuncionalDTO exercicioDto) {
-
-        ExercicioResponseGetDTO exercicioCriado = exercicioService.cadastrar(exercicioDto);
-        return ResponseEntity.status(201).body(exercicioCriado);
+    @GetMapping
+    @Operation(summary = "Listar todos os exercícios")
+    public ResponseEntity<List<ExercicioResponseGetDTO>> listarExerciciosPorIdPersonal() {
+        return ResponseEntity.ok(exercicioService.listarExerciciosPorIdPersonal());
     }
 
     @GetMapping("/{id}")
@@ -43,10 +37,29 @@ public class ExercicioController {
 
     }
 
-    @GetMapping("/kpi/total-por-origem")
-    @Operation(summary = "Buscar total de exercícios por origem (BIBLIOTECA, PERSONAL)")
-    public ResponseEntity<List<ExercicioResponseTotalExercicioOrigemDTO>> buscarTotalExercicioOrigem() {
-        List<ExercicioResponseTotalExercicioOrigemDTO> listaExercicios = exercicioService.buscarTotalExercicioOrigem();
+    // Esse endpoint vai ser usado pra listar os exercícios do personal (na tela de Gerenciar Treinos -> Criar Treinos -> Personalizar Exercícios
+    @GetMapping("/por-personal/{idPersonal}")
+    @Operation(summary = "Listar exercícios por ID Personal")
+    public ResponseEntity<List<ExercicioResponseGetDTO>> listarExerciciosPorIdPersonal(@PathVariable Integer idPersonal) {
+        return ResponseEntity.ok(exercicioService.listarExerciciosPorIdPersonal(idPersonal));
+    }
+
+    // Esse endpoint vai ser usado para listar os exercícios do Personal com ID X de forma paginada
+    @GetMapping("/por-personal-paginado/{idPersonal}")
+    @Operation(summary = "Listar exercícios por ID Personal")
+    public ResponseEntity<Page<ExercicioResponseGetDTO>> paginarExerciciosPorIdPersonal(
+            @PathVariable Integer idPersonal,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size
+    ) {
+        Page<ExercicioResponseGetDTO> treinosExerciciosResumo = exercicioService.paginarExerciciosPorIdPersonal(idPersonal, PageRequest.of(page, size));
+        return ResponseEntity.ok(treinosExerciciosResumo);
+    }
+
+    @GetMapping("/kpi/total-por-origem/{idPersonal}")
+    @Operation(summary = "Buscar número total de exercícios por origem (BIBLIOTECA, PERSONAL)")
+    public ResponseEntity<List<ExercicioResponseTotalExercicioOrigemDTO>> buscarTotalExercicioOrigem(@PathVariable Integer idPersonal) {
+        List<ExercicioResponseTotalExercicioOrigemDTO> listaExercicios = exercicioService.buscarTotalExercicioOrigem(idPersonal);
 
         if (listaExercicios.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -55,22 +68,21 @@ public class ExercicioController {
         return ResponseEntity.ok(listaExercicios);
     }
 
-    @GetMapping
-    @Operation(summary = "Listar todos os exercícios")
-    public ResponseEntity<List<ExercicioResponseGetDTO>> listarTodos() {
-        return ResponseEntity.ok(exercicioService.listarTodos());
+    @PostMapping
+    @Operation(summary = "Cadastrar novo exercício apenas com payload essencial")
+    public ResponseEntity<ExercicioResponseGetDTO> cadastrarComCamposEssenciais(@RequestBody @Valid ExercicioRequestPostFuncionalDTO exercicioDto) {
+
+        ExercicioResponseGetDTO exercicioCriado = exercicioService.cadastrar(exercicioDto);
+        return ResponseEntity.status(201).body(exercicioCriado);
     }
 
-    @PutMapping("/{id}")
-    @Operation(summary = "Atualizar exercício")
-    public ResponseEntity<ExercicioResponseGetDTO> atualizar(@PathVariable Integer id, @RequestBody @Valid ExercicioRequestPostDTO exercicioDto) {
-        return ResponseEntity.ok(exercicioService.atualizar(id, exercicioDto));
-    }
-
-    @PutMapping("/campos-essenciais/{id}")
+    @PutMapping("/{idExercicio}")
     @Operation(summary = "Atualizar exercício apenas com payload essencial")
-    public ResponseEntity<ExercicioResponseGetDTO> atualizarComCamposEssenciais(@PathVariable Integer id, @RequestBody @Valid ExercicioRequestPostFuncionalDTO exercicioDto) {
-        return ResponseEntity.ok(exercicioService.atualizar(id, exercicioDto));
+    public ResponseEntity<ExercicioResponseGetDTO> atualizarComCamposEssenciais(
+            @PathVariable Integer idExercicio,
+            @RequestBody @Valid ExercicioRequestPostFuncionalDTO exercicioDto
+    ) {
+        return ResponseEntity.ok(exercicioService.atualizar(idExercicio, exercicioDto));
     }
 
     @PatchMapping("/{id}")
@@ -79,16 +91,16 @@ public class ExercicioController {
         return ResponseEntity.ok(exercicioService.editarInfoExercicio(id, exercicioDto));
     }
 
+    @PatchMapping("/{id}/favorito")
+    public ResponseEntity<Void> atualizarFavorito(@PathVariable Integer id, @RequestBody ExercicioFavoritoRequestPatchDto dto) {
+        exercicioService.atualizarFavorito(id, dto.favorito());
+        return ResponseEntity.status(204).build();
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Remover exercício")
     public ResponseEntity<Void> remover(@PathVariable Integer id) {
         exercicioService.remover(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/{id}/favorito")
-    public ResponseEntity<Void> atualizarFavorito(@PathVariable Integer id, @RequestBody ExercicioFavoritoRequestPatchDto dto) {
-        exercicioService.atualizarFavorito(id, dto.favorito());
-        return ResponseEntity.status(204).build();
     }
 }

@@ -2,10 +2,13 @@ package tech.vitalis.caringu.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tech.vitalis.caringu.dtos.EvolucaoCorporal.EvolucaoCorporalRequestPostDTO;
 import tech.vitalis.caringu.dtos.EvolucaoCorporal.EvolucaoCorporalResponseGetDTO;
+import tech.vitalis.caringu.enums.EvolucaoCorporal.TipoEvolucaoEnum;
 import tech.vitalis.caringu.service.EvolucaoCorporalService;
 
 import java.util.List;
@@ -39,8 +42,21 @@ public class EvolucaoCorporalController {
     }
 
     @PostMapping
-    public ResponseEntity<EvolucaoCorporalResponseGetDTO> cadastrar(@Valid @RequestBody EvolucaoCorporalRequestPostDTO dto) {
-        EvolucaoCorporalResponseGetDTO response = service.cadastrar(dto);
+    public ResponseEntity<EvolucaoCorporalResponseGetDTO> cadastrar(
+            @RequestParam("tipo") TipoEvolucaoEnum tipo,
+            @RequestParam("periodoAvaliacao") Integer periodoAvaliacao,
+            @RequestParam("alunoId") Integer alunoId,
+            @RequestParam("arquivo") MultipartFile arquivo
+    ) {
+        EvolucaoCorporalRequestPostDTO dto = new EvolucaoCorporalRequestPostDTO(
+                tipo,
+                null,
+                null,
+                periodoAvaliacao,
+                alunoId
+        );
+
+        EvolucaoCorporalResponseGetDTO response = service.cadastrar(dto, arquivo);
         return ResponseEntity.status(201).body(response);
     }
 

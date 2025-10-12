@@ -1,6 +1,7 @@
 package tech.vitalis.caringu.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import tech.vitalis.caringu.dtos.EvolucaoCorporal.EvolucaoCorporalRequestPostDTO;
 import tech.vitalis.caringu.dtos.EvolucaoCorporal.EvolucaoCorporalResponseGetDTO;
 import tech.vitalis.caringu.entity.Aluno;
@@ -11,9 +12,11 @@ import tech.vitalis.caringu.exception.EvolucaoCorporal.EvolucaoCorporalNaoEncont
 import tech.vitalis.caringu.mapper.EvolucaoCorporalMapper;
 import tech.vitalis.caringu.repository.AlunoRepository;
 import tech.vitalis.caringu.repository.EvolucaoCorporalRepository;
+import tech.vitalis.caringu.service.ArmazenamentoFotos.ArmazenamentoService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EvolucaoCorporalService {
@@ -21,13 +24,15 @@ public class EvolucaoCorporalService {
     private final EvolucaoCorporalRepository repository;
     private final AlunoRepository alunoRepository;
     private final EvolucaoCorporalMapper mapper;
+    private final ArmazenamentoService armazenamentoService;
 
     public EvolucaoCorporalService(EvolucaoCorporalRepository repository,
                                    AlunoRepository alunoRepository,
-                                   EvolucaoCorporalMapper mapper) {
+                                   EvolucaoCorporalMapper mapper, ArmazenamentoService armazenamentoService) {
         this.repository = repository;
         this.alunoRepository = alunoRepository;
         this.mapper = mapper;
+        this.armazenamentoService = armazenamentoService;
     }
 
     public List<EvolucaoCorporalResponseGetDTO> listar() {
@@ -46,7 +51,7 @@ public class EvolucaoCorporalService {
                 .toList();
     }
 
-    public EvolucaoCorporalResponseGetDTO cadastrar(EvolucaoCorporalRequestPostDTO dto) {
+    public EvolucaoCorporalResponseGetDTO cadastrar(EvolucaoCorporalRequestPostDTO dto, MultipartFile arquivo) {
         Aluno aluno = alunoRepository.findById(dto.alunoId())
                 .orElseThrow(() -> new AlunoNaoEncontradoException(
                         "Aluno com ID %d não encontrado".formatted(dto.alunoId()))
@@ -60,8 +65,33 @@ public class EvolucaoCorporalService {
             throw new EvolucaoCorporalJaExisteException("Já existe uma evolução corporal com esse tipo e período para o aluno.");
         }
 
+        Optional<EvolucaoCorporal> fotoAntiga = repository
+                .findByAlunoId(aluno.getId()).stream()
+                .filter(e -> e.getTipo().equals(dto.tipo()))
+                .filter(e -> e.getUrlFotoShape() != null)
+                .findFirst();
+
+        if (fotoAntiga.isPresent()){
+            try {
+                armazenamentoService.deletarArquivoPorUrl(
+                        fotoAntiga.get().getUrlFotoShape()
+                );
+            }catch (Exception e){
+                System.err.println("Erro ao deletar foto antiga: " + e.getMessage());
+            }
+        }
+
+        String nomeArquivo = null;
+        String urlCompleta = null;
+
+        if (arquivo != null && !arquivo.isEmpty()){
+            urlCompleta = armazenamentoService.uploadArquivo(arquivo);
+            nomeArquivo = extrairNomeArquivo(urlCompleta);
+        }
+
         EvolucaoCorporal nova = mapper.toEntity(dto, aluno);
         nova.setAluno(aluno);
+        nova.setUrlFotoShape(urlCompleta);
         nova.setDataEnvio(LocalDateTime.now());
 
         EvolucaoCorporal salvo = repository.save(nova);
@@ -76,5 +106,12 @@ public class EvolucaoCorporalService {
         }
 
         repository.deleteById(id);
+    }
+
+    private String extrairNomeArquivo(String url) {
+        if (url == null || !url.startsWith("http")) {
+            return url;
+        }
+        return url.substring(url.lastIndexOf("/") + 1);
     }
 }

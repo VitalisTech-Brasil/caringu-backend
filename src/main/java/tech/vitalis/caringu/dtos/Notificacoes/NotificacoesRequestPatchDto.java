@@ -8,11 +8,11 @@ import tech.vitalis.caringu.enums.Notificacoes.TipoNotificacaoEnum;
 import java.time.LocalDateTime;
 
 public record NotificacoesRequestPatchDto (
-        @NotNull
+        @NotNull(message = "O campo tipo não pode estar nulo.")
         TipoNotificacaoEnum tipo,
-        @NotBlank
+        @NotBlank(message = "O campo titulo não pode estar nulo.")
         String titulo,
-        @NotNull
+        @NotNull(message = "O campo visualizada não pode estar nulo.")
         boolean visualizada,
         @FutureOrPresent
         LocalDateTime dataCriacao

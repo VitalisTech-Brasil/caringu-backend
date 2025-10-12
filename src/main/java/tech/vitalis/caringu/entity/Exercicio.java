@@ -1,20 +1,20 @@
 package tech.vitalis.caringu.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import lombok.*;
 import tech.vitalis.caringu.enums.Exercicio.GrupoMuscularEnum;
 import tech.vitalis.caringu.enums.Exercicio.OrigemEnum;
 
 @Entity
 @Table(name = "exercicios")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Exercicio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
     private Integer id;
+
+    @ManyToOne
+    @JoinColumn(name = "personal_id")
+    private PersonalTrainer personal;
 
     @Column(nullable = false)
     private String nome;
@@ -23,19 +23,25 @@ public class Exercicio {
     @Column(name = "grupo_muscular", nullable = false)
     private GrupoMuscularEnum grupoMuscular;
 
+    @Column(name = "url_video")
     private String urlVideo;
+
     private String observacoes;
+
     private Boolean favorito;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "origem", nullable = false)
     private OrigemEnum origem;
 
+    public Exercicio() {
+    }
 
-    public Exercicio() {}
-
-    public Exercicio(Integer id, String nome, GrupoMuscularEnum grupoMuscular, String urlVideo, String observacoes, Boolean favorito, OrigemEnum origem) {
+    public Exercicio(Integer id, PersonalTrainer personal, String nome,
+                     GrupoMuscularEnum grupoMuscular, String urlVideo,
+                     String observacoes, Boolean favorito, OrigemEnum origem) {
         this.id = id;
+        this.personal = personal;
         this.nome = nome;
         this.grupoMuscular = grupoMuscular;
         this.urlVideo = urlVideo;
@@ -50,6 +56,14 @@ public class Exercicio {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public PersonalTrainer getPersonal() {
+        return personal;
+    }
+
+    public void setPersonal(PersonalTrainer personal) {
+        this.personal = personal;
     }
 
     public String getNome() {
