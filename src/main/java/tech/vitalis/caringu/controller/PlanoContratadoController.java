@@ -31,7 +31,7 @@ public class PlanoContratadoController {
         return planoService.contarAlunosAtivos(personalId);
     }
 
-    @GetMapping("/qtd-planos-vencendo/{personalId}")
+    @GetMapping("/kpis/qtd-planos-vencendo/{personalId}")
     public Integer buscarQtdPlanosVencendo(@PathVariable Integer personalId) {
         LocalDate limite = LocalDate.now().plusWeeks(2);
         return planoContratadoService.buscarQtdPlanosVencendo(limite, personalId);
