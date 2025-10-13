@@ -91,7 +91,8 @@ public class AlunoMapper {
                 dto.doencaMetabolica(),
                 dto.doencaMetabolicaDescricao(),
                 dto.deficiencia(),
-                dto.deficienciaDescricao()
+                dto.deficienciaDescricao(),
+                dto.aulasRestantes()
         );
     }
 
