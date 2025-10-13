@@ -23,6 +23,7 @@ services:
       MYSQL_DATABASE: vitalis
       MYSQL_USER: vitalis
       MYSQL_PASSWORD: vitalis123
+      LANG: C.UTF-8
     ports:
       - "3307:3306"
     volumes:
@@ -31,6 +32,10 @@ services:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       timeout: 20s
       retries: 10
+    command: [
+      "--character-set-server=utf8mb4",
+      "--collation-server=utf8mb4_unicode_ci"
+    ]
     networks:
       - caringu-network
 
@@ -52,8 +57,7 @@ services:
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: guest
       SPRING_RABBITMQ_PASSWORD: guest
-      SPRING_PROFILES_ACTIVE: prod
-      IP_HOST: caringu-mysql
+      SPRING_PROFILES_ACTIVE: dev
       # Exchange que o CaringU usa
       APP_RABBITMQ_EXCHANGE: notificacoes.exchange
       JWT_SECRET: zXhpc3RlIHVtYSB0ZW9yaWEgcXVlIGRpeiBxdWUsIHNlIHVtIGRpYSBhbGd16W0gZGVzY29icmlyIGV4YXRhbWVudGUgcGFyYSBxdWUgc2VydmUgbyBVbml2ZXJzbyBlIHBvciBxdWUgZWxlIGVzdOEgYXF1aSwgZWxlIGRlc2FwYXJlY2Vy4SBpbnN0YW50YW5lYW1lbnRlIGUgc2Vy4SBzdWJzdGl0de1kbyBwb3IgYWxnbyBhaW5kYSBtYWlzIGVzdHJhbmhvIGUgaW5leHBsaWPhdmVsLiBFeGlzdGUgdW1hIHNlZ3VuZGEgdGVvcmlhIHF1ZSBkaXogcXVlIGlzc28gauEgYWNvbnRlY2V1Li4u
@@ -68,11 +72,11 @@ services:
       - caringu-network
 
   # Serviço que consome notificações
-  notification-service:
+  notificacao-service:
     build:
       context: ../caringu-notificacao
       dockerfile: Dockerfile
-    container_name: notification-service
+    container_name: notificacao-service
     ports:
       - "8081:8080"
     depends_on:
@@ -85,6 +89,7 @@ services:
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: guest
       SPRING_RABBITMQ_PASSWORD: guest
+      SPRING_PROFILES_ACTIVE: dev
       APP_RABBITMQ_EXCHANGE: notificacoes.exchange
       # Configurações do banco se este serviço também usar MySQL
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/vitalis?useSSL=false&serverTimezone=America/Sao_Paulo&allowPublicKeyRetrieval=true
