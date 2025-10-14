@@ -22,8 +22,7 @@ public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
                     SUM(CASE WHEN au.status = 'REALIZADO' THEN 1 ELSE 0 END),
                     ana.id, ana.objetivoTreino, ana.lesao, ana.lesaoDescricao, ana.frequenciaTreino, ana.experiencia,
                     ana.experienciaDescricao, ana.desconforto, ana.desconfortoDescricao, ana.fumante, ana.proteses,
-                    ana.protesesDescricao, ana.doencaMetabolica, ana.doencaMetabolicaDescricao, ana.deficiencia, ana.deficienciaDescricao,
-                    CAST(pl.quantidadeAulas - SUM(CASE WHEN au.status IN ('AGENDADO', 'REALIZADO', 'REAGENDADO') THEN 1 ELSE 0 END) AS long)
+                    ana.protesesDescricao, ana.doencaMetabolica, ana.doencaMetabolicaDescricao, ana.deficiencia, ana.deficienciaDescricao
                 )
                 FROM PlanoContratado pc
                 JOIN pc.plano pl

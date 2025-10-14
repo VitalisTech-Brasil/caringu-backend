@@ -43,7 +43,6 @@ public record AlunoDetalhadoResponseDTO(
         Boolean doencaMetabolica,
         String doencaMetabolicaDescricao,
         Boolean deficiencia,
-        String deficienciaDescricao,
-        Long aulasRestantes
+        String deficienciaDescricao
 ) {
 }
