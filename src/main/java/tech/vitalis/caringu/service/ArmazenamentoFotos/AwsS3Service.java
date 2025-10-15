@@ -7,14 +7,11 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.ServerSideEncryption;
-import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import tech.vitalis.caringu.exception.Aws.ArmazenamentoException;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +19,7 @@ import java.util.UUID;
 
 @Service
 @Profile("prod")
-public class AwsS3Service implements ArmazenamentoService{
+public class AwsS3Service implements ArmazenamentoService {
 
     private final S3Client s3Client;
 
@@ -34,8 +31,8 @@ public class AwsS3Service implements ArmazenamentoService{
     }
 
     @Override
-        public String uploadArquivo(MultipartFile file) {
-        try{
+    public String uploadArquivo(MultipartFile file) {
+        try {
             String fileName = generateFileName(file);
             Map<String, String> metadata = new HashMap<>();
 
@@ -63,8 +60,8 @@ public class AwsS3Service implements ArmazenamentoService{
 
 
     @Override
-    public void deletarArquivoPorUrl(String fileName){
-        try{
+    public void deletarArquivoPorUrl(String fileName) {
+        try {
             String fileKey = extractFileKey(fileName);
 
             DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
@@ -73,7 +70,7 @@ public class AwsS3Service implements ArmazenamentoService{
                     .build();
 
             s3Client.deleteObject(deleteObjectRequest);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new ArmazenamentoException("Erro ao deletar o arquivo: " + e.getMessage(), e);
         }
     }
@@ -82,7 +79,7 @@ public class AwsS3Service implements ArmazenamentoService{
         String originalFileName = file.getOriginalFilename();
         String extension = "";
 
-        if(originalFileName != null && originalFileName.contains(".")){
+        if (originalFileName != null && originalFileName.contains(".")) {
             extension = originalFileName
                     .substring(originalFileName.lastIndexOf("."))
                     .toLowerCase();
@@ -91,22 +88,22 @@ public class AwsS3Service implements ArmazenamentoService{
         return UUID.randomUUID().toString() + "-" + System.currentTimeMillis() + extension;
     }
 
-    private String sanitizeFilename(String fileName){
-        if (fileName == null){
+    private String sanitizeFilename(String fileName) {
+        if (fileName == null) {
             return "unknown";
         }
 
         return fileName.replaceAll("[^a-zA-Z0-9._-]", "_");
     }
 
-    private String extractFileKey(String fileNameOrUrl){
-        if (fileNameOrUrl.startsWith("http")){
+    private String extractFileKey(String fileNameOrUrl) {
+        if (fileNameOrUrl.startsWith("http")) {
             return fileNameOrUrl.substring(fileNameOrUrl.lastIndexOf("/") + 1);
         }
         return fileNameOrUrl;
     }
 
-    private String getFileUrl(String fileName){
+    private String getFileUrl(String fileName) {
         return String.format("https://%s.s3.amazonaws.com/%s", bucketName, fileName);
     }
 }
