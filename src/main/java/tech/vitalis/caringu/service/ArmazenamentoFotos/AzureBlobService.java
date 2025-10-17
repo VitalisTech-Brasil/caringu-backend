@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.UUID;
 
 @Service
-@Profile("prod")
+@Profile("azure")
 public class AzureBlobService implements ArmazenamentoService {
 
     @Value("${azure.storage.connection-string}")
