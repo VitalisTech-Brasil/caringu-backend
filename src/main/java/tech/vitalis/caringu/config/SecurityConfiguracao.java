@@ -119,7 +119,10 @@ public class SecurityConfiguracao {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuracao = new CorsConfiguration();
-        configuracao.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuracao.setAllowedOrigins(Arrays.asList(
+                "http://localhost:5173",
+                "http://54.85.59.6"
+        ));
         configuracao.setAllowedMethods(
                 Arrays.asList(
                         HttpMethod.GET.name(),
