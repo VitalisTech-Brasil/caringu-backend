@@ -12,7 +12,9 @@ import tech.vitalis.caringu.dtos.PersonalTrainerBairro.PersonalTrainerComBairroC
 import tech.vitalis.caringu.entity.*;
 import tech.vitalis.caringu.exception.Especialidade.EspecialidadeNaoEncontrada;
 import tech.vitalis.caringu.repository.EspecialidadeRepository;
+import tech.vitalis.caringu.service.ArmazenamentoFotos.ArmazenamentoService;
 
+import java.time.Duration;
 import java.util.List;
 
 @Component
@@ -22,9 +24,11 @@ public class PersonalTrainerMapper {
     @Autowired
     private Environment env;
 
+    private final ArmazenamentoService armazenamentoInterface;
     private final EspecialidadeRepository especialidadeRepository;
 
-    public PersonalTrainerMapper(EspecialidadeRepository especialidadeRepository) {
+    public PersonalTrainerMapper(ArmazenamentoService armazenamentoInterface, EspecialidadeRepository especialidadeRepository) {
+        this.armazenamentoInterface = armazenamentoInterface;
         this.especialidadeRepository = especialidadeRepository;
     }
 
@@ -83,7 +87,7 @@ public class PersonalTrainerMapper {
     }
 
     public PersonalTrainerResponseGetDTO toResponseDTO(PersonalTrainer personalTrainer) {
-        List<EspecialidadeResponseGetDTO> especialidadesDTO  = personalTrainer.getEspecialidades().stream()
+        List<EspecialidadeResponseGetDTO> especialidadesDTO = personalTrainer.getEspecialidades().stream()
                 .map(pte -> new EspecialidadeResponseGetDTO(
                         pte.getEspecialidade().getId(),
                         pte.getEspecialidade().getNome()
@@ -91,12 +95,16 @@ public class PersonalTrainerMapper {
 
                 .toList();
 
+        String urlFotoTemporaria = personalTrainer.getUrlFotoPerfil() != null
+                ? armazenamentoInterface.gerarUrlPreAssinada(personalTrainer.getUrlFotoPerfil(), Duration.ofMinutes(5))
+                : null;
+
         return new PersonalTrainerResponseGetDTO(
                 personalTrainer.getId(),
                 personalTrainer.getNome(),
                 personalTrainer.getEmail(),
                 personalTrainer.getCelular(),
-                personalTrainer.getUrlFotoPerfil(),
+                urlFotoTemporaria,
                 personalTrainer.getDataNascimento(),
                 personalTrainer.getGenero(),
                 personalTrainer.getCref(),
@@ -107,7 +115,7 @@ public class PersonalTrainerMapper {
     }
 
     public PersonalTrainerComBairroCidadeResponseGetDTO toResponseDTO(PersonalTrainer personalTrainer, Bairro bairro, Cidade cidade) {
-        List<EspecialidadeResponseGetDTO> especialidadesDTO  = personalTrainer.getEspecialidades().stream()
+        List<EspecialidadeResponseGetDTO> especialidadesDTO = personalTrainer.getEspecialidades().stream()
                 .map(pte -> new EspecialidadeResponseGetDTO(
                         pte.getEspecialidade().getId(),
                         pte.getEspecialidade().getNome()
@@ -116,10 +124,16 @@ public class PersonalTrainerMapper {
                 .toList();
 
         String urlFoto = personalTrainer.getUrlFotoPerfil();
-        if (urlFoto != null && !urlFoto.startsWith("http") && !env.acceptsProfiles(Profiles.of("prod"))) {
-            urlFoto = "http://localhost:8080/pessoas/fotos-perfil/" + urlFoto;
-        }
 
+        if (urlFoto != null && !urlFoto.startsWith("http")) {
+            if (env.acceptsProfiles(Profiles.of("dev"))) {
+                // produção: assume S3 e gera URL pré-assinada
+                urlFoto = armazenamentoInterface.gerarUrlPreAssinada(urlFoto, Duration.ofMinutes(5));
+            } else {
+                // dev/local: monta URL para servir via endpoint local
+                urlFoto = "http://localhost:8080/pessoas/fotos-perfil/" + urlFoto;
+            }
+        }
 
         return new PersonalTrainerComBairroCidadeResponseGetDTO(
                 personalTrainer.getId(),

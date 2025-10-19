@@ -3,20 +3,23 @@ package tech.vitalis.caringu.mapper;
 import org.springframework.stereotype.Component;
 import tech.vitalis.caringu.dtos.Aluno.*;
 import tech.vitalis.caringu.entity.Aluno;
-import tech.vitalis.caringu.enums.PeriodoEnum;
 import tech.vitalis.caringu.repository.AulaRepository;
+import tech.vitalis.caringu.service.ArmazenamentoFotos.ArmazenamentoService;
 
-import java.time.LocalDate;
+import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
 public class AlunoMapper {
 
     private final AulaRepository aulaRepository;
+    private final ArmazenamentoService armazenamentoInterface;
 
-    public AlunoMapper(AulaRepository aulaRepository) {
+    public AlunoMapper(AulaRepository aulaRepository, ArmazenamentoService armazenamentoInterface) {
         this.aulaRepository = aulaRepository;
+        this.armazenamentoInterface = armazenamentoInterface;
     }
 
     public Aluno toEntity(AlunoRequestPostDTO cadastroDTO) {
@@ -26,10 +29,10 @@ public class AlunoMapper {
         aluno.setEmail(cadastroDTO.email());
         aluno.setSenha(cadastroDTO.senha());
         aluno.setCelular(cadastroDTO.celular());
+        // Armazena apenas o fileKey no banco
         aluno.setUrlFotoPerfil(cadastroDTO.urlFotoPerfil());
         aluno.setDataNascimento(cadastroDTO.dataNascimento());
         aluno.setGenero(cadastroDTO.genero());
-
         aluno.setPeso(cadastroDTO.peso());
         aluno.setAltura(cadastroDTO.altura());
         aluno.setNivelAtividade(cadastroDTO.nivelAtividade());
@@ -55,14 +58,17 @@ public class AlunoMapper {
         return mapParaDTOComTreinosBase(dto);
     }
 
-
     private AlunoDetalhadoComTreinosDTO mapParaDTOComTreinosBase(AlunoDetalhadoResponseDTO dto) {
+        String urlFotoTemporaria = dto.urlFotoPerfil() != null
+                ? armazenamentoInterface.gerarUrlPreAssinada(dto.urlFotoPerfil(), Duration.ofMinutes(5))
+                : null;
+
         return new AlunoDetalhadoComTreinosDTO(
                 dto.idAluno(),
                 dto.nomeAluno(),
                 dto.email(),
                 dto.celular(),
-                dto.urlFotoPerfil(),
+                urlFotoTemporaria,
                 dto.peso(),
                 dto.altura(),
                 dto.nivelAtividade(),
@@ -75,7 +81,7 @@ public class AlunoMapper {
                 dto.idAula(),
                 dto.treinosSemana(),
                 dto.treinosTotal(),
-                null, null, null, null, // horários ainda serão adicionados depois
+                null, null, null, null,
                 dto.idAnamnese(),
                 dto.objetivoTreino(),
                 dto.lesao(),
@@ -96,9 +102,8 @@ public class AlunoMapper {
     }
 
     private AlunoDetalhadoComTreinosDTO consolidar(List<AlunoDetalhadoComTreinosDTO> duplicados) {
-        AlunoDetalhadoComTreinosDTO base = duplicados.getFirst(); // os dados são iguais entre os duplicados
+        AlunoDetalhadoComTreinosDTO base = duplicados.getFirst();
 
-        // Horários e contagens agregadas por aluno (não por treino)
         List<String> horariosInicioSemana = aulaRepository.buscarHorariosInicioSemana(base.idAluno());
         List<String> horariosFimSemana = aulaRepository.buscarHorariosFimSemana(base.idAluno());
         List<String> horariosInicioTotal = aulaRepository.buscarHorariosInicioTotal(base.idAluno());
@@ -108,22 +113,22 @@ public class AlunoMapper {
         Long treinosTotal = duplicados.stream().mapToLong(AlunoDetalhadoComTreinosDTO::treinosTotal).sum();
 
         Integer idPlanoContratado = duplicados.stream()
-                .filter(dto -> dto.idPlanoContratado() != null &&
-                        (
-                                PeriodoEnum.AVULSO.equals(dto.periodoPlano()) ||
-                                        (dto.dataVencimentoPlano() != null && !dto.dataVencimentoPlano().isBefore(LocalDate.now()))
-                        )
-                )
                 .map(AlunoDetalhadoComTreinosDTO::idPlanoContratado)
+                .filter(Objects::nonNull)
                 .findFirst()
                 .orElse(null);
+
+        // Gera URL temporária
+        String urlFotoTemporaria = base.urlFotoPerfil() != null
+                ? armazenamentoInterface.gerarUrlPreAssinada(base.urlFotoPerfil(), Duration.ofMinutes(5))
+                : null;
 
         return new AlunoDetalhadoComTreinosDTO(
                 base.idAluno(),
                 base.nomeAluno(),
                 base.email(),
                 base.celular(),
-                base.urlFotoPerfil(),
+                urlFotoTemporaria,
                 base.peso(),
                 base.altura(),
                 base.nivelAtividade(),
@@ -160,13 +165,17 @@ public class AlunoMapper {
     }
 
     public AlunoResponseGetDTO toResponseDTO(Aluno aluno) {
+        // Gera URL temporária aqui, pro front
+        String urlFoto = aluno.getUrlFotoPerfil() != null
+                ? armazenamentoInterface.gerarUrlPreAssinada(aluno.getUrlFotoPerfil(), Duration.ofMinutes(5))
+                : null;
 
         return new AlunoResponseGetDTO(
                 aluno.getId(),
                 aluno.getNome(),
                 aluno.getEmail(),
                 aluno.getCelular(),
-                aluno.getUrlFotoPerfil(),
+                urlFoto,
                 aluno.getDataNascimento(),
                 aluno.getGenero(),
                 aluno.getPeso(),
