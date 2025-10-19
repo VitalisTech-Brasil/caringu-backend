@@ -126,7 +126,7 @@ public class PersonalTrainerMapper {
         String urlFoto = personalTrainer.getUrlFotoPerfil();
 
         if (urlFoto != null && !urlFoto.startsWith("http")) {
-            if (env.acceptsProfiles(Profiles.of("dev"))) {
+            if (env.acceptsProfiles(Profiles.of("prod"))) {
                 // produção: assume S3 e gera URL pré-assinada
                 urlFoto = armazenamentoInterface.gerarUrlPreAssinada(urlFoto, Duration.ofMinutes(5));
             } else {
