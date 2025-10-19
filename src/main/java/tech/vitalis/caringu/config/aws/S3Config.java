@@ -15,14 +15,14 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 @Profile("prod")
 public class S3Config {
 
-//    @Value("${aws.access-key-id}")
-//    private String accessKeyId;
+    @Value("${aws.access-key-id}")
+    private String accessKeyId;
 
-//    @Value("${aws.secret-access-key}")
-//    private String secretAccessKey;
+    @Value("${aws.secret-access-key}")
+    private String secretAccessKey;
 
-//    @Value("${aws.session-token}")
-//    private String sessionToken;
+    @Value("${aws.session-token}")
+    private String sessionToken;
 
     @Value("${aws.s3.region}")
     private String region;
@@ -30,36 +30,36 @@ public class S3Config {
     @Bean
     public S3Client s3Client() {
         // Descomenta o de baixo para teste local batendo na AWS
-//        AwsSessionCredentials awsCredentials = AwsSessionCredentials.create(
-//                accessKeyId,
-//                secretAccessKey,
-//                sessionToken
-//        );
+        AwsSessionCredentials awsCredentials = AwsSessionCredentials.create(
+                accessKeyId,
+                secretAccessKey,
+                sessionToken
+        );
 
         return S3Client.builder()
                 .region(Region.of(region))
                 .credentialsProvider(
                         // Descomenta o de baixo para teste local batendo na AWS
-                        // StaticCredentialsProvider.create(awsCredentials)
-                        DefaultCredentialsProvider.create() // se estiver em EC2
+                        StaticCredentialsProvider.create(awsCredentials)
+                        // DefaultCredentialsProvider.create() // se estiver em EC2
                 )
                 .build();
     }
 
     @Bean
     public S3Presigner s3Presigner() {
-//        AwsSessionCredentials awsCredentials = AwsSessionCredentials.create(
-//                accessKeyId,
-//                secretAccessKey,
-//                sessionToken
-//        );
+        AwsSessionCredentials awsCredentials = AwsSessionCredentials.create(
+                accessKeyId,
+                secretAccessKey,
+                sessionToken
+        );
 
         return S3Presigner.builder()
                 .region(Region.of(region))
                 .credentialsProvider(
                         // Descomenta o de baixo para teste local batendo na AWS
-                        // StaticCredentialsProvider.create(awsCredentials)
-                        DefaultCredentialsProvider.create() // se estiver em EC2
+                        StaticCredentialsProvider.create(awsCredentials)
+                        // DefaultCredentialsProvider.create() // se estiver em EC2
                 )
                 .build();
     }
