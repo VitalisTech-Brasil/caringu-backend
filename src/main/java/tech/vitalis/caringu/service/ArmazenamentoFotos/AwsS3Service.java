@@ -67,6 +67,16 @@ public class AwsS3Service implements ArmazenamentoService {
 
     @Override
     public void deletarArquivoPorUrl(String fileKey) {
+        if (fileKey == null || fileKey.isBlank()) {
+            // Ignora se não tiver nada
+            return;
+        }
+
+        // Ignora URLs externas
+        if (fileKey.startsWith("http://") || fileKey.startsWith("https://")) {
+            return;
+        }
+
         try {
             DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                     .bucket(bucketName)
@@ -75,6 +85,7 @@ public class AwsS3Service implements ArmazenamentoService {
 
             s3Client.deleteObject(deleteObjectRequest);
         } catch (Exception e) {
+            // Só loga ou re-lança se quiser forçar falha
             throw new ArmazenamentoException("Erro ao deletar o arquivo: " + e.getMessage(), e);
         }
     }
