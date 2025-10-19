@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.Duration;
 import java.util.UUID;
 
 @Service
@@ -43,5 +44,11 @@ public class LocalStorageService implements ArmazenamentoService {
         } catch (IOException e) {
             throw new RuntimeException("Erro ao deletar arquivo local", e);
         }
+    }
+
+    @Override
+    public String gerarUrlPreAssinada(String fileKey, Duration expiracao) {
+        // monta URL local
+        return "http://localhost:8080/pessoas/fotos-perfil/" + fileKey;
     }
 }

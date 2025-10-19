@@ -9,10 +9,11 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Duration;
 import java.util.UUID;
 
 @Service
-@Profile("prod")
+@Profile("azure")
 public class AzureBlobService implements ArmazenamentoService {
 
     @Value("${azure.storage.connection-string}")
@@ -59,5 +60,10 @@ public class AzureBlobService implements ArmazenamentoService {
         } catch (Exception e) {
             throw new RuntimeException("Erro ao deletar arquivo do Azure Blob", e);
         }
+    }
+
+    @Override
+    public String gerarUrlPreAssinada(String fileKey, Duration expiracao) {
+        return "";
     }
 }

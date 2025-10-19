@@ -3,7 +3,7 @@ INSERT INTO vitalis.pessoas (nome, email, senha, celular, url_foto_perfil, data_
                                                                                                          ('Lucas Andrade', 'lucas.andrade@gmail.com', 'senha1234', '11998765432', 'https://storagevitalis.blob.core.windows.net/fotos-perfil/personal-trainers/Lucas Andrade.png', '1990-03-15', 'HOMEM_CISGENERO'),
                                                                                                          ('Mariana Silva', 'mariana.silva@gmail.com', 'senha5678', '21998887766', 'https://storagevitalis.blob.core.windows.net/fotos-perfil/personal-trainers/Mariana Silva.png', '1988-07-22', 'MULHER_CISGENERO'),
                                                                                                          ('João Pereira', 'joao.pereira@gmail.com', 'joao3210', '31999990000', 'https://storagevitalis.blob.core.windows.net/fotos-perfil/personal-trainers/João Pereira.png', '1995-11-05', 'HOMEM_TRANSGENERO'),
-                                                                                                         ('Ana Costa', 'ana.costa@gmail.com', 'anaana123', '21991234567', 'https://storagevitalis.blob.core.windows.net/fotos-perfil/personal-trainers/Ana Costa.png', '1992-05-18', 'MULHER_TRANSGENERO'),
+                                                                                                         ('Ana Costa', 'ana.costa@gmail.com', '$2a$10$pn9w6oGeHHfo8WBghLvKvuw.ed5GMYuLw0Tpy0XKPHI5lQTv2HdP.', '21991234567', 'https://storagevitalis.blob.core.windows.net/fotos-perfil/personal-trainers/Ana Costa.png', '1992-05-18', 'MULHER_TRANSGENERO'),
 
 -- INSERT COM JWT (ID: 5)
                                                                                                          ('Ricardo Gomes da Silva', 'ricardo@gmail.com', '$2a$10$pn9w6oGeHHfo8WBghLvKvuw.ed5GMYuLw0Tpy0XKPHI5lQTv2HdP.', '11997654321', 'https://storagevitalis.blob.core.windows.net/fotos-perfil/ricardo.png', '1999-12-25', 'HOMEM_CISGENERO'),
@@ -30,7 +30,8 @@ INSERT INTO vitalis.alunos (id, peso, altura, nivel_atividade, nivel_experiencia
                                                                                       (7, 65.20, 1.68, 'LEVEMENTE_ATIVO', 'INICIANTE'),
                                                                                       (8, 82.00, 1.80, 'MUITO_ATIVO', 'AVANCADO'),
                                                                                       (9, 90.30, 1.85, 'SEDENTARIO', 'INICIANTE'),
-                                                                                      (10, 70.00, 1.65, 'EXTREMAMENTE_ATIVO', 'INTERMEDIARIO');
+                                                                                      (10, 70.00, 1.65, 'EXTREMAMENTE_ATIVO', 'INTERMEDIARIO'),
+                                                                                      (11, 78.90, 1.76, 'MODERADAMENTE_ATIVO', 'INTERMEDIARIO');
 
 INSERT INTO vitalis.exercicios (personal_id, nome, grupo_muscular, url_video, observacoes, favorito, origem) VALUES
 -- Peitoral
@@ -210,24 +211,24 @@ INSERT INTO vitalis.planos (personal_trainers_id, nome, periodo, quantidade_aula
 INSERT INTO vitalis.planos_contratados (planos_id, alunos_id, status, data_contratacao, data_fim) VALUES
 -- Aluno 6
 (5, 6, 'INATIVO', '2025-05-01', '2025-06-01'),
-(6, 6, 'ATIVO', '2025-06-01', '2025-09-25');
+(6, 6, 'ATIVO', '2025-06-01', '2025-12-01'),
 
 -- Aluno 7
--- (5, 7, 'INATIVO', '2025-01-01', '2025-02-01'),
--- (6, 7, 'ATIVO', '2025-06-01', '2025-12-01'),
+(5, 7, 'INATIVO', '2025-01-01', '2025-02-01'),
+(6, 7, 'ATIVO', '2025-06-01', '2025-12-01'),
 
 -- Aluno 8
--- (5, 8, 'INATIVO', '2025-02-01', '2025-07-31'),
--- (6, 8, 'ATIVO', '2025-06-01', '2025-12-01'),
+(5, 8, 'INATIVO', '2025-02-01', '2025-07-31'),
+(6, 8, 'ATIVO', '2025-06-01', '2025-12-01'),
 
 -- Aluno 9
--- (5, 9, 'INATIVO', '2025-04-01', '2025-05-01'),
--- (6, 9, 'ATIVO', '2025-06-01', '2025-12-01'),
--- (4, 9, 'INATIVO', '2025-03-01', '2025-04-01'),
+(4, 9, 'INATIVO', '2025-03-01', '2025-04-01'),
+(5, 9, 'INATIVO', '2025-04-01', '2025-05-01'),
+(6, 9, 'ATIVO', '2025-06-01', '2025-12-01'),
 
 -- Aluno 10
--- (6, 10, 'ATIVO', '2025-06-01', '2025-12-01'),
--- (7, 10, 'INATIVO', '2025-02-01', '2025-02-02');
+(7, 10, 'INATIVO', '2025-02-01', '2025-02-02'),
+(6, 10, 'INATIVO', '2025-06-01', '2025-12-01');
 
 -- ========================================
 -- TABELA: aulas
@@ -271,11 +272,11 @@ INSERT INTO vitalis.aulas
 -- Aluno 8 (plano_contratado id 8 - ativo)
 -- (8, '2025-08-12 08:00:00', '2025-08-12 09:00:00', 'REALIZADO'),
 -- (8, '2025-08-29 09:00:00', NULL, 'AGENDADO'),
--- 
+--
 -- -- Aluno 9 (plano_contratado id 10 - ativo)
 -- (10, '2025-08-15 08:00:00', '2025-08-15 09:00:00', 'REALIZADO'),
 -- (10, '2025-08-27 18:00:00', NULL, 'AGENDADO'),
--- 
+--
 -- -- Aluno 10 (plano_contratado id 12 - ativo)
 -- (12, '2025-08-20 07:00:00', '2025-08-20 08:00:00', 'REALIZADO'),
 -- (12, '2025-08-31 08:00:00', NULL, 'AGENDADO');
@@ -375,7 +376,7 @@ INSERT INTO vitalis.feedbacks
 (1, 1, 'Parabéns pelo empenho!', '2025-04-01 10:05:00', 'PERSONAL', 'MODERADO'),
 
 -- Sessão 2
-(2, 6, 'Achei a carga pesada no agachamento.', '2025-04-02 11:00:00', 'ALUNO', 'INTENSA'),
+(2, 7, 'Achei a carga pesada no agachamento.', '2025-04-02 11:00:00', 'ALUNO', 'INTENSA'),
 (2, 2, 'Vamos ajustar a carga.', '2025-04-02 11:10:00', 'PERSONAL', 'INTENSA');
 
 -- Sessão 3
@@ -466,12 +467,7 @@ VALUES
 (5, 'PAGAMENTO_REALIZADO', TRUE),
 (5, 'PLANO_PROXIMO_VENCIMENTO', TRUE),
 -- (5, 'NOVA_FOTO_PROGRESSO', TRUE),
-(5, 'TREINO_PROXIMO_VENCIMENTO', TRUE),
-
--- Adiciona as outras preferências para pessoa 6
-(6, 'PAGAMENTO_REALIZADO', TRUE),
-(6, 'PLANO_PROXIMO_VENCIMENTO', TRUE),
-(6, 'TREINO_PROXIMO_VENCIMENTO', FALSE);
+(5, 'TREINO_PROXIMO_VENCIMENTO', TRUE);
 
 INSERT INTO vitalis.anamnese (
     alunos_id, objetivo_treino, lesao, lesao_descricao, frequencia_treino,
