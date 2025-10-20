@@ -59,7 +59,7 @@ public class TreinoExercicioService {
                             return new TreinoExercicioResumoDTO(
                                     primeiroItem.treinoId(),
                                     primeiroItem.nomeTreino(),
-                                    primeiroItem.grauDificuldade(),
+                                    primeiroItem.grauDificuldade().getValor(),
                                     primeiroItem.origemTreinoExercicio(),
                                     primeiroItem.favorito(),
                                     listaDeExercicioPorTreino.size()
@@ -80,7 +80,7 @@ public class TreinoExercicioService {
                     return new TreinoExercicioResumoDTO(
                             primeiroItem.treinoId(),
                             primeiroItem.nomeTreino(),
-                            primeiroItem.grauDificuldade(),
+                            primeiroItem.grauDificuldade().getValor(),
                             primeiroItem.origemTreinoExercicio(),
                             primeiroItem.favorito(),
                             listaDeExercicioPorTreino.size()

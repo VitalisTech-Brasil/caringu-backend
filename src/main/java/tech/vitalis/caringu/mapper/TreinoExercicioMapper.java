@@ -46,7 +46,7 @@ public class TreinoExercicioMapper {
                 treinoExercicio.getDescanso(),
                 treinoExercicio.getDataModificacao(),
                 treinoExercicio.getTreino().getOrigem(),
-                treinoExercicio.getTreino().getGrauDificuldade()
+                treinoExercicio.getTreino().getGrauDificuldade().getValor()
         );
     }
 
@@ -56,7 +56,7 @@ public class TreinoExercicioMapper {
         return new TreinoExercicioResumoDTO(
                 primeiro.treinoId(),
                 primeiro.nomeTreino(),
-                primeiro.grauDificuldade(),
+                primeiro.grauDificuldade().getValor(),
                 primeiro.origemTreinoExercicio(),
                 primeiro.favorito(),
                 lista.size()
