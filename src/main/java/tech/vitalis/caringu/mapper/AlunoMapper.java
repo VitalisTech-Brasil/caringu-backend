@@ -72,7 +72,7 @@ public class AlunoMapper {
                 dto.peso(),
                 dto.altura(),
                 dto.nivelAtividade(),
-                dto.nivelExperiencia(),
+                dto.nivelExperiencia().getValor(),
                 dto.nomePlano(),
                 dto.periodoPlano(),
                 dto.totalAulasContratadas(),
@@ -98,7 +98,7 @@ public class AlunoMapper {
                 dto.doencaMetabolicaDescricao(),
                 dto.deficiencia(),
                 dto.deficienciaDescricao(),
-                dto.genero(),
+                dto.genero().getValor(),
                 dto.dataNascimento()
         );
     }

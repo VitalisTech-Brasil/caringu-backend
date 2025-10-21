@@ -2,7 +2,7 @@ package tech.vitalis.caringu.dtos.Aluno;
 
 import tech.vitalis.caringu.enums.Aluno.NivelAtividadeEnum;
 import tech.vitalis.caringu.enums.Aluno.NivelExperienciaEnum;
-import tech.vitalis.caringu.core.domain.valueObject.FrequenciaTreinoEnum;
+import tech.vitalis.caringu.enums.Anamnese.FrequenciaTreinoEnum;
 import tech.vitalis.caringu.enums.PeriodoEnum;
 import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
 

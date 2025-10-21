@@ -1,6 +1,6 @@
 package tech.vitalis.caringu.dtos.SessaoTreino;
 
-import tech.vitalis.caringu.core.domain.valueObject.FrequenciaTreinoEnum;
+import tech.vitalis.caringu.enums.Anamnese.FrequenciaTreinoEnum;
 
 public record EvolucaoTreinoCumpridoResponseDTO(
         Integer idAluno,
