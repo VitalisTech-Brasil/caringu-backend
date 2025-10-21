@@ -18,7 +18,7 @@ public record AlunoDetalhadoComTreinosDTO(
         Double peso,
         Double altura,
         NivelAtividadeEnum nivelAtividade,
-        String nivelExperiencia,
+        NivelExperienciaEnum nivelExperiencia,
 
         String nomePlano,
         PeriodoEnum periodoPlano,
@@ -51,7 +51,7 @@ public record AlunoDetalhadoComTreinosDTO(
         String doencaMetabolicaDescricao,
         Boolean deficiencia,
         String deficienciaDescricao,
-        String genero,
+        GeneroEnum genero,
         LocalDate dataNascimento
 ) {
 }
