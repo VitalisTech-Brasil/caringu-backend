@@ -1,17 +1,17 @@
-package tech.vitalis.caringu.repository;
+package tech.vitalis.caringu.infrastructure.persistence.anamnese;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import tech.vitalis.caringu.entity.Anamnese;
 
 import java.util.Optional;
 
 @Repository
-public interface AnamneseRepository extends JpaRepository<Anamnese, Integer> {
+public interface AnamneseRepository extends JpaRepository<AnamneseEntity, Integer> {
 
-    Optional<Anamnese> findByAlunoId(Integer alunoId);
+    Optional<AnamneseEntity> findByAlunoId(Integer alunoId);
+
     boolean existsByAlunoId(Integer id);
     @Query("""
     SELECT COUNT(DISTINCT a)
