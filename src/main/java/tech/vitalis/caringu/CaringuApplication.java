@@ -7,7 +7,10 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @EnableAsync
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = "tech.vitalis.caringu.repository")
+@EnableJpaRepositories(basePackages = {
+        "tech.vitalis.caringu.repository",
+        "tech.vitalis.caringu.infrastructure.persistence"
+})
 public class CaringuApplication {
 
     public static void main(String[] args) {

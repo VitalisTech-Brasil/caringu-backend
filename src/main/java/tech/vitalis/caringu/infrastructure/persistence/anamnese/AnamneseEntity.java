@@ -1,12 +1,13 @@
-package tech.vitalis.caringu.entity;
+package tech.vitalis.caringu.infrastructure.persistence.anamnese;
 
 import jakarta.persistence.*;
-import tech.vitalis.caringu.entity.Converter.FrequenciaTreinoEnumConverter;
-import tech.vitalis.caringu.enums.Anamnese.FrequenciaTreinoEnum;
+import tech.vitalis.caringu.entity.Aluno;
+import tech.vitalis.caringu.core.domain.valueObject.FrequenciaTreinoEnum;
+import tech.vitalis.caringu.infrastructure.persistence.converter.FrequenciaTreinoEnumConverter;
 
-@Entity
+@Entity(name = "Anamnese")
 @Table(name = "anamnese", schema = "vitalis")
-public class Anamnese {
+public class AnamneseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,17 +63,7 @@ public class Anamnese {
     @Column(name = "deficiencia_descricao", columnDefinition = "TEXT")
     private String deficienciaDescricao;
 
-    public Anamnese () {}
-
-    public Anamnese(Integer id, Aluno aluno, String objetivoTreino,
-                    Boolean lesao, String lesaoDescricao,
-                    FrequenciaTreinoEnum frequenciaTreino, Boolean experiencia,
-                    String experienciaDescricao, Boolean desconforto,
-                    String desconfortoDescricao, Boolean fumante,
-                    Boolean proteses, String protesesDescricao,
-                    Boolean doencaMetabolica, String doencaMetabolicaDescricao,
-                    Boolean deficiencia, String deficienciaDescricao) {
-        this.id = id;
+    public AnamneseEntity(Aluno aluno, String objetivoTreino, Boolean lesao, String lesaoDescricao, FrequenciaTreinoEnum frequenciaTreino, Boolean experiencia, String experienciaDescricao, Boolean desconforto, String desconfortoDescricao, Boolean fumante, Boolean proteses, String protesesDescricao, Boolean doencaMetabolica, String doencaMetabolicaDescricao, Boolean deficiencia, String deficienciaDescricao) {
         this.aluno = aluno;
         this.objetivoTreino = objetivoTreino;
         this.lesao = lesao;
@@ -90,6 +81,8 @@ public class Anamnese {
         this.deficiencia = deficiencia;
         this.deficienciaDescricao = deficienciaDescricao;
     }
+
+    public AnamneseEntity(){}
 
     public Integer getId() {
         return id;
