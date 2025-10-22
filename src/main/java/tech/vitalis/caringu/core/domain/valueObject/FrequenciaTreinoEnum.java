@@ -1,5 +1,8 @@
 package tech.vitalis.caringu.core.domain.valueObject;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum FrequenciaTreinoEnum {
     UM("1"),
     DOIS("2"),
@@ -15,10 +18,12 @@ public enum FrequenciaTreinoEnum {
         this.valor = valor;
     }
 
+    @JsonValue
     public String getValor() {
         return valor;
     }
 
+    @JsonCreator
     public static FrequenciaTreinoEnum fromValor(String valor) {
         for (FrequenciaTreinoEnum f : values()) {
             if (f.valor.equalsIgnoreCase(valor)) {
