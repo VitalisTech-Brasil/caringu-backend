@@ -41,8 +41,8 @@ public class AnamneseDTOMapper {
     }
 
     public Anamnese toEntity(CreateAnamneseRequest request){
-        Aluno aluno = alunoRepository.findById(request.aluno())
-                .orElseThrow(() -> new RuntimeException("Aluno não encontrado com ID: " + request.aluno()));
+        Aluno aluno = alunoRepository.findById(request.alunoId())
+                .orElseThrow(() -> new RuntimeException("Aluno não encontrado com ID: " + request.alunoId()));
 
         return new Anamnese(
                 null,

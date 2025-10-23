@@ -3,7 +3,7 @@ package tech.vitalis.caringu.infrastructure.web.anamnese;
 import tech.vitalis.caringu.core.domain.valueObject.FrequenciaTreinoEnum;
 
 public record CreateAnamneseRequest(
-        Integer aluno,
+        Integer alunoId,
         String objetivoTreino,
         Boolean lesao,
         String lesaoDescricao,
