@@ -22,15 +22,15 @@ public class AvaliacaoController {
         return avaliacaoService.listarAvaliacoesPorPersonal(idPersonal);
     }
 
+    @GetMapping("/personal/filtrar-por-nota/{idPersonal}")
+    public ResponseEntity<List<FiltroAvaliacaoResponseDTO>> listarAvaliacoesDoPersonalPorNota(@PathVariable Integer idPersonal, @RequestParam(required = false) Double filtroNota) {
+        return avaliacaoService.listarAvaliacoesDoPersonalPorNota(idPersonal, filtroNota);
+    }
+
     @PostMapping()
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<AvaliacaoResponseDTO> criarAvaliacao(@RequestBody AvaliacaoRequestDTO avaliacaoRequestDTO) {
         // Implementar a lógica para criar uma nova avaliação
         return avaliacaoService.cadastrarAvaliacao(avaliacaoRequestDTO);
-    }
-
-    @GetMapping("/personal/filtrar-por-nota/{idPersonal}")
-    public ResponseEntity<List<FiltroAvaliacaoResponseDTO>> listarAvaliacoesDoPersonalPorNota(@PathVariable Integer idPersonal, @RequestParam(required = false) Double filtroNota) {
-        return avaliacaoService.listarAvaliacoesDoPersonalPorNota(idPersonal, filtroNota);
     }
 }
