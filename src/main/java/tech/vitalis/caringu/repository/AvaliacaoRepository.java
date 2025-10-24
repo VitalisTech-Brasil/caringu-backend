@@ -21,6 +21,8 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Integer>{
     SELECT new tech.vitalis.caringu.dtos.Avaliacao.FiltroAvaliacaoResponseDTO(
         a.personalTrainer.id,
         a.aluno.id,
+        a.aluno.nome,
+        a.aluno.urlFotoPerfil,
         a.nota,
         a.comentario,
         a.dataAvaliacao
