@@ -113,6 +113,13 @@ public class TreinoExercicioService {
         return new PageImpl<>(sublista, pageable, listaResumida.size());
     }
 
+    public Page<RelatorioTreinoAlunoDTO> listarPaginadoTreinosAlunoEmRelatorioTreino(
+            Integer idAluno,
+            Pageable pageable
+    ) {
+        return treinoExercicioRepository.listarPaginadoTreinosAlunoEmRelatorioTreino(idAluno, pageable);
+    }
+
     public List<ExerciciosPorTreinoResponseDTO> buscarExerciciosPorTreino(Integer treinoId, Integer alunoId) {
 
         return treinoExercicioRepository.buscarExerciciosPorTreino(treinoId, alunoId);

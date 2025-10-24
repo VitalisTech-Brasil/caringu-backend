@@ -143,6 +143,11 @@ public class PersonalTrainerService {
                         urlFoto = "http://localhost:8080/pessoas/fotos-perfil/" + urlFoto;
                     }
 
+                    // Arredondar média de estrelas para meio em meio (ex: 3.7 → 3.5, 3.8 → 4.0)
+                    Double mediaEstrela = p.mediaEstrela() != null
+                            ? Math.round(p.mediaEstrela() * 2) / 2.0
+                            : 0.0;
+
                     return new PersonalTrainerDisponivelResponseDTO(
                             p.id(),
                             p.nomePersonal(),
@@ -154,7 +159,9 @@ public class PersonalTrainerService {
                             especialidadesPorPersonal.getOrDefault(p.id(), List.of()),
                             planosPorPersonal.getOrDefault(p.id(), List.of()),
                             p.bairro(),
-                            p.cidade()
+                            p.cidade(),
+                            mediaEstrela,
+                            p.quantidadeAvaliacao()
                     );
                 })
                 .toList();
@@ -171,6 +178,11 @@ public class PersonalTrainerService {
         // Buscar planos
         List<PlanoResumoDTO> planos = planoRepository.findResumoByPersonalId(id);
 
+        // Arredondar média de estrelas para meio em meio (ex: 3.7 → 3.5, 3.8 → 4.0)
+        Double mediaEstrela = basico.mediaEstrela() != null
+                ? Math.round(basico.mediaEstrela() * 2) / 2.0
+                : 0.0;
+
         // Montar e retornar DTO completo
         return new PersonalTrainerDisponivelResponseDTO(
                 basico.id(),
@@ -183,7 +195,9 @@ public class PersonalTrainerService {
                 especialidades,
                 planos,
                 basico.bairro(),
-                basico.cidade()
+                basico.cidade(),
+                mediaEstrela,
+                basico.quantidadeAvaliacao()
         );
     }
 
