@@ -11,6 +11,8 @@ public record PersonalTrainerInfoBasicaDTO(
         GeneroEnum genero,
         Integer experiencia,
         String bairro,
-        String cidade
+        String cidade,
+        Double mediaEstrela,
+        Long quantidadeAvaliacao
 ) {
 }
