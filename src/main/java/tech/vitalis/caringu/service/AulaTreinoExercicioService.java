@@ -74,6 +74,7 @@ public class AulaTreinoExercicioService {
                         d.idExecucaoExercicio(),
                         d.nomeExercicio(),
                         d.carga(),
+                        formatarDuracao(d.descanso()),
                         d.repeticoesSeries(),
                         d.grupoMuscular().getValue(),
                         d.observacoes(),
@@ -235,5 +236,20 @@ public class AulaTreinoExercicioService {
                 aula.getDataHorarioFim(),
                 exerciciosDTO
         );
+    }
+
+    private String formatarDuracao(int segundos) {
+        int minutos = segundos / 60;
+        int restoSegundos = segundos % 60;
+
+        if (minutos > 0 && restoSegundos > 0) {
+            return String.format("%d minuto%s e %d segundo%s",
+                    minutos, minutos > 1 ? "s" : "",
+                    restoSegundos, restoSegundos > 1 ? "s" : "");
+        } else if (minutos > 0) {
+            return String.format("%d minuto%s", minutos, minutos > 1 ? "s" : "");
+        } else {
+            return String.format("%d segundo%s", restoSegundos, restoSegundos > 1 ? "s" : "");
+        }
     }
 }

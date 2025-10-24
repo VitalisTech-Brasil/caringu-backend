@@ -63,6 +63,10 @@ public class AulaService {
         return aulaRepository.findAllAulasPorPersonal(idPersonal);
     }
 
+    public List<SessaoAulasAgendadasResponseDTO> listarAulasPorAluno(Integer idAluno) {
+        return aulaRepository.findAllAulasPorAluno(idAluno);
+    }
+
     public List<EvolucaoCargaDashboardResponseDTO> buscarEvolucaoCarga(Integer idAluno, Integer idExercicio) {
         return aulaRepository.buscarEvolucaoCarga(idExercicio, idAluno);
     }

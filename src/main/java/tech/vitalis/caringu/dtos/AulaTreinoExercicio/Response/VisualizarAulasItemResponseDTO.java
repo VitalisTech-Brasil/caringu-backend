@@ -9,6 +9,7 @@ public record VisualizarAulasItemResponseDTO(
         Integer idExecucaoExercicio,
         String nomeExercicio,
         String carga,
+        String descanso,
         String repeticoesSeries,
         String grupoMuscular,
         String observacoes,

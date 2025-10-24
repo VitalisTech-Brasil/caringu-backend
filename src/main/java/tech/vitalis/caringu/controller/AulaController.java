@@ -43,6 +43,13 @@ public class AulaController {
         return ResponseEntity.ok(aulasAgendadas);
     }
 
+    @GetMapping("/alunos-aulas/{idAluno}")
+    public ResponseEntity<List<SessaoAulasAgendadasResponseDTO>> listarAulasPorAluno(@PathVariable Integer idAluno) {
+        List<SessaoAulasAgendadasResponseDTO> aulasAgendadas = aulaService.listarAulasPorAluno(idAluno);
+
+        return ResponseEntity.ok(aulasAgendadas);
+    }
+
     @GetMapping("/evolucao-carga")
     public ResponseEntity<List<EvolucaoCargaDashboardResponseDTO>> buscarEvolucaoCarga(
             @RequestParam Integer idAluno,
