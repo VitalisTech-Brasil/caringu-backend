@@ -60,11 +60,20 @@ public class AulaService {
     }
 
     public List<SessaoAulasAgendadasResponseDTO> listarAulasPorPersonal(Integer idPersonal) {
-        return aulaRepository.findAllAulasPorPersonal(idPersonal);
+
+        List<SessaoAulasAgendadasResponseDTO> aulasPorAluno = aulaRepository.findAllAulasPorPersonal(idPersonal);
+
+        return aulasPorAluno.stream()
+                .map(aulaMapper::toSessaoAulasAgendadasResponseDTOComUrlPreAssinada)
+                .toList();
     }
 
     public List<SessaoAulasAgendadasResponseDTO> listarAulasPorAluno(Integer idAluno) {
-        return aulaRepository.findAllAulasPorAluno(idAluno);
+        List<SessaoAulasAgendadasResponseDTO> aulasPorAluno = aulaRepository.findAllAulasPorAluno(idAluno);
+
+        return aulasPorAluno.stream()
+                .map(aulaMapper::toSessaoAulasAgendadasResponseDTOComUrlPreAssinada)
+                .toList();
     }
 
     public List<EvolucaoCargaDashboardResponseDTO> buscarEvolucaoCarga(Integer idAluno, Integer idExercicio) {
