@@ -1,14 +1,14 @@
-package tech.vitalis.caringu.dtos.PlanoContratado;
+package tech.vitalis.caringu.infrastructure.web.planoContratado;
 
-import tech.vitalis.caringu.entity.Aluno;
+import tech.vitalis.caringu.dtos.Aluno.AlunoResponseGetDTO;
 import tech.vitalis.caringu.core.domain.valueObject.StatusEnum;
 
 import java.time.LocalDate;
 
-public record PlanoContratadoPagamentoPendenteResponseDTO(
+public record GetPlanoContratadoPagamentoPendenteResponse(
         Integer id,
         Integer planoId,
-        Aluno alunoId,
+        AlunoResponseGetDTO alunoId,
         StatusEnum status,
         LocalDate dataContratacao,
         LocalDate dataFim

@@ -4,13 +4,13 @@ import org.springframework.stereotype.Component;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoItemDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoCriadaDTO;
 import tech.vitalis.caringu.entity.Aula;
-import tech.vitalis.caringu.entity.PlanoContratado;
+import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoContratadoEntity;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
 
 @Component
 public class AulaMapper {
 
-    public Aula toEntity(AulaRascunhoItemDTO dto, PlanoContratado plano) {
+    public Aula toEntity(AulaRascunhoItemDTO dto, PlanoContratadoEntity plano) {
         Aula aula = new Aula();
         aula.setPlanoContratado(plano);
         aula.setDataHorarioInicio(dto.dataHorarioInicio());

@@ -1,6 +1,6 @@
 package tech.vitalis.caringu.strategy.PlanoContratado;
 
-import tech.vitalis.caringu.enums.StatusEnum;
+import tech.vitalis.caringu.core.domain.valueObject.StatusEnum;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.strategy.EnumValidationStrategy;
 

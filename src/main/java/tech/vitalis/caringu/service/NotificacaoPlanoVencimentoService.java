@@ -11,9 +11,10 @@ import tech.vitalis.caringu.entity.Plano;
 import tech.vitalis.caringu.entity.PlanoContratado;
 import tech.vitalis.caringu.enums.Notificacoes.TipoNotificacaoEnum;
 import tech.vitalis.caringu.enums.PreferenciaNotificacao.TipoPreferenciaEnum;
-import tech.vitalis.caringu.enums.StatusEnum;
+import tech.vitalis.caringu.core.domain.valueObject.StatusEnum;
+import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoContratadoEntity;
 import tech.vitalis.caringu.repository.NotificacoesRepository;
-import tech.vitalis.caringu.repository.PlanoContratadoRepository;
+import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoContratadoRepository;
 import tech.vitalis.caringu.repository.PreferenciaNotificacaoRepository;
 
 import java.time.LocalDate;
@@ -47,12 +48,12 @@ public class NotificacaoPlanoVencimentoService {
 
         logger.info("🔍 Verificando planos vencendo entre {} e {}", hoje, daquiDuasSemanas);
 
-        List<PlanoContratado> planoContratados = planoContratadoRepository
+        List<PlanoContratadoEntity> planoContratados = planoContratadoRepository
                 .findByDataFimBetweenAndStatus(hoje, daquiDuasSemanas, StatusEnum.ATIVO);
 
         logger.info("📊 Encontrados {} planos próximos do vencimento", planoContratados.size());
 
-        for (PlanoContratado planoContratado : planoContratados){
+        for (PlanoContratadoEntity planoContratado : planoContratados){
             processarPlanoVencimento(planoContratado);
         }
 
@@ -87,7 +88,7 @@ public class NotificacaoPlanoVencimentoService {
 //        }
 //    }
   
-  private void processarPlanoVencimento(PlanoContratado planoContratado) {
+  private void processarPlanoVencimento(PlanoContratadoEntity planoContratado) {
         Pessoa alunoPessoa = planoContratado.getAluno();
         Plano plano = planoContratado.getPlano();
         PersonalTrainer personal = plano.getPersonalTrainer();
