@@ -100,6 +100,9 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
                     a.id,
                     pa.nome,
                     pa.urlFotoPerfil,
+                    pt.id,
+                    pt.nome,
+                    pt.urlFotoPerfil,
                     au.id,
                     au.dataHorarioInicio,
                     au.dataHorarioFim,
@@ -127,8 +130,11 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
     @Query("""
                 SELECT new tech.vitalis.caringu.dtos.SessaoTreino.SessaoAulasAgendadasResponseDTO(
                     a.id,
-                    pa.nome,
-                    pa.urlFotoPerfil,
+                    a.nome,
+                    a.urlFotoPerfil,
+                    pt.id,
+                    pt.nome,
+                    pt.urlFotoPerfil,
                     au.id,
                     au.dataHorarioInicio,
                     au.dataHorarioFim,
@@ -143,8 +149,6 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
                     ON pt.id = pp.id
                 JOIN Aluno a
                     ON pc.aluno.id = a.id
-                JOIN Pessoa pa
-                    ON a.id = pa.id
                 JOIN Aula au
                     ON pc.id = au.planoContratado.id
                 WHERE pc.status = 'ATIVO'
