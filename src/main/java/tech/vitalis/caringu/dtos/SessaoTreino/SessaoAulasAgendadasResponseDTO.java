@@ -7,7 +7,10 @@ import java.time.LocalDateTime;
 public record SessaoAulasAgendadasResponseDTO(
         Integer idAluno,
         String nomeAluno,
-        String urlFotoPerfil,
+        String urlFotoPerfilAluno,
+        Integer idPersonal,
+        String nomePersonal,
+        String urlFotoPerfilPersonal,
         Integer idAula,
         LocalDateTime dataHorarioInicio,
         LocalDateTime dataHorarioFim,
