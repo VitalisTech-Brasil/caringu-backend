@@ -68,7 +68,7 @@ public class AlunoMapper {
                 dto.nomeAluno(),
                 dto.email(),
                 dto.celular(),
-                urlFotoTemporaria,
+                dto.urlFotoPerfil(),
                 dto.peso(),
                 dto.altura(),
                 dto.nivelAtividade(),

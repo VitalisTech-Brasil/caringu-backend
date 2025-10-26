@@ -24,9 +24,12 @@ import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
 import tech.vitalis.caringu.mapper.PersonalTrainerMapper;
 import tech.vitalis.caringu.repository.*;
+import tech.vitalis.caringu.service.ArmazenamentoFotos.ArmazenamentoService;
 import tech.vitalis.caringu.strategy.Pessoa.GeneroEnumValidationStrategy;
 
 import org.springframework.data.domain.Pageable;
+
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,11 +59,15 @@ public class PersonalTrainerService {
     private final CidadeRepository cidadeRepository;
     private final PlanoRepository planoRepository;
 
+    private final ArmazenamentoService armazenamentoInterface;
+
     public PersonalTrainerService(PasswordEncoder passwordEncoder, PessoaRepository pessoaRepository,
                                   PersonalTrainerMapper personalTrainerMapper, PersonalTrainerRepository personalTrainerRepository,
                                   EspecialidadeRepository especialidadeRepository, PreferenciaNotificacaoService preferenciaNotificacaoService,
                                   PersonalTrainerBairroRepository personalTrainerBairroRepository, BairroRepository bairroRepository,
-                                  CidadeRepository cidadeRepository, PlanoRepository planoRepository) {
+                                  CidadeRepository cidadeRepository, PlanoRepository planoRepository,
+                                  ArmazenamentoService armazenamentoInterface
+    ) {
         this.passwordEncoder = passwordEncoder;
         this.pessoaRepository = pessoaRepository;
         this.personalTrainerMapper = personalTrainerMapper;
@@ -71,6 +78,7 @@ public class PersonalTrainerService {
         this.bairroRepository = bairroRepository;
         this.cidadeRepository = cidadeRepository;
         this.planoRepository = planoRepository;
+        this.armazenamentoInterface = armazenamentoInterface;
     }
 
     public List<PersonalTrainerResponseGetDTO> listar() {
@@ -138,8 +146,12 @@ public class PersonalTrainerService {
 
         return basicos.stream()
                 .map(p -> {
-                    String urlFoto = p.urlFotoPerfil();
-                    if (urlFoto != null && !urlFoto.startsWith("http") && !env.acceptsProfiles(Profiles.of("prod"))) {
+
+                    String urlFoto = p.urlFotoPerfil() != null
+                            ? armazenamentoInterface.gerarUrlPreAssinada(p.urlFotoPerfil(), Duration.ofMinutes(5))
+                            : null;
+
+                    if (urlFoto != null && !urlFoto.startsWith("http") && !env.acceptsProfiles(Profiles.of("dev"))) {
                         urlFoto = "http://localhost:8080/pessoas/fotos-perfil/" + urlFoto;
                     }
 
@@ -183,6 +195,10 @@ public class PersonalTrainerService {
                 ? Math.round(basico.mediaEstrela() * 2) / 2.0
                 : 0.0;
 
+        String urlFotoTemporaria = basico.urlFotoPerfil() != null
+                ? armazenamentoInterface.gerarUrlPreAssinada(basico.urlFotoPerfil(), Duration.ofMinutes(5))
+                : null;
+
         // Montar e retornar DTO completo
         return new PersonalTrainerDisponivelResponseDTO(
                 basico.id(),
@@ -190,7 +206,7 @@ public class PersonalTrainerService {
                 basico.email(),
                 basico.celular(),
                 basico.experiencia(),
-                basico.urlFotoPerfil(),
+                urlFotoTemporaria,
                 basico.genero(),
                 especialidades,
                 planos,
