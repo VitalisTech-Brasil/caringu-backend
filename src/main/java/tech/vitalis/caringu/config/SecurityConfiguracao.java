@@ -121,7 +121,7 @@ public class SecurityConfiguracao {
         CorsConfiguration configuracao = new CorsConfiguration();
         configuracao.setAllowedOrigins(Arrays.asList(
                 "http://localhost:5173",
-                "http://54.85.59.6"
+                "https://caringu.ddns.net"
         ));
         configuracao.setAllowedMethods(
                 Arrays.asList(
