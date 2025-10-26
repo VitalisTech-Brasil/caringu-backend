@@ -1,9 +1,12 @@
 package tech.vitalis.caringu.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import tech.vitalis.caringu.dtos.TreinoExercicio.ExerciciosPorTreinoResponseDTO;
+import tech.vitalis.caringu.dtos.TreinoExercicio.RelatorioTreinoAlunoDTO;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioEditResponseGetDTO;
 import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoModeloCruQuerySqlDTO;
 import tech.vitalis.caringu.entity.TreinoExercicio;
@@ -81,6 +84,33 @@ public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio
     List<ExerciciosPorTreinoResponseDTO> buscarExerciciosPorTreino(
             @Param("treinoId") Integer treinoId,
             @Param("alunoId") Integer alunoId
+    );
+
+    @Query("""
+                SELECT new tech.vitalis.caringu.dtos.TreinoExercicio.RelatorioTreinoAlunoDTO(
+                    pc.aluno.id,
+                    a.nome,
+                    t.id,
+                    t.nome,
+                    t.personal.id,
+                    pt.nome,
+                    COUNT(DISTINCT au.id)
+                )
+                FROM PlanoContratado pc
+                LEFT JOIN Aluno a ON a.id = pc.aluno.id
+                LEFT JOIN Pessoa p ON p.id = a.id
+                JOIN Aula au ON pc.id = au.planoContratado.id
+                JOIN AulaTreinoExercicio ate ON au.id = ate.aula.id
+                JOIN TreinoExercicio te ON te.id = ate.treinoExercicio.id
+                JOIN Treino t ON t.id = te.treino.id
+                LEFT JOIN PersonalTrainer pt ON t.personal.id = pt.id
+                WHERE pc.aluno.id = :idAluno
+                GROUP BY pc.aluno.id, p.nome, t.id, t.nome, t.personal.id, pt.nome
+                ORDER BY COUNT(DISTINCT au.id)
+            """)
+    Page<RelatorioTreinoAlunoDTO> listarPaginadoTreinosAlunoEmRelatorioTreino(
+            @Param("idAluno") Integer idAluno,
+            Pageable pageable
     );
 
     @Query("""

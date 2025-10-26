@@ -18,5 +18,5 @@ public record TreinoExercicioResponseGetDto(
         Integer descanso,
         LocalDateTime dataHoraModificacao,
         OrigemTreinoExercicioEnum origemTreinoExercicio,
-        GrauDificuldadeEnum grauDificuldade
+        String grauDificuldade
 ){}

@@ -100,6 +100,9 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
                     a.id,
                     pa.nome,
                     pa.urlFotoPerfil,
+                    pt.id,
+                    pt.nome,
+                    pt.urlFotoPerfil,
                     au.id,
                     au.dataHorarioInicio,
                     au.dataHorarioFim,
@@ -123,6 +126,36 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
                   AND pt.id = :idPersonal
             """)
     List<SessaoAulasAgendadasResponseDTO> findAllAulasPorPersonal(@Param("idPersonal") Integer idPersonal);
+
+    @Query("""
+                SELECT new tech.vitalis.caringu.dtos.SessaoTreino.SessaoAulasAgendadasResponseDTO(
+                    a.id,
+                    a.nome,
+                    a.urlFotoPerfil,
+                    pt.id,
+                    pt.nome,
+                    pt.urlFotoPerfil,
+                    au.id,
+                    au.dataHorarioInicio,
+                    au.dataHorarioFim,
+                    au.status
+                )
+                FROM PlanoContratado pc
+                JOIN Plano pl
+                    ON pc.plano.id = pl.id
+                JOIN PersonalTrainer pt
+                    ON pl.personalTrainer.id = pt.id
+                JOIN Pessoa pp
+                    ON pt.id = pp.id
+                JOIN Aluno a
+                    ON pc.aluno.id = a.id
+                JOIN Aula au
+                    ON pc.id = au.planoContratado.id
+                WHERE pc.status = 'ATIVO'
+                  AND NOW() BETWEEN pc.dataContratacao AND pc.dataFim
+                  AND a.id = :idAluno
+            """)
+    List<SessaoAulasAgendadasResponseDTO> findAllAulasPorAluno(@Param("idAluno") Integer idAluno);
 
     @Query("""
                 SELECT new tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoCargaDashboardResponseDTO(

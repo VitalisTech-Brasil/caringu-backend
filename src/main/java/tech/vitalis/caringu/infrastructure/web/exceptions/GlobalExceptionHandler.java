@@ -1,4 +1,4 @@
-package tech.vitalis.caringu.exception;
+package tech.vitalis.caringu.infrastructure.web.exceptions;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.validation.ConstraintViolation;
@@ -13,9 +13,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
-import tech.vitalis.caringu.exception.Aluno.AlunoNaoEncontradoException;
-import tech.vitalis.caringu.exception.Anamnese.AnamneseJaCadastradaException;
-import tech.vitalis.caringu.exception.Anamnese.AnamneseNaoEncontradaException;
+import tech.vitalis.caringu.core.exceptions.aluno.AlunoNaoEncontradoException;
+import tech.vitalis.caringu.core.exceptions.anamnese.AnamneseJaCadastradaException;
+import tech.vitalis.caringu.core.exceptions.anamnese.AnamneseNaoEncontradaException;
+import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.exception.ApiExceptions.BadRequestException;
 import tech.vitalis.caringu.exception.Aula.AulaConflitanteException;
 import tech.vitalis.caringu.exception.Aula.AulaNaoEncontradaException;

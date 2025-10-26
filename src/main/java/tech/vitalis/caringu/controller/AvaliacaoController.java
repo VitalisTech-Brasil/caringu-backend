@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Avaliacao.AvaliacaoRequestDTO;
 import tech.vitalis.caringu.dtos.Avaliacao.AvaliacaoResponseDTO;
+import tech.vitalis.caringu.dtos.Avaliacao.FiltroAvaliacaoResponseDTO;
 import tech.vitalis.caringu.service.AvaliacaoService;
 
 import java.util.List;
@@ -19,6 +20,11 @@ public class AvaliacaoController {
     @GetMapping("/personal/{idPersonal}")
     public ResponseEntity<List<AvaliacaoResponseDTO>> listarAvaliacoesPorPersonal(@PathVariable Integer idPersonal) {
         return avaliacaoService.listarAvaliacoesPorPersonal(idPersonal);
+    }
+
+    @GetMapping("/personal/filtrar-por-nota/{idPersonal}")
+    public ResponseEntity<List<FiltroAvaliacaoResponseDTO>> listarAvaliacoesDoPersonalPorNota(@PathVariable Integer idPersonal, @RequestParam(required = false) Double filtroNota) {
+        return avaliacaoService.listarAvaliacoesDoPersonalPorNota(idPersonal, filtroNota);
     }
 
     @PostMapping()

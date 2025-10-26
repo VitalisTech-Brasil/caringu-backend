@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Avaliacao.AvaliacaoRequestDTO;
 import tech.vitalis.caringu.dtos.Avaliacao.AvaliacaoResponseDTO;
+import tech.vitalis.caringu.dtos.Avaliacao.FiltroAvaliacaoResponseDTO;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.entity.Avaliacao;
 import tech.vitalis.caringu.entity.PersonalTrainer;
@@ -40,6 +41,15 @@ public class AvaliacaoService {
         }
 
         return ResponseEntity.ok(avaliacaoMapper.toDto(avaliacaoList));
+    }
+
+    public ResponseEntity<List<FiltroAvaliacaoResponseDTO>> listarAvaliacoesDoPersonalPorNota(Integer idPersonal, Double filtroNota) {
+        personalTrainerRepository.findById(idPersonal)
+                .orElseThrow(()-> new PersonalNaoEncontradoException("Personal Trainer não encontrado com o ID: " + idPersonal));
+
+        List<FiltroAvaliacaoResponseDTO> avaliacoes =
+                avaliacaoRepository.findAvaliacoesByPersonalAndNota(idPersonal, filtroNota);
+        return ResponseEntity.ok(avaliacoes);
     }
 
     public ResponseEntity<AvaliacaoResponseDTO> cadastrarAvaliacao(AvaliacaoRequestDTO avaliacaoRequestDTO) {

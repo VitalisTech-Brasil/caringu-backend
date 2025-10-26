@@ -16,6 +16,8 @@ public record PersonalTrainerDisponivelResponseDTO(
         List<String> especialidades,
         List<PlanoResumoDTO> planos,
         String bairro,
-        String cidade
+        String cidade,
+        Double mediaEstrela,
+        Long quantidadeAvaliacao
 ) {
 }

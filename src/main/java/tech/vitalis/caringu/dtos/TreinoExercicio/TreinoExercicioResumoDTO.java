@@ -6,7 +6,7 @@ import tech.vitalis.caringu.enums.TreinoExercicio.OrigemTreinoExercicioEnum;
 public record TreinoExercicioResumoDTO(
         Integer treinoId,
         String nomeTreino,
-        GrauDificuldadeEnum grauDificuldade,
+        String grauDificuldade,
         OrigemTreinoExercicioEnum origemTreinoExercicio,
         Boolean favorito,
         int quantidadeExercicios

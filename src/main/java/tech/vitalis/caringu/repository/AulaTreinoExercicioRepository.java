@@ -18,6 +18,7 @@ public interface AulaTreinoExercicioRepository extends JpaRepository<AulaTreinoE
                     a.id,
                     ee.id,
                     e.nome,
+                    ate.descanso,
                     CONCAT(CAST(ate.series AS string), ' x ', CAST(ate.repeticoes AS string)),
                     CONCAT(CAST(ate.carga AS string), ' kg'),
                     e.grupoMuscular,

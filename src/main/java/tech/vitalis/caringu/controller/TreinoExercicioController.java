@@ -3,15 +3,13 @@ package tech.vitalis.caringu.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.vitalis.caringu.dtos.TreinoExercicio.ExerciciosPorTreinoResponseDTO;
-import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioEditResponseGetDTO;
-import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioAssociacaoRequestDTO;
-import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResponseGetDto;
-import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioResumoDTO;
+import tech.vitalis.caringu.dtos.TreinoExercicio.*;
 import tech.vitalis.caringu.service.TreinoExercicioService;
 
 import java.util.List;
@@ -50,6 +48,19 @@ public class TreinoExercicioController {
     ) {
         Page<TreinoExercicioResumoDTO> treinosExerciciosResumo = treinoExercicioService.paginarPorAluno(alunoId, PageRequest.of(page, size));
         return ResponseEntity.ok(treinosExerciciosResumo);
+    }
+
+    @GetMapping("/relatorio-treino/aluno/{idAluno}")
+    @Operation(summary = "Listar os Treinos Exercícios do Aluno na tela de Relatório de Treino de forma paginada")
+    public ResponseEntity<Page<RelatorioTreinoAlunoDTO>> listarPaginadoTreinosAlunoEmRelatorioTreino(
+            @PathVariable Integer idAluno,
+            @ParameterObject Pageable pageable
+    ) {
+        Page<RelatorioTreinoAlunoDTO> treinosAluno = treinoExercicioService.listarPaginadoTreinosAlunoEmRelatorioTreino(
+                idAluno,
+                pageable
+        );
+        return ResponseEntity.ok(treinosAluno);
     }
 
     @GetMapping("/exercicios-por-treino/{treinoId}/{alunoId}")

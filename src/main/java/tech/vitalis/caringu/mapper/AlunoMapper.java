@@ -97,7 +97,9 @@ public class AlunoMapper {
                 dto.doencaMetabolica(),
                 dto.doencaMetabolicaDescricao(),
                 dto.deficiencia(),
-                dto.deficienciaDescricao()
+                dto.deficienciaDescricao(),
+                dto.genero(),
+                dto.dataNascimento()
         );
     }
 
@@ -160,7 +162,9 @@ public class AlunoMapper {
                 base.doencaMetabolica(),
                 base.doencaMetabolicaDescricao(),
                 base.deficiencia(),
-                base.deficienciaDescricao()
+                base.deficienciaDescricao(),
+                base.genero(),
+                base.dataNascimento()
         );
     }
 

@@ -2,8 +2,9 @@ package tech.vitalis.caringu.dtos.Aluno;
 
 import tech.vitalis.caringu.enums.Aluno.NivelAtividadeEnum;
 import tech.vitalis.caringu.enums.Aluno.NivelExperienciaEnum;
-import tech.vitalis.caringu.enums.Anamnese.FrequenciaTreinoEnum;
+import tech.vitalis.caringu.core.domain.valueObject.FrequenciaTreinoEnum;
 import tech.vitalis.caringu.enums.PeriodoEnum;
+import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -49,6 +50,8 @@ public record AlunoDetalhadoComTreinosDTO(
         Boolean doencaMetabolica,
         String doencaMetabolicaDescricao,
         Boolean deficiencia,
-        String deficienciaDescricao
+        String deficienciaDescricao,
+        GeneroEnum genero,
+        LocalDate dataNascimento
 ) {
 }

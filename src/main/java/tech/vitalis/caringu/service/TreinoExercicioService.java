@@ -59,7 +59,7 @@ public class TreinoExercicioService {
                             return new TreinoExercicioResumoDTO(
                                     primeiroItem.treinoId(),
                                     primeiroItem.nomeTreino(),
-                                    primeiroItem.grauDificuldade(),
+                                    primeiroItem.grauDificuldade().getValor(),
                                     primeiroItem.origemTreinoExercicio(),
                                     primeiroItem.favorito(),
                                     listaDeExercicioPorTreino.size()
@@ -80,7 +80,7 @@ public class TreinoExercicioService {
                     return new TreinoExercicioResumoDTO(
                             primeiroItem.treinoId(),
                             primeiroItem.nomeTreino(),
-                            primeiroItem.grauDificuldade(),
+                            primeiroItem.grauDificuldade().getValor(),
                             primeiroItem.origemTreinoExercicio(),
                             primeiroItem.favorito(),
                             listaDeExercicioPorTreino.size()
@@ -111,6 +111,13 @@ public class TreinoExercicioService {
         List<TreinoExercicioResumoDTO> sublista = (start > end) ? List.of() : listaResumida.subList(start, end);
 
         return new PageImpl<>(sublista, pageable, listaResumida.size());
+    }
+
+    public Page<RelatorioTreinoAlunoDTO> listarPaginadoTreinosAlunoEmRelatorioTreino(
+            Integer idAluno,
+            Pageable pageable
+    ) {
+        return treinoExercicioRepository.listarPaginadoTreinosAlunoEmRelatorioTreino(idAluno, pageable);
     }
 
     public List<ExerciciosPorTreinoResponseDTO> buscarExerciciosPorTreino(Integer treinoId, Integer alunoId) {
