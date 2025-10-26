@@ -49,7 +49,12 @@ public class AvaliacaoService {
 
         List<FiltroAvaliacaoResponseDTO> avaliacoes =
                 avaliacaoRepository.findAvaliacoesByPersonalAndNota(idPersonal, filtroNota);
-        return ResponseEntity.ok(avaliacoes);
+
+        List<FiltroAvaliacaoResponseDTO> avaliacoesComUrl = avaliacoes.stream()
+                .map(avaliacaoMapper::toFiltroAvaliacaoResponseDTOComUrlPreAssinada)
+                .toList();
+
+        return ResponseEntity.ok(avaliacoesComUrl);
     }
 
     public ResponseEntity<AvaliacaoResponseDTO> cadastrarAvaliacao(AvaliacaoRequestDTO avaliacaoRequestDTO) {

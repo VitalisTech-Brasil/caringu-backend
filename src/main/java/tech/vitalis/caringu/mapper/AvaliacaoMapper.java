@@ -4,10 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import tech.vitalis.caringu.dtos.Avaliacao.AvaliacaoRequestDTO;
 import tech.vitalis.caringu.dtos.Avaliacao.AvaliacaoResponseDTO;
+import tech.vitalis.caringu.dtos.Avaliacao.FiltroAvaliacaoResponseDTO;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.entity.Avaliacao;
 import tech.vitalis.caringu.entity.PersonalTrainer;
+import tech.vitalis.caringu.service.ArmazenamentoFotos.ArmazenamentoService;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,8 +18,12 @@ import java.util.List;
 public class AvaliacaoMapper {
     @Autowired
     PersonalTrainerMapper personalTrainerMapper;
+
     @Autowired
     AlunoMapper alunoMapper;
+
+    @Autowired
+    ArmazenamentoService armazenamentoInterface;
 
     public AvaliacaoResponseDTO toDto(Avaliacao avaliacao) {
         return new AvaliacaoResponseDTO(
@@ -29,7 +36,7 @@ public class AvaliacaoMapper {
         );
     }
 
-    public List<AvaliacaoResponseDTO> toDto(List<Avaliacao> avaliacoes){
+    public List<AvaliacaoResponseDTO> toDto(List<Avaliacao> avaliacoes) {
         return avaliacoes.stream().map(this::toDto).toList();
     }
 
@@ -40,6 +47,22 @@ public class AvaliacaoMapper {
                 avaliacaoRequestDTO.nota(),
                 avaliacaoRequestDTO.comentario(),
                 LocalDateTime.now()
+        );
+    }
+
+    public FiltroAvaliacaoResponseDTO toFiltroAvaliacaoResponseDTOComUrlPreAssinada(FiltroAvaliacaoResponseDTO responseDTO) {
+        String urlFoto = responseDTO.urlFotoAluno() != null
+                ? armazenamentoInterface.gerarUrlPreAssinada(responseDTO.urlFotoAluno(), Duration.ofMinutes(5))
+                : null;
+
+        return new FiltroAvaliacaoResponseDTO(
+                responseDTO.personalId(),
+                responseDTO.alunoId(),
+                responseDTO.nomeAluno(),
+                urlFoto,
+                responseDTO.nota(),
+                responseDTO.comentario(),
+                responseDTO.dataAvaliacao()
         );
     }
 
