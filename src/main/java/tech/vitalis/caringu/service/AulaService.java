@@ -1,14 +1,19 @@
 package tech.vitalis.caringu.service;
 
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGetDTO;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoItemDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoRequestPostDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AulasAlunoResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoCriadaDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoResponsePostDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulasAgendadasResponseDTO;
+import tech.vitalis.caringu.dtos.Aula.Request.AulasAlunoRequestDTO;
 import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.*;
 import tech.vitalis.caringu.entity.Aula;
@@ -26,6 +31,7 @@ import tech.vitalis.caringu.repository.TreinoExercicioRepository;
 import tech.vitalis.caringu.strategy.SessaoTreino.StatusSessaoTreinoValidationStrategy;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -185,6 +191,42 @@ public class AulaService {
                 .toList();
 
         return new AulaRascunhoResponsePostDTO(aulasCriadas);
+    }
+
+    //visualizar aulas
+    public Page<AulasAlunoResponseDTO> listarAulasPorAlunoComPlano(Integer idAluno, Pageable pageable) {
+        final Map<Integer, String> diasDaSemana = Map.of(
+                7, "Domingo",
+                1, "Segunda-feira",
+                2, "Terça-feira",
+                3, "Quarta-feira",
+                4, "Quinta-feira",
+                5, "Sexta-feira",
+                6, "Sábado"
+        );
+
+        Page<AulasAlunoRequestDTO> aulasPage = aulaRepository.listarAulasPorAlunoComPlano(idAluno, pageable);
+
+        List<AulasAlunoResponseDTO> mapperAula = aulasPage.getContent().stream()
+                .map(dto -> {
+                    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+                    int diaSemana = dto.dataHorarioInicio().getDayOfWeek().getValue();
+
+                    return new AulasAlunoResponseDTO(
+                            dto.aulaId(),
+                            dto.dataHorarioInicio().format(dateFormatter),
+                            diasDaSemana.getOrDefault(diaSemana, "Dia Desconhecido"),
+                            dto.dataHorarioInicio().format(timeFormatter),
+                            dto.dataHorarioFim().format(timeFormatter),
+                            dto.nomePersonal(),
+                            dto.treinoId()
+                    );
+                })
+                .toList();
+
+        return new PageImpl<>(mapperAula, pageable, aulasPage.getTotalElements());
     }
 
     public void atualizarStatus(Integer idAula, AulaStatusEnum novoStatus) {
