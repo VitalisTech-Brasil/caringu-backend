@@ -17,6 +17,7 @@ import tech.vitalis.caringu.entity.Aula;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
 import tech.vitalis.caringu.dtos.Aula.Request.AulasAlunoRequestDTO;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -357,7 +358,11 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
     JOIN ate.treinoExercicio te
     JOIN te.treino t
     WHERE al.id = :idAluno
-    AND pc.status = 'ATIVO'
+      AND pc.status = 'ATIVO'
+      AND (
+          :data IS NULL
+          OR (a.dataHorarioInicio >= :dataInicio AND a.dataHorarioInicio < :dataFim)
+      )
     ORDER BY a.dataHorarioInicio DESC
     """,
             countQuery = """
@@ -366,10 +371,17 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
     JOIN a.planoContratado pc
     JOIN pc.aluno al
     WHERE al.id = :idAluno
-    AND pc.status = 'ATIVO'
+      AND pc.status = 'ATIVO'
+      AND (
+          :data IS NULL
+          OR (a.dataHorarioInicio >= :dataInicio AND a.dataHorarioInicio < :dataFim)
+      )
     """)
     Page<AulasAlunoRequestDTO> listarAulasPorAlunoComPlano(
             @Param("idAluno") Integer idAluno,
+            @Param("data") LocalDate data,
+            @Param("dataInicio") LocalDateTime dataInicio,
+            @Param("dataFim") LocalDateTime dataFim,
             Pageable pageable
     );
 }

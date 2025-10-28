@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
@@ -17,6 +18,7 @@ import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.*;
 import tech.vitalis.caringu.service.AulaService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -100,9 +102,14 @@ public class AulaController {
     public ResponseEntity<Page<AulasAlunoResponseDTO>> listarAulasPorAlunoComPlano(
             @PathVariable Integer idAluno,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "4") int size
+            @RequestParam(defaultValue = "4") int size,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
     ) {
-        Page<AulasAlunoResponseDTO> aulas = aulaService.listarAulasPorAlunoComPlano(idAluno, PageRequest.of(page, size));
+        Page<AulasAlunoResponseDTO> aulas = aulaService.listarAulasPorAlunoComPlano(
+                idAluno,
+                PageRequest.of(page, size),
+                data
+        );
 
         return ResponseEntity.ok(aulas);
     }
