@@ -1,5 +1,6 @@
 package tech.vitalis.caringu.repository;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,6 +15,7 @@ import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoTreinoCumpridoResponseDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.SessaoAulasAgendadasResponseDTO;
 import tech.vitalis.caringu.entity.Aula;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
+import tech.vitalis.caringu.dtos.Aula.Request.AulasAlunoRequestDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -337,4 +339,37 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
                 ORDER BY a.dataHorarioInicio ASC
             """)
     List<ProximaAulaDTO> listarProximasAulas(@Param("alunoId") Integer alunoId, Pageable pageable);
+
+    @Query(value = """
+    SELECT DISTINCT new tech.vitalis.caringu.dtos.Aula.Request.AulasAlunoRequestDTO(
+        a.id,
+        a.dataHorarioInicio,
+        a.dataHorarioFim,
+        pt.nome,
+        t.id
+    )
+    FROM Aula a
+    JOIN a.planoContratado pc
+    JOIN pc.aluno al
+    JOIN pc.plano p
+    JOIN p.personalTrainer pt
+    JOIN AulaTreinoExercicio ate ON ate.aula.id = a.id
+    JOIN ate.treinoExercicio te
+    JOIN te.treino t
+    WHERE al.id = :idAluno
+    AND pc.status = 'ATIVO'
+    ORDER BY a.dataHorarioInicio DESC
+    """,
+            countQuery = """
+    SELECT COUNT(DISTINCT a.id)
+    FROM Aula a
+    JOIN a.planoContratado pc
+    JOIN pc.aluno al
+    WHERE al.id = :idAluno
+    AND pc.status = 'ATIVO'
+    """)
+    Page<AulasAlunoRequestDTO> listarAulasPorAlunoComPlano(
+            @Param("idAluno") Integer idAluno,
+            Pageable pageable
+    );
 }

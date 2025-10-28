@@ -3,10 +3,14 @@ package tech.vitalis.caringu.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoRequestPostDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AulasAlunoResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoResponsePostDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulasAgendadasResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
@@ -91,6 +95,18 @@ public class AulaController {
         AulasRascunhoResponseDTO aulas = aulaService.buscarAulasRascunho(idAluno);
         return ResponseEntity.ok(aulas);
     }
+
+    @GetMapping("/aluno/{idAluno}/plano")
+    public ResponseEntity<Page<AulasAlunoResponseDTO>> listarAulasPorAlunoComPlano(
+            @PathVariable Integer idAluno,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "4") int size
+    ) {
+        Page<AulasAlunoResponseDTO> aulas = aulaService.listarAulasPorAlunoComPlano(idAluno, PageRequest.of(page, size));
+
+        return ResponseEntity.ok(aulas);
+    }
+
 
     @PostMapping("/{idAluno}/rascunhos")
     public ResponseEntity<AulaRascunhoResponsePostDTO> criarAulasRascunho(
