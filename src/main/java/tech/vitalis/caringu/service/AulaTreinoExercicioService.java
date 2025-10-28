@@ -12,14 +12,16 @@ import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.*;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.TreinoDetalhadoRepositoryDTO;
 import tech.vitalis.caringu.entity.*;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
-import tech.vitalis.caringu.enums.StatusEnum;
+import tech.vitalis.caringu.core.domain.valueObject.StatusEnum;
 import tech.vitalis.caringu.exception.Aula.AulaNaoEncontradaException;
 import tech.vitalis.caringu.exception.PlanoContratado.AlunoSemPlanoContratadoException;
 import tech.vitalis.caringu.exception.PlanoContratado.PlanoNaoPertenceAoAlunoException;
 import tech.vitalis.caringu.exception.Treino.TreinoNaoEncontradoException;
+import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoContratadoEntity;
 import tech.vitalis.caringu.mapper.AulaTreinoExercicioMapper;
 import tech.vitalis.caringu.mapper.ExecucaoExercicioMapper;
 import tech.vitalis.caringu.repository.*;
+import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoContratadoRepository;
 
 import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
@@ -104,7 +106,7 @@ public class AulaTreinoExercicioService {
         for (AtribuicaoTreinosAulaTreinoDTO item : requestDTO.aulasTreinos()) {
 
             // 1. Validar plano ativo
-            PlanoContratado planoContratado = planoContratadoRepository
+            PlanoContratadoEntity planoContratado = planoContratadoRepository
                     .findFirstByAlunoIdAndStatus(item.idAluno(), StatusEnum.ATIVO)
                     .orElseThrow(() -> new AlunoSemPlanoContratadoException("Aluno sem plano ativo."));
 

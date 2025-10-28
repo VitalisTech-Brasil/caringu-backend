@@ -2,6 +2,7 @@ package tech.vitalis.caringu.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import tech.vitalis.caringu.core.domain.entity.PlanoContratado;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGetDTO;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoItemDTO;
@@ -12,16 +13,16 @@ import tech.vitalis.caringu.dtos.Aula.Response.AulasAgendadasResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.*;
 import tech.vitalis.caringu.entity.Aula;
-import tech.vitalis.caringu.entity.PlanoContratado;
+import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoContratadoEntity;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
-import tech.vitalis.caringu.enums.StatusEnum;
+import tech.vitalis.caringu.core.domain.valueObject.StatusEnum;
 import tech.vitalis.caringu.exception.Aula.AulaConflitanteException;
 import tech.vitalis.caringu.exception.PlanoContratado.AlunoSemPlanoContratadoException;
 import tech.vitalis.caringu.exception.SessaoTreino.SessaoTreinoNaoEncontradoException;
 import tech.vitalis.caringu.mapper.AulaMapper;
 import tech.vitalis.caringu.repository.AulaRepository;
 import tech.vitalis.caringu.repository.AulaTreinoExercicioRepository;
-import tech.vitalis.caringu.repository.PlanoContratadoRepository;
+import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoContratadoRepository;
 import tech.vitalis.caringu.repository.TreinoExercicioRepository;
 import tech.vitalis.caringu.strategy.SessaoTreino.StatusSessaoTreinoValidationStrategy;
 
@@ -118,7 +119,7 @@ public class AulaService {
     ) {
 
         // 1. Buscar plano ativo do aluno
-        PlanoContratado planoAtivo = planoContratadoRepository
+        PlanoContratadoEntity planoAtivo = planoContratadoRepository
                 .findFirstByAlunoIdAndStatus(idAluno, StatusEnum.ATIVO)
                 .orElseThrow(() -> new AlunoSemPlanoContratadoException("Aluno não possui plano contratado ativo."));
 

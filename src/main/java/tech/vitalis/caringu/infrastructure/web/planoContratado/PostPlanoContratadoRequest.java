@@ -1,20 +1,19 @@
-package tech.vitalis.caringu.dtos.PlanoContratado;
+package tech.vitalis.caringu.infrastructure.web.planoContratado;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
-import tech.vitalis.caringu.entity.Aluno;
-import tech.vitalis.caringu.entity.Plano;
 import tech.vitalis.caringu.core.domain.valueObject.StatusEnum;
+
 import java.time.LocalDate;
 
-public record PlanoContratadoRespostaRecord(
+public record PostPlanoContratadoRequest (
         @NotNull(message = "Aluno não pode ser nulo")
-        Aluno aluno,
+        Integer aluno,
 
         @NotNull(message = "Plano não pode ser nulo")
-        Plano plano,
+        Integer plano,
 
         @Enumerated(EnumType.STRING)
         StatusEnum status,
@@ -23,5 +22,5 @@ public record PlanoContratadoRespostaRecord(
         LocalDate dataContratacao,
 
         LocalDate dataFim
-) {
+){
 }

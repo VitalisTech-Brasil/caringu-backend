@@ -1,24 +1,27 @@
-package tech.vitalis.caringu.repository;
+package tech.vitalis.caringu.infrastructure.persistence.planoContratado;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import tech.vitalis.caringu.core.domain.entity.PlanoContratado;
 import tech.vitalis.caringu.dtos.Notificacoes.NotificacaoPlanoVencimentoDto;
+import tech.vitalis.caringu.core.domain.valueObject.StatusEnum;
 import tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoPagamentoPendenteResponseDTO;
 import tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoPendenteRequestDTO;
-import tech.vitalis.caringu.entity.PlanoContratado;
-import tech.vitalis.caringu.enums.StatusEnum;
+import tech.vitalis.caringu.infrastructure.web.planoContratado.GetPlanoContratadoPagamentoPendenteResponse;
+import tech.vitalis.caringu.infrastructure.web.planoContratado.GetPlanoContratadoPendenteRequest;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PlanoContratadoRepository extends JpaRepository<PlanoContratado, Integer> {
+public interface PlanoContratadoRepository  extends JpaRepository<PlanoContratadoEntity, Integer> {
 
-    Optional<PlanoContratado> findFirstByAlunoIdAndStatus(Integer alunoId, StatusEnum status);
-    List<PlanoContratado> findByDataFimBetweenAndStatus(LocalDate hoje, LocalDate daquiDuasSemans, StatusEnum status);
+    Optional<PlanoContratadoEntity> findFirstByAlunoIdAndStatus(Integer alunoId, StatusEnum status);
+    List<PlanoContratadoEntity> findByDataFimBetweenAndStatus(LocalDate hoje, LocalDate daquiDuasSemans, StatusEnum status);
+    Optional<PlanoContratadoEntity> findByAlunoIdAndStatus(Integer alunoId, StatusEnum statusEnum);
 
     @Query("SELECT COUNT(DISTINCT pc.aluno.id) " +
             "FROM PlanoContratado pc " +
@@ -47,6 +50,15 @@ public interface PlanoContratadoRepository extends JpaRepository<PlanoContratado
     List<PlanoContratadoPendenteRequestDTO> listarSolicitacoesPendentes(@Param("personalId") Integer personalId);
 
     @Query("""
+        SELECT pc
+            FROM PlanoContratadoEntity pc 
+            JOIN pc.plano p
+            JOIN pc.aluno a
+            WHERE pc.status = 'EM_PROCESSO' AND p.personalTrainer.id = :personalId
+        """)
+    List<PlanoContratadoEntity> listSolicitacoesPendentes(@Param("personalId") Integer personalId);
+
+    @Query("""
             SELECT new tech.vitalis.caringu.dtos.PlanoContratado.PlanoContratadoPagamentoPendenteResponseDTO(
                 pc.id,
                 pc.plano.id,
@@ -60,6 +72,9 @@ public interface PlanoContratadoRepository extends JpaRepository<PlanoContratado
             AND pc.status IN ("PENDENTE", "EM_PROCESSO", "ATIVO")
             """)
     List<PlanoContratadoPagamentoPendenteResponseDTO> buscarPorAlunoIdStatus(Integer alunoId);
+
+    @Query("SELECT pc FROM PlanoContratadoEntity pc WHERE pc.aluno.id = :alunoId AND pc.status IN ('PENDENTE', 'EM_PROCESSO', 'ATIVO')")
+    List<PlanoContratadoEntity> findPorAlunoIdStatus(@Param("alunoId") Integer alunoId);
 
     @Query("""
                 SELECT DISTINCT new tech.vitalis.caringu.dtos.Notificacoes.NotificacaoPlanoVencimentoDto(

@@ -1,9 +1,9 @@
-package tech.vitalis.caringu.dtos.PlanoContratado;
+package tech.vitalis.caringu.infrastructure.web.planoContratado;
 
-import tech.vitalis.caringu.enums.PeriodoEnum;
 import tech.vitalis.caringu.core.domain.valueObject.StatusEnum;
+import tech.vitalis.caringu.enums.PeriodoEnum;
 
-public record PlanoContratadoPendenteRequestDTO(
+public record GetPlanoContratadoPendenteRequest(
         Integer id,
         String nomeAluno,
         String celular,

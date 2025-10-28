@@ -1,12 +1,15 @@
-package tech.vitalis.caringu.entity;
+package tech.vitalis.caringu.infrastructure.persistence.planoContratado;
+
 import jakarta.persistence.*;
+import tech.vitalis.caringu.entity.Aluno;
+import tech.vitalis.caringu.entity.Plano;
 import tech.vitalis.caringu.core.domain.valueObject.StatusEnum;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "planos_contratados")
-public class PlanoContratado {
+public class PlanoContratadoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -28,10 +31,7 @@ public class PlanoContratado {
     @Column(name = "data_fim")
     private LocalDate dataFim;
 
-    public PlanoContratado() {
-    }
-
-    public PlanoContratado(Integer id, Aluno aluno, Plano plano, StatusEnum status, LocalDate dataContratacao, LocalDate dataFim) {
+    public PlanoContratadoEntity(Integer id, Aluno aluno, Plano plano, StatusEnum status, LocalDate dataContratacao, LocalDate dataFim) {
         this.id = id;
         this.aluno = aluno;
         this.plano = plano;
@@ -39,6 +39,8 @@ public class PlanoContratado {
         this.dataContratacao = dataContratacao;
         this.dataFim = dataFim;
     }
+
+    public PlanoContratadoEntity() {}
 
     public Integer getId() {
         return id;
@@ -87,4 +89,5 @@ public class PlanoContratado {
     public void setDataFim(LocalDate dataFim) {
         this.dataFim = dataFim;
     }
+
 }

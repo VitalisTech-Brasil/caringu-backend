@@ -3,7 +3,7 @@ package tech.vitalis.caringu.dtos.Notificacoes;
 import tech.vitalis.caringu.entity.Aluno;
 import tech.vitalis.caringu.entity.PersonalTrainer;
 import tech.vitalis.caringu.entity.PlanoContratado;
-import tech.vitalis.caringu.enums.StatusEnum;
+import tech.vitalis.caringu.core.domain.valueObject.StatusEnum;
 
 import java.time.LocalDate;
 

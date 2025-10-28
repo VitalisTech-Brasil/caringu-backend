@@ -2,6 +2,7 @@ package tech.vitalis.caringu.entity;
 
 import jakarta.persistence.*;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
+import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoContratadoEntity;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +16,7 @@ public class Aula {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "planos_contratados_id")
-    private PlanoContratado planoContratado;
+    private PlanoContratadoEntity planoContratado;
 
     @Column(name = "data_horario_inicio")
     private LocalDateTime dataHorarioInicio;
@@ -38,7 +39,7 @@ public class Aula {
     public Aula() {}
 
     public Aula(
-            Integer id, PlanoContratado planoContratado,
+            Integer id, PlanoContratadoEntity planoContratado,
             LocalDateTime dataHorarioInicio,
             LocalDateTime dataHorarioFim,
             AulaStatusEnum status
@@ -58,11 +59,11 @@ public class Aula {
         this.id = id;
     }
 
-    public PlanoContratado getPlanoContratado() {
+    public PlanoContratadoEntity getPlanoContratado() {
         return planoContratado;
     }
 
-    public void setPlanoContratado(PlanoContratado planoContratado) {
+    public void setPlanoContratado(PlanoContratadoEntity planoContratado) {
         this.planoContratado = planoContratado;
     }
 
