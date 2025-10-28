@@ -37,6 +37,7 @@ public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio
                 JOIN te.treino t
                 JOIN te.exercicio e
                 WHERE t.personal.id = :personalId OR t.personal.id IS NULL
+                ORDER BY t.id DESC
             """)
     List<TreinoExercicioResumoModeloCruQuerySqlDTO> buscarTreinosExerciciosPorPersonal(@Param("personalId") Integer personalId);
 

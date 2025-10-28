@@ -4,8 +4,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import tech.vitalis.caringu.dtos.TreinoExercicio.ExerciciosPorTreinoResponseDTO;
-import tech.vitalis.caringu.dtos.TreinoExercicio.TreinoExercicioEditResponseGetDTO;
 import tech.vitalis.caringu.dtos.TreinoExercicio.*;
 import tech.vitalis.caringu.entity.Exercicio;
 import tech.vitalis.caringu.entity.Treino;
@@ -20,10 +18,7 @@ import tech.vitalis.caringu.repository.TreinoRepository;
 import tech.vitalis.caringu.strategy.TreinoExercio.GrauDificuldadeEnumValidator;
 import tech.vitalis.caringu.strategy.TreinoExercio.OrigemTreinoExercicioEnumValidator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static tech.vitalis.caringu.strategy.EnumValidador.validarEnums;
@@ -50,22 +45,27 @@ public class TreinoExercicioService {
     public List<TreinoExercicioResumoDTO> listarPorPersonal(Integer personalId) {
         List<TreinoExercicioResumoModeloCruQuerySqlDTO> listaComValoresNaoTratados = treinoExercicioRepository.buscarTreinosExerciciosPorPersonal(personalId);
 
-        Map<Integer, List<TreinoExercicioResumoModeloCruQuerySqlDTO>> agrupadoPorTreinoId = listaComValoresNaoTratados.stream()
-                .collect(Collectors.groupingBy(TreinoExercicioResumoModeloCruQuerySqlDTO::treinoId));
+        Map<Integer, List<TreinoExercicioResumoModeloCruQuerySqlDTO>> agrupadoPorTreinoId =
+                listaComValoresNaoTratados.stream()
+                        .collect(Collectors.groupingBy(
+                                TreinoExercicioResumoModeloCruQuerySqlDTO::treinoId,
+                                Collectors.toList()
+                        ));
 
         return agrupadoPorTreinoId.values().stream()
                 .map(listaDeExercicioPorTreino -> {
-                            TreinoExercicioResumoModeloCruQuerySqlDTO primeiroItem = listaDeExercicioPorTreino.getFirst();
-                            return new TreinoExercicioResumoDTO(
-                                    primeiroItem.treinoId(),
-                                    primeiroItem.nomeTreino(),
-                                    primeiroItem.grauDificuldade().getValor(),
-                                    primeiroItem.origemTreinoExercicio(),
-                                    primeiroItem.favorito(),
-                                    listaDeExercicioPorTreino.size()
-                            );
-                        }
-                ).toList();
+                    TreinoExercicioResumoModeloCruQuerySqlDTO primeiroItem = listaDeExercicioPorTreino.getFirst();
+                    return new TreinoExercicioResumoDTO(
+                            primeiroItem.treinoId(),
+                            primeiroItem.nomeTreino(),
+                            primeiroItem.grauDificuldade().getValor(),
+                            primeiroItem.origemTreinoExercicio(),
+                            primeiroItem.favorito(),
+                            listaDeExercicioPorTreino.size()
+                    );
+                })
+                .sorted(Comparator.comparing(TreinoExercicioResumoDTO::treinoId).reversed())
+                .toList();
     }
 
     public List<TreinoExercicioResumoDTO> listarPorAluno(Integer alunoId) {
