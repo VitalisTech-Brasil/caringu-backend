@@ -115,9 +115,10 @@ public class TreinoExercicioService {
 
     public Page<RelatorioTreinoAlunoDTO> listarPaginadoTreinosAlunoEmRelatorioTreino(
             Integer idAluno,
+            String nomeTreino,
             Pageable pageable
     ) {
-        return treinoExercicioRepository.listarPaginadoTreinosAlunoEmRelatorioTreino(idAluno, pageable);
+        return treinoExercicioRepository.listarPaginadoTreinosAlunoEmRelatorioTreino(idAluno, nomeTreino, pageable);
     }
 
     public List<ExerciciosPorTreinoResponseDTO> buscarExerciciosPorTreino(Integer treinoId, Integer alunoId) {
