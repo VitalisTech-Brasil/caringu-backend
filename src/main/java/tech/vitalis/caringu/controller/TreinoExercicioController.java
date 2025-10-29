@@ -54,10 +54,12 @@ public class TreinoExercicioController {
     @Operation(summary = "Listar os Treinos Exercícios do Aluno na tela de Relatório de Treino de forma paginada")
     public ResponseEntity<Page<RelatorioTreinoAlunoDTO>> listarPaginadoTreinosAlunoEmRelatorioTreino(
             @PathVariable Integer idAluno,
+            @RequestParam(required = false) String nomeTreino,
             @ParameterObject Pageable pageable
     ) {
         Page<RelatorioTreinoAlunoDTO> treinosAluno = treinoExercicioService.listarPaginadoTreinosAlunoEmRelatorioTreino(
                 idAluno,
+                nomeTreino,
                 pageable
         );
         return ResponseEntity.ok(treinosAluno);

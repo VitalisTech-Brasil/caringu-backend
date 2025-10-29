@@ -31,6 +31,7 @@ import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoCont
 import tech.vitalis.caringu.repository.TreinoExercicioRepository;
 import tech.vitalis.caringu.strategy.SessaoTreino.StatusSessaoTreinoValidationStrategy;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -204,7 +205,7 @@ public class AulaService {
     }
 
     //visualizar aulas
-    public Page<AulasAlunoResponseDTO> listarAulasPorAlunoComPlano(Integer idAluno, Pageable pageable) {
+    public Page<AulasAlunoResponseDTO> listarAulasPorAlunoComPlano(Integer idAluno, Pageable pageable, LocalDate data) {
         final Map<Integer, String> diasDaSemana = Map.of(
                 7, "Domingo",
                 1, "Segunda-feira",
@@ -215,7 +216,17 @@ public class AulaService {
                 6, "Sábado"
         );
 
-        Page<AulasAlunoRequestDTO> aulasPage = aulaRepository.listarAulasPorAlunoComPlano(idAluno, pageable);
+        LocalDateTime dataInicio = null;
+        LocalDateTime dataFim = null;
+
+        if (data != null) {
+            dataInicio = data.atStartOfDay(); // 00:00
+            dataFim = data.plusDays(1).atStartOfDay(); // dia seguinte 00:00
+        }
+
+        Page<AulasAlunoRequestDTO> aulasPage = aulaRepository.listarAulasPorAlunoComPlano(
+                idAluno, data, dataInicio, dataFim, pageable
+        );
 
         List<AulasAlunoResponseDTO> mapperAula = aulasPage.getContent().stream()
                 .map(dto -> {

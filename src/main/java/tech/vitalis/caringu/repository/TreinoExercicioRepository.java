@@ -106,11 +106,17 @@ public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio
                 JOIN Treino t ON t.id = te.treino.id
                 LEFT JOIN PersonalTrainer pt ON t.personal.id = pt.id
                 WHERE pc.aluno.id = :idAluno
+                  AND (
+                      :nomeTreino IS NULL
+                      OR :nomeTreino = ''
+                      OR LOWER(t.nome) LIKE LOWER(CONCAT('%', :nomeTreino, '%'))
+                  )
                 GROUP BY pc.aluno.id, p.nome, t.id, t.nome, t.personal.id, pt.nome
                 ORDER BY COUNT(DISTINCT au.id)
             """)
     Page<RelatorioTreinoAlunoDTO> listarPaginadoTreinosAlunoEmRelatorioTreino(
             @Param("idAluno") Integer idAluno,
+            @Param("nomeTreino") String nomeTreino,
             Pageable pageable
     );
 
