@@ -128,7 +128,7 @@ public class PersonalTrainerMapper {
             if (env.acceptsProfiles(Profiles.of("prod"))) {
                 // produção: assume S3 e gera URL pré-assinada
                 urlFoto = armazenamentoInterface.gerarUrlPreAssinada(urlFoto, Duration.ofMinutes(5));
-            } else {
+            } else if (env.acceptsProfiles((Profiles.of("dev")))) {
                 // dev/local: monta URL para servir via endpoint local
                 urlFoto = "http://localhost:8080/pessoas/fotos-perfil/" + urlFoto;
             }
@@ -187,12 +187,16 @@ public class PersonalTrainerMapper {
             List<String> especialidades,
             List<PlanoResumoDTO> planos
     ) {
-        String urlFoto = basico.urlFotoPerfil() != null
-                ? armazenamentoInterface.gerarUrlPreAssinada(basico.urlFotoPerfil(), Duration.ofMinutes(5))
-                : null;
+        String urlFoto = basico.urlFotoPerfil();
 
-        if (urlFoto != null && !urlFoto.startsWith("http") && !env.acceptsProfiles(Profiles.of("dev"))) {
-            urlFoto = "http://localhost:8080/pessoas/fotos-perfil/" + urlFoto;
+        if (urlFoto != null) {
+            if (env.acceptsProfiles(Profiles.of("prod"))) {
+                // produção: gera URL pré-assinada
+                urlFoto = armazenamentoInterface.gerarUrlPreAssinada(urlFoto, Duration.ofMinutes(5));
+            } else if (env.acceptsProfiles(Profiles.of("dev"))) {
+                // dev/local: monta URL para servir via endpoint local
+                urlFoto = "http://localhost:8080/pessoas/fotos-perfil/" + urlFoto;
+            }
         }
 
         return new PersonalTrainerDisponivelResponseDTO(

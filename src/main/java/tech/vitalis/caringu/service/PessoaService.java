@@ -1,6 +1,8 @@
 package tech.vitalis.caringu.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -10,24 +12,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.Profiles;
 import tech.vitalis.caringu.config.GerenciadorTokenJwt;
+import tech.vitalis.caringu.dtos.Pessoa.PessoaRequestPostDTO;
 import tech.vitalis.caringu.dtos.Pessoa.PessoaResponseFotoPerfilGetDTO;
 import tech.vitalis.caringu.dtos.Pessoa.PessoaResponseGetDTO;
-import tech.vitalis.caringu.dtos.Pessoa.PessoaRequestPostDTO;
 import tech.vitalis.caringu.dtos.Pessoa.security.ControleLogin;
 import tech.vitalis.caringu.dtos.Pessoa.security.PessoaTokenDTO;
+import tech.vitalis.caringu.entity.Pessoa;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.exception.Pessoa.ContaBloqueadaException;
 import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
 import tech.vitalis.caringu.exception.Pessoa.PessoaNaoEncontradaException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
 import tech.vitalis.caringu.mapper.PessoaMapper;
-import tech.vitalis.caringu.entity.Pessoa;
 import tech.vitalis.caringu.repository.PessoaRepository;
 import tech.vitalis.caringu.service.ArmazenamentoFotos.ArmazenamentoService;
-
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -236,11 +235,11 @@ public class PessoaService {
 
         PessoaResponseFotoPerfilGetDTO dto = pessoaMapper.toFotoPerfilDTO(pessoa);
 
-        String urlFinal;
+        String urlFinal = "";
 
         if (env.acceptsProfiles(Profiles.of("prod"))) {
             urlFinal = dto.urlFotoPerfil();
-        } else {
+        } else if (env.acceptsProfiles((Profiles.of("dev")))) {
             String nomeArquivo = dto.urlFotoPerfil();
             urlFinal = "http://localhost:8080/pessoas/fotos-perfil/" + nomeArquivo;
         }
