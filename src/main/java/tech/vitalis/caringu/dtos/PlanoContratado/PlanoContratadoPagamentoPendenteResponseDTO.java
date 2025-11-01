@@ -1,7 +1,7 @@
 package tech.vitalis.caringu.dtos.PlanoContratado;
 
 import tech.vitalis.caringu.entity.Aluno;
-import tech.vitalis.caringu.enums.StatusEnum;
+import tech.vitalis.caringu.core.domain.valueObject.StatusEnum;
 
 import java.time.LocalDate;
 

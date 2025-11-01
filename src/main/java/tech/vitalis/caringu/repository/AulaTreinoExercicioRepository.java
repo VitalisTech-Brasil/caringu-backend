@@ -3,6 +3,7 @@ package tech.vitalis.caringu.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.AulaComTreinoModeloCruDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.TreinoDetalhadoRepositoryDTO;
 import tech.vitalis.caringu.entity.AulaTreinoExercicio;
 
@@ -40,6 +41,38 @@ public interface AulaTreinoExercicioRepository extends JpaRepository<AulaTreinoE
             @Param("idAula") Integer idAula,
             @Param("idAluno") Integer idAluno
     );
+
+    @Query("""
+                SELECT new tech.vitalis.caringu.dtos.AulaTreinoExercicio.AulaComTreinoModeloCruDTO(
+                    a.planoContratado.aluno.id,
+                    a.planoContratado.aluno.nome,
+                    ate.id,
+                    ate.aula.id,
+                    a.dataHorarioInicio,
+                    a.dataHorarioFim,
+                    t.id,
+                    t.nome,
+                    e.id,
+                    e.nome,
+                    p.id,
+                    p.nome,
+                    p.urlFotoPerfil
+                )
+                FROM AulaTreinoExercicio ate
+                JOIN ate.aula a
+                JOIN ate.treinoExercicio te
+                JOIN te.treino t
+                JOIN te.exercicio e
+                JOIN t.personal p
+                WHERE a.planoContratado.aluno.id = :idAluno
+                  AND a.dataHorarioInicio > CURRENT_TIMESTAMP
+                  AND a.status IN (
+                              tech.vitalis.caringu.enums.Aula.AulaStatusEnum.AGENDADO,
+                              tech.vitalis.caringu.enums.Aula.AulaStatusEnum.REAGENDADO
+                                  )
+                ORDER BY a.dataHorarioInicio ASC
+            """)
+    List<AulaComTreinoModeloCruDTO> listarProximasAulas(@Param("idAluno") Integer idAluno);
 
     @Query("""
                 SELECT

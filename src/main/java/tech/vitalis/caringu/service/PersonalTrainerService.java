@@ -24,9 +24,12 @@ import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
 import tech.vitalis.caringu.mapper.PersonalTrainerMapper;
 import tech.vitalis.caringu.repository.*;
+import tech.vitalis.caringu.service.ArmazenamentoFotos.ArmazenamentoService;
 import tech.vitalis.caringu.strategy.Pessoa.GeneroEnumValidationStrategy;
 
 import org.springframework.data.domain.Pageable;
+
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,11 +59,15 @@ public class PersonalTrainerService {
     private final CidadeRepository cidadeRepository;
     private final PlanoRepository planoRepository;
 
+    private final ArmazenamentoService armazenamentoInterface;
+
     public PersonalTrainerService(PasswordEncoder passwordEncoder, PessoaRepository pessoaRepository,
                                   PersonalTrainerMapper personalTrainerMapper, PersonalTrainerRepository personalTrainerRepository,
                                   EspecialidadeRepository especialidadeRepository, PreferenciaNotificacaoService preferenciaNotificacaoService,
                                   PersonalTrainerBairroRepository personalTrainerBairroRepository, BairroRepository bairroRepository,
-                                  CidadeRepository cidadeRepository, PlanoRepository planoRepository) {
+                                  CidadeRepository cidadeRepository, PlanoRepository planoRepository,
+                                  ArmazenamentoService armazenamentoInterface
+    ) {
         this.passwordEncoder = passwordEncoder;
         this.pessoaRepository = pessoaRepository;
         this.personalTrainerMapper = personalTrainerMapper;
@@ -71,6 +78,7 @@ public class PersonalTrainerService {
         this.bairroRepository = bairroRepository;
         this.cidadeRepository = cidadeRepository;
         this.planoRepository = planoRepository;
+        this.armazenamentoInterface = armazenamentoInterface;
     }
 
     public List<PersonalTrainerResponseGetDTO> listar() {
@@ -116,12 +124,36 @@ public class PersonalTrainerService {
         return personalTrainerMapper.toResponseDTO(personalTrainer, bairro, cidade);
     }
 
-    public List<PersonalTrainerDisponivelResponseDTO> listarPersonaisDisponiveis() {
+    public List<PersonalTrainerDisponivelResponseDTO> listarPersonaisDisponiveis(Double filtroNota) {
         List<PersonalTrainerInfoBasicaDTO> basicos = personalTrainerRepository.buscarBasicos();
 
-        List<Integer> ids = basicos.stream()
+        List<PersonalTrainerInfoBasicaDTO> basicosComMediaAjustada = basicos.stream()
+                .map(b -> new PersonalTrainerInfoBasicaDTO(
+                        b.id(),
+                        b.nomePersonal(),
+                        b.email(),
+                        b.celular(),
+                        b.urlFotoPerfil(),
+                        b.genero(),
+                        b.experiencia(),
+                        b.bairro(),
+                        b.cidade(),
+                        b.mediaEstrela() != null ? Math.round(b.mediaEstrela() * 2) / 2.0 : 0.0,
+                        b.quantidadeAvaliacao()
+                ))
+                .toList();
+
+        if (filtroNota != null) {
+            basicosComMediaAjustada = basicosComMediaAjustada.stream()
+                    .filter(p -> p.mediaEstrela() != null && p.mediaEstrela().equals(filtroNota))
+                    .toList();
+        }
+
+        List<Integer> ids = basicosComMediaAjustada.stream()
                 .map(PersonalTrainerInfoBasicaDTO::id)
                 .toList();
+
+        if (ids.isEmpty()) return List.of();
 
         Map<Integer, List<String>> especialidadesPorPersonal = especialidadeRepository.buscarNomesPorPersonalIds(ids)
                 .stream()
@@ -130,40 +162,16 @@ public class PersonalTrainerService {
                         Collectors.mapping(obj -> (String) obj[1], Collectors.toList())
                 ));
 
-        List<PlanoResumoDTO> planos = planoRepository.findResumoByPersonalIds(ids);
-
-        // Agrupa planos por personalId
-        Map<Integer, List<PlanoResumoDTO>> planosPorPersonal = planos.stream()
+        Map<Integer, List<PlanoResumoDTO>> planosPorPersonal = planoRepository.findResumoByPersonalIds(ids)
+                .stream()
                 .collect(Collectors.groupingBy(PlanoResumoDTO::personalTrainerId));
 
-        return basicos.stream()
-                .map(p -> {
-                    String urlFoto = p.urlFotoPerfil();
-                    if (urlFoto != null && !urlFoto.startsWith("http") && !env.acceptsProfiles(Profiles.of("prod"))) {
-                        urlFoto = "http://localhost:8080/pessoas/fotos-perfil/" + urlFoto;
-                    }
-
-                    // Arredondar média de estrelas para meio em meio (ex: 3.7 → 3.5, 3.8 → 4.0)
-                    Double mediaEstrela = p.mediaEstrela() != null
-                            ? Math.round(p.mediaEstrela() * 2) / 2.0
-                            : 0.0;
-
-                    return new PersonalTrainerDisponivelResponseDTO(
-                            p.id(),
-                            p.nomePersonal(),
-                            p.email(),
-                            p.celular(),
-                            p.experiencia(),
-                            urlFoto,
-                            p.genero(),
-                            especialidadesPorPersonal.getOrDefault(p.id(), List.of()),
-                            planosPorPersonal.getOrDefault(p.id(), List.of()),
-                            p.bairro(),
-                            p.cidade(),
-                            mediaEstrela,
-                            p.quantidadeAvaliacao()
-                    );
-                })
+        return basicosComMediaAjustada.stream()
+                .map(p -> personalTrainerMapper.toResponse(
+                        p,
+                        especialidadesPorPersonal.getOrDefault(p.id(), List.of()),
+                        planosPorPersonal.getOrDefault(p.id(), List.of())
+                ))
                 .toList();
     }
 
@@ -172,33 +180,11 @@ public class PersonalTrainerService {
         PersonalTrainerInfoBasicaDTO basico = personalTrainerRepository.buscarBasicoPorId(id)
                 .orElseThrow(() -> new PersonalNaoEncontradoException("Personal não encontrado"));
 
-        // Buscar especialidades
+        // Buscar especialidades e planos
         List<String> especialidades = especialidadeRepository.buscarNomesPorPersonalId(id);
-
-        // Buscar planos
         List<PlanoResumoDTO> planos = planoRepository.findResumoByPersonalId(id);
 
-        // Arredondar média de estrelas para meio em meio (ex: 3.7 → 3.5, 3.8 → 4.0)
-        Double mediaEstrela = basico.mediaEstrela() != null
-                ? Math.round(basico.mediaEstrela() * 2) / 2.0
-                : 0.0;
-
-        // Montar e retornar DTO completo
-        return new PersonalTrainerDisponivelResponseDTO(
-                basico.id(),
-                basico.nomePersonal(),
-                basico.email(),
-                basico.celular(),
-                basico.experiencia(),
-                basico.urlFotoPerfil(),
-                basico.genero(),
-                especialidades,
-                planos,
-                basico.bairro(),
-                basico.cidade(),
-                mediaEstrela,
-                basico.quantidadeAvaliacao()
-        );
+        return personalTrainerMapper.toResponse(basico, especialidades, planos);
     }
 
 

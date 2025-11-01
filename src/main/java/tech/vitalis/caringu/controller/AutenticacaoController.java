@@ -133,7 +133,8 @@ public class AutenticacaoController {
                             "pessoaId", pessoa.getId(),
                             "nome", pessoa.getNome(),
                             "email", pessoa.getEmail(),
-                            "urlFotoPerfil", pessoa.getUrlFotoPerfil()
+                            "urlFotoPerfil", pessoa.getUrlFotoPerfil(),
+                            "tipo", "ALUNO"
                     ));
                 })
                 .orElse(ResponseEntity.status(401).body(Map.of("erro", "Token inválido do Google.")));

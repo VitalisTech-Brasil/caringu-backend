@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.vitalis.caringu.dtos.Aula.ProximaAulaDTO;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.AulaComTreinoDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.AtribuicaoTreinosAulaRequestPostDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.RemarcarAulaTreinoRequestDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.AtribuicaoTreinosAulaResponsePostDTO;
@@ -39,6 +39,13 @@ public class AulaTreinoExercicioController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @GetMapping("/buscar-aulas/{idAluno}")
+    @Operation(summary = "Listar próximas 2 aulas do aluno")
+    public ResponseEntity<List<AulaComTreinoDTO>> listarProximasAulas(@PathVariable Integer idAluno) {
+        List<AulaComTreinoDTO> proxAulas = aulaTreinoExercicioService.listarProximasAulas(idAluno);
+        return ResponseEntity.ok(proxAulas);
+    }
+
     @PostMapping("/atribuicao/treinos")
     public ResponseEntity<AtribuicaoTreinosAulaResponsePostDTO> atribuirTreinoAAula(
             @Valid @RequestBody AtribuicaoTreinosAulaRequestPostDTO requestDTO
@@ -53,12 +60,5 @@ public class AulaTreinoExercicioController {
     ) {
         RemarcarAulaTreinoResponseDTO response = aulaTreinoExercicioService.remarcarAulaTreino(request);
         return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/buscar-aulas/{id}")
-    @Operation(summary = "Listar próximas 2 aulas do aluno")
-    public ResponseEntity<List<ProximaAulaDTO>> listarProximasAulas(@PathVariable Integer id) {
-        List<ProximaAulaDTO> proxAulas = aulaTreinoExercicioService.listarProximasAulas(id);
-        return ResponseEntity.ok(proxAulas);
     }
 }

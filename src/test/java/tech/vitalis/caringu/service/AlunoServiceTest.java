@@ -207,7 +207,7 @@ class AlunoServiceTest {
         AlunoRequestPatchDTO dto = new AlunoRequestPatchDTO(
                 "João Atualizado", "joao.atualizado@email.com", null, null,
                 null, null, null, null,
-                null, null, null
+                null, null
         );
 
         AlunoResponsePatchDTO response = alunoService.atualizarParcial(1, dto);

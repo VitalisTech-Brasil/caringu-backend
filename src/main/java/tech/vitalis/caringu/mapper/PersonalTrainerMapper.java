@@ -5,10 +5,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.stereotype.Component;
 import tech.vitalis.caringu.dtos.Especialidade.EspecialidadeResponseGetDTO;
-import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerRequestPatchDTO;
-import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerRequestPostDTO;
-import tech.vitalis.caringu.dtos.PersonalTrainer.PersonalTrainerResponseGetDTO;
+import tech.vitalis.caringu.dtos.PersonalTrainer.*;
 import tech.vitalis.caringu.dtos.PersonalTrainerBairro.PersonalTrainerComBairroCidadeResponseGetDTO;
+import tech.vitalis.caringu.dtos.Plano.PlanoResumoDTO;
 import tech.vitalis.caringu.entity.*;
 import tech.vitalis.caringu.exception.Especialidade.EspecialidadeNaoEncontrada;
 import tech.vitalis.caringu.repository.EspecialidadeRepository;
@@ -181,6 +180,36 @@ public class PersonalTrainerMapper {
         }
 
         return pt;
+    }
+
+    public PersonalTrainerDisponivelResponseDTO toResponse(
+            PersonalTrainerInfoBasicaDTO basico,
+            List<String> especialidades,
+            List<PlanoResumoDTO> planos
+    ) {
+        String urlFoto = basico.urlFotoPerfil() != null
+                ? armazenamentoInterface.gerarUrlPreAssinada(basico.urlFotoPerfil(), Duration.ofMinutes(5))
+                : null;
+
+        if (urlFoto != null && !urlFoto.startsWith("http") && !env.acceptsProfiles(Profiles.of("dev"))) {
+            urlFoto = "http://localhost:8080/pessoas/fotos-perfil/" + urlFoto;
+        }
+
+        return new PersonalTrainerDisponivelResponseDTO(
+                basico.id(),
+                basico.nomePersonal(),
+                basico.email(),
+                basico.celular(),
+                basico.experiencia(),
+                urlFoto,
+                basico.genero(),
+                especialidades,
+                planos,
+                basico.bairro(),
+                basico.cidade(),
+                basico.mediaEstrela(),
+                basico.quantidadeAvaliacao()
+        );
     }
 
 }

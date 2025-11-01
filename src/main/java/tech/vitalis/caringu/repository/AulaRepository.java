@@ -1,12 +1,13 @@
 package tech.vitalis.caringu.repository;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGetDTO;
-import tech.vitalis.caringu.dtos.Aula.ProximaAulaDTO;
+import tech.vitalis.caringu.dtos.Aula.Request.AulasAlunoRequestDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulasAgendadasResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoCargaDashboardResponseDTO;
@@ -15,6 +16,7 @@ import tech.vitalis.caringu.dtos.SessaoTreino.SessaoAulasAgendadasResponseDTO;
 import tech.vitalis.caringu.entity.Aula;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -93,7 +95,7 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
                   AND pt.id = :idPersonal
                   AND au.id = :idAula
             """)
-    AulasAgendadasResponseDTO findAllInfoAulaPorPersonal(@Param("idPersonal") Integer idPersonal, @Param("idAula") Integer idAula);
+    List<AulasAgendadasResponseDTO> findAllInfoAulaPorPersonal(@Param("idPersonal") Integer idPersonal, @Param("idAula") Integer idAula);
 
     @Query("""
                 SELECT new tech.vitalis.caringu.dtos.SessaoTreino.SessaoAulasAgendadasResponseDTO(
@@ -311,30 +313,47 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
             AulaStatusEnum aulaStatus
     );
 
-    @Query("""
-                SELECT new tech.vitalis.caringu.dtos.Aula.ProximaAulaDTO(
-                    ate.id,
-                    ate.aula.id,
-                    a.dataHorarioInicio,
-                    a.dataHorarioFim,
-                    t.id,
-                    t.nome,
-                    e.id,
-                    e.nome,
-                    p.id,
-                    p.nome,
-                    p.urlFotoPerfil
-                )
-                FROM AulaTreinoExercicio ate
-                JOIN ate.aula a
-                JOIN ate.treinoExercicio te
-                JOIN te.treino t
-                JOIN te.exercicio e
-                JOIN t.personal p
-                WHERE a.planoContratado.aluno.id = :alunoId
-                  AND a.dataHorarioInicio > CURRENT_TIMESTAMP
-                  AND a.status = tech.vitalis.caringu.enums.Aula.AulaStatusEnum.AGENDADO
-                ORDER BY a.dataHorarioInicio ASC
-            """)
-    List<ProximaAulaDTO> listarProximasAulas(@Param("alunoId") Integer alunoId, Pageable pageable);
+    @Query(value = """
+    SELECT DISTINCT new tech.vitalis.caringu.dtos.Aula.Request.AulasAlunoRequestDTO(
+        a.id,
+        a.dataHorarioInicio,
+        a.dataHorarioFim,
+        pt.nome,
+        t.id
+    )
+    FROM Aula a
+    JOIN a.planoContratado pc
+    JOIN pc.aluno al
+    JOIN pc.plano p
+    JOIN p.personalTrainer pt
+    JOIN AulaTreinoExercicio ate ON ate.aula.id = a.id
+    JOIN ate.treinoExercicio te
+    JOIN te.treino t
+    WHERE al.id = :idAluno
+      AND pc.status = 'ATIVO'
+      AND (
+          :data IS NULL
+          OR (a.dataHorarioInicio >= :dataInicio AND a.dataHorarioInicio < :dataFim)
+      )
+    ORDER BY a.dataHorarioInicio DESC
+    """,
+            countQuery = """
+    SELECT COUNT(DISTINCT a.id)
+    FROM Aula a
+    JOIN a.planoContratado pc
+    JOIN pc.aluno al
+    WHERE al.id = :idAluno
+      AND pc.status = 'ATIVO'
+      AND (
+          :data IS NULL
+          OR (a.dataHorarioInicio >= :dataInicio AND a.dataHorarioInicio < :dataFim)
+      )
+    """)
+    Page<AulasAlunoRequestDTO> listarAulasPorAlunoComPlano(
+            @Param("idAluno") Integer idAluno,
+            @Param("data") LocalDate data,
+            @Param("dataInicio") LocalDateTime dataInicio,
+            @Param("dataFim") LocalDateTime dataFim,
+            Pageable pageable
+    );
 }

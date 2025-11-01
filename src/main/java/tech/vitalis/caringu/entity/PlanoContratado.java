@@ -1,6 +1,6 @@
 package tech.vitalis.caringu.entity;
 import jakarta.persistence.*;
-import tech.vitalis.caringu.enums.StatusEnum;
+import tech.vitalis.caringu.core.domain.valueObject.StatusEnum;
 
 import java.time.LocalDate;
 

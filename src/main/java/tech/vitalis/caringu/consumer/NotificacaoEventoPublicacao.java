@@ -9,7 +9,7 @@ import tech.vitalis.caringu.dtos.Notificacoes.NotificacaoPlanoVencimentoDto;
 import tech.vitalis.caringu.entity.*;
 import tech.vitalis.caringu.enums.Notificacoes.TipoNotificacaoEnum;
 import tech.vitalis.caringu.repository.NotificacoesRepository;
-import tech.vitalis.caringu.repository.PlanoContratadoRepository;
+import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoContratadoRepository;
 import tech.vitalis.caringu.repository.PlanoRepository;
 import tech.vitalis.caringu.service.NotificacaoPlanoVencimentoService;
 

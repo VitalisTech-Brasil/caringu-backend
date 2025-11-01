@@ -34,7 +34,7 @@ import tech.vitalis.caringu.exception.Pessoa.EmailJaCadastradoException;
 import tech.vitalis.caringu.exception.Pessoa.PessoaNaoEncontradaException;
 import tech.vitalis.caringu.exception.Pessoa.SenhaInvalidaException;
 import tech.vitalis.caringu.exception.PlanoContratado.AlunoSemPlanoContratadoException;
-import tech.vitalis.caringu.exception.PlanoContratado.PlanoContratadoNaoEncontradoException;
+import tech.vitalis.caringu.core.exceptions.planoContratado.PlanoContratadoNaoEncontradoException;
 import tech.vitalis.caringu.exception.PlanoContratado.PlanoNaoPertenceAoAlunoException;
 import tech.vitalis.caringu.exception.PreferenciasNotificacao.PreferenciasNotificacaoJaExisteException;
 import tech.vitalis.caringu.exception.PreferenciasNotificacao.PreferenciasNotificacaoNaoEncontradaException;

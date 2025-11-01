@@ -1,31 +1,38 @@
 package tech.vitalis.caringu.service;
 
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import tech.vitalis.caringu.core.domain.valueObject.StatusEnum;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGetDTO;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoItemDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoRequestPostDTO;
+import tech.vitalis.caringu.dtos.Aula.Request.AulasAlunoRequestDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoCriadaDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoResponsePostDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulasAgendadasResponseDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AulasAlunoResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.*;
 import tech.vitalis.caringu.entity.Aula;
-import tech.vitalis.caringu.entity.PlanoContratado;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
-import tech.vitalis.caringu.enums.StatusEnum;
 import tech.vitalis.caringu.exception.Aula.AulaConflitanteException;
 import tech.vitalis.caringu.exception.PlanoContratado.AlunoSemPlanoContratadoException;
 import tech.vitalis.caringu.exception.SessaoTreino.SessaoTreinoNaoEncontradoException;
+import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoContratadoEntity;
+import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoContratadoRepository;
 import tech.vitalis.caringu.mapper.AulaMapper;
 import tech.vitalis.caringu.repository.AulaRepository;
 import tech.vitalis.caringu.repository.AulaTreinoExercicioRepository;
-import tech.vitalis.caringu.repository.PlanoContratadoRepository;
 import tech.vitalis.caringu.repository.TreinoExercicioRepository;
 import tech.vitalis.caringu.strategy.SessaoTreino.StatusSessaoTreinoValidationStrategy;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -56,15 +63,25 @@ public class AulaService {
     }
 
     public AulasAgendadasResponseDTO listarInfoAulaPorPersonal(Integer idPersonal, Integer idAula) {
-        return aulaRepository.findAllInfoAulaPorPersonal(idPersonal, idAula);
+        List<AulasAgendadasResponseDTO> aulas = aulaRepository.findAllInfoAulaPorPersonal(idPersonal, idAula);
+        return aulas.isEmpty() ? null : aulas.getFirst();
     }
 
     public List<SessaoAulasAgendadasResponseDTO> listarAulasPorPersonal(Integer idPersonal) {
-        return aulaRepository.findAllAulasPorPersonal(idPersonal);
+
+        List<SessaoAulasAgendadasResponseDTO> aulasPorAluno = aulaRepository.findAllAulasPorPersonal(idPersonal);
+
+        return aulasPorAluno.stream()
+                .map(aulaMapper::toSessaoAulasAgendadasResponseDTOComUrlPreAssinada)
+                .toList();
     }
 
     public List<SessaoAulasAgendadasResponseDTO> listarAulasPorAluno(Integer idAluno) {
-        return aulaRepository.findAllAulasPorAluno(idAluno);
+        List<SessaoAulasAgendadasResponseDTO> aulasPorAluno = aulaRepository.findAllAulasPorAluno(idAluno);
+
+        return aulasPorAluno.stream()
+                .map(aulaMapper::toSessaoAulasAgendadasResponseDTOComUrlPreAssinada)
+                .toList();
     }
 
     public List<EvolucaoCargaDashboardResponseDTO> buscarEvolucaoCarga(Integer idAluno, Integer idExercicio) {
@@ -109,7 +126,7 @@ public class AulaService {
     ) {
 
         // 1. Buscar plano ativo do aluno
-        PlanoContratado planoAtivo = planoContratadoRepository
+        PlanoContratadoEntity planoAtivo = planoContratadoRepository
                 .findFirstByAlunoIdAndStatus(idAluno, StatusEnum.ATIVO)
                 .orElseThrow(() -> new AlunoSemPlanoContratadoException("Aluno não possui plano contratado ativo."));
 
@@ -185,6 +202,52 @@ public class AulaService {
                 .toList();
 
         return new AulaRascunhoResponsePostDTO(aulasCriadas);
+    }
+
+    //visualizar aulas
+    public Page<AulasAlunoResponseDTO> listarAulasPorAlunoComPlano(Integer idAluno, Pageable pageable, LocalDate data) {
+        final Map<Integer, String> diasDaSemana = Map.of(
+                7, "Domingo",
+                1, "Segunda-feira",
+                2, "Terça-feira",
+                3, "Quarta-feira",
+                4, "Quinta-feira",
+                5, "Sexta-feira",
+                6, "Sábado"
+        );
+
+        LocalDateTime dataInicio = null;
+        LocalDateTime dataFim = null;
+
+        if (data != null) {
+            dataInicio = data.atStartOfDay(); // 00:00
+            dataFim = data.plusDays(1).atStartOfDay(); // dia seguinte 00:00
+        }
+
+        Page<AulasAlunoRequestDTO> aulasPage = aulaRepository.listarAulasPorAlunoComPlano(
+                idAluno, data, dataInicio, dataFim, pageable
+        );
+
+        List<AulasAlunoResponseDTO> mapperAula = aulasPage.getContent().stream()
+                .map(dto -> {
+                    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+                    int diaSemana = dto.dataHorarioInicio().getDayOfWeek().getValue();
+
+                    return new AulasAlunoResponseDTO(
+                            dto.aulaId(),
+                            dto.dataHorarioInicio().format(dateFormatter),
+                            diasDaSemana.getOrDefault(diaSemana, "Dia Desconhecido"),
+                            dto.dataHorarioInicio().format(timeFormatter),
+                            dto.dataHorarioFim().format(timeFormatter),
+                            dto.nomePersonal(),
+                            dto.treinoId()
+                    );
+                })
+                .toList();
+
+        return new PageImpl<>(mapperAula, pageable, aulasPage.getTotalElements());
     }
 
     public void atualizarStatus(Integer idAula, AulaStatusEnum novoStatus) {
