@@ -41,6 +41,7 @@ public interface PersonalTrainerRepository extends JpaRepository<PersonalTrainer
     GROUP BY
         p.id, p.nome, p.email, p.celular, p.urlFotoPerfil,
         p.genero, p.experiencia, b.nome, c.nome
+    ORDER BY COALESCE(CAST(AVG(a.nota) AS double), 0.0) DESC
 """)
     List<PersonalTrainerInfoBasicaDTO> buscarBasicos();
 
