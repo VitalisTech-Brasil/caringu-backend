@@ -1,9 +1,10 @@
 package tech.vitalis.caringu.service;
 
 import jakarta.transaction.Transactional;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import tech.vitalis.caringu.dtos.Aula.ProximaAulaDTO;
+import tech.vitalis.caringu.core.domain.valueObject.StatusEnum;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.AulaComTreinoDTO;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.AulaComTreinoModeloCruDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.AtribuicaoTreinosAulaRequestPostDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.AtribuicaoTreinosAulaTreinoDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.HorarioAulaDTO;
@@ -12,18 +13,16 @@ import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.*;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.TreinoDetalhadoRepositoryDTO;
 import tech.vitalis.caringu.entity.*;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
-import tech.vitalis.caringu.core.domain.valueObject.StatusEnum;
 import tech.vitalis.caringu.exception.Aula.AulaNaoEncontradaException;
 import tech.vitalis.caringu.exception.PlanoContratado.AlunoSemPlanoContratadoException;
 import tech.vitalis.caringu.exception.PlanoContratado.PlanoNaoPertenceAoAlunoException;
 import tech.vitalis.caringu.exception.Treino.TreinoNaoEncontradoException;
 import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoContratadoEntity;
+import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoContratadoRepository;
 import tech.vitalis.caringu.mapper.AulaTreinoExercicioMapper;
 import tech.vitalis.caringu.mapper.ExecucaoExercicioMapper;
 import tech.vitalis.caringu.repository.*;
-import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoContratadoRepository;
 
-import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -92,9 +91,19 @@ public class AulaTreinoExercicioService {
         );
     }
 
-    public List<ProximaAulaDTO> listarProximasAulas(int idAluno){
-        Pageable pageable = PageRequest.of(0, 2);
-        return aulaRepository.listarProximasAulas(idAluno, pageable);
+    public List<AulaComTreinoDTO> listarProximasAulas(Integer idAluno) {
+
+        final int QUANTIDADE_AULAS_EXIBIDAS = 2;
+
+        List<AulaComTreinoModeloCruDTO> listaCrua = aulaTreinoExercicioRepository
+                .listarProximasAulas(idAluno);
+
+        List<AulaComTreinoDTO> aulasAgrupadas = aulaTreinoExercicioMapper
+                .toAulaComTreinoDTO(listaCrua);
+
+        return aulasAgrupadas.stream()
+                .limit(QUANTIDADE_AULAS_EXIBIDAS)
+                .toList();
     }
 
     @Transactional

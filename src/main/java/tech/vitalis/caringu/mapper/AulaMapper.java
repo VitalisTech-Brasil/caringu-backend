@@ -36,7 +36,9 @@ public class AulaMapper {
         );
     }
 
-    public SessaoAulasAgendadasResponseDTO toSessaoAulasAgendadasResponseDTOComUrlPreAssinada(SessaoAulasAgendadasResponseDTO responseDTO) {
+    public SessaoAulasAgendadasResponseDTO toSessaoAulasAgendadasResponseDTOComUrlPreAssinada(
+            SessaoAulasAgendadasResponseDTO responseDTO
+    ) {
         String urlFotoAluno = responseDTO.urlFotoPerfilAluno() != null
                 ? armazenamentoInterface.gerarUrlPreAssinada(responseDTO.urlFotoPerfilAluno(), Duration.ofMinutes(5))
                 : null;
