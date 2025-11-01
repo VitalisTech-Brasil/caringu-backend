@@ -91,8 +91,10 @@ public class PersonalTrainerController {
     }
 
     @GetMapping("/disponiveis")
-    public ResponseEntity<List<PersonalTrainerDisponivelResponseDTO>> listarPersonaisDisponiveis() {
-        List<PersonalTrainerDisponivelResponseDTO> lista = service.listarPersonaisDisponiveis();
+    public ResponseEntity<List<PersonalTrainerDisponivelResponseDTO>> listarPersonaisDisponiveis(
+            @RequestParam(required = false) Double filtroNota
+    ) {
+        List<PersonalTrainerDisponivelResponseDTO> lista = service.listarPersonaisDisponiveis(filtroNota);
         return ResponseEntity.ok(lista);
     }
 

@@ -5,29 +5,28 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import tech.vitalis.caringu.core.domain.entity.PlanoContratado;
+import tech.vitalis.caringu.core.domain.valueObject.StatusEnum;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGetDTO;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoItemDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoRequestPostDTO;
-import tech.vitalis.caringu.dtos.Aula.Response.AulasAlunoResponseDTO;
+import tech.vitalis.caringu.dtos.Aula.Request.AulasAlunoRequestDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoCriadaDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoResponsePostDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulasAgendadasResponseDTO;
-import tech.vitalis.caringu.dtos.Aula.Request.AulasAlunoRequestDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AulasAlunoResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.*;
 import tech.vitalis.caringu.entity.Aula;
-import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoContratadoEntity;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
-import tech.vitalis.caringu.core.domain.valueObject.StatusEnum;
 import tech.vitalis.caringu.exception.Aula.AulaConflitanteException;
 import tech.vitalis.caringu.exception.PlanoContratado.AlunoSemPlanoContratadoException;
 import tech.vitalis.caringu.exception.SessaoTreino.SessaoTreinoNaoEncontradoException;
+import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoContratadoEntity;
+import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoContratadoRepository;
 import tech.vitalis.caringu.mapper.AulaMapper;
 import tech.vitalis.caringu.repository.AulaRepository;
 import tech.vitalis.caringu.repository.AulaTreinoExercicioRepository;
-import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoContratadoRepository;
 import tech.vitalis.caringu.repository.TreinoExercicioRepository;
 import tech.vitalis.caringu.strategy.SessaoTreino.StatusSessaoTreinoValidationStrategy;
 
@@ -64,7 +63,8 @@ public class AulaService {
     }
 
     public AulasAgendadasResponseDTO listarInfoAulaPorPersonal(Integer idPersonal, Integer idAula) {
-        return aulaRepository.findAllInfoAulaPorPersonal(idPersonal, idAula);
+        List<AulasAgendadasResponseDTO> aulas = aulaRepository.findAllInfoAulaPorPersonal(idPersonal, idAula);
+        return aulas.isEmpty() ? null : aulas.getFirst();
     }
 
     public List<SessaoAulasAgendadasResponseDTO> listarAulasPorPersonal(Integer idPersonal) {
