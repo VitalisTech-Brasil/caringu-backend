@@ -121,7 +121,8 @@ public class SecurityConfiguracao {
         CorsConfiguration configuracao = new CorsConfiguration();
         configuracao.setAllowedOrigins(Arrays.asList(
                 "http://localhost:5173",
-                "https://caringu.ddns.net"
+                "https://caringu.ddns.net",
+                "https://caringu.zapto.org"
         ));
         configuracao.setAllowedMethods(
                 Arrays.asList(
