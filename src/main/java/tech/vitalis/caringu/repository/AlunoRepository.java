@@ -83,31 +83,30 @@ public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
     List<Object[]> findProgressoAulasByAlunoId(@Param("alunoId") Long alunoId);
 
     @Query(value = """
-SELECT 
-    e.id as exercicioId,
-    e.nome as nomeExercicio,
-    MIN(ee.carga_executada) as cargaAntiga,
-    MAX(ee.carga_executada) as cargaAtual,
-    (MAX(ee.carga_executada) - MIN(ee.carga_executada)) as evolucao
-FROM planos_contratados pc
-JOIN alunos al ON al.id = pc.alunos_id
-JOIN aulas a ON a.planos_contratados_id = pc.id
-JOIN aulas_treinos_exercicios ate ON ate.aulas_id = a.id
-JOIN execucoes_exercicios ee ON ee.aulas_treinos_exercicios_id = ate.id
-JOIN treinos_exercicios te ON te.id = ate.treinos_exercicios_id
-JOIN exercicios e ON e.id = te.exercicios_id
-WHERE al.id = :alunoId
-AND a.status = 'REALIZADO'
-AND YEAR(a.data_horario_inicio) = YEAR(CURRENT_DATE())
-AND MONTH(a.data_horario_inicio) = MONTH(CURRENT_DATE())
-AND ee.carga_executada > 0
-AND ee.finalizado = true
-GROUP BY e.id, e.nome
-HAVING COUNT(ee.id) > 1
-AND MAX(ee.carga_executada) > MIN(ee.carga_executada)
-ORDER BY evolucao DESC
-LIMIT 1
-""", nativeQuery = true)
+            SELECT
+                e.id AS exercicioId,
+                e.nome AS nomeExercicio,
+                MIN(ee.carga_executada) AS cargaAntiga,
+                MAX(ee.carga_executada) AS cargaAtual,
+                (MAX(ee.carga_executada) - MIN(ee.carga_executada)) AS evolucao
+            FROM planos_contratados pc
+            JOIN alunos al ON al.id = pc.alunos_id
+            JOIN aulas a ON a.planos_contratados_id = pc.id
+            JOIN aulas_treinos_exercicios ate ON ate.aulas_id = a.id
+            JOIN execucoes_exercicios ee ON ee.aulas_treinos_exercicios_id = ate.id
+            JOIN treinos_exercicios te ON te.id = ate.treinos_exercicios_id
+            JOIN exercicios e ON e.id = te.exercicios_id
+            WHERE al.id = 6
+              AND a.status = 'REALIZADO'
+              AND a.data_horario_inicio BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY) AND CURRENT_DATE()
+              AND ee.carga_executada > 0
+              AND ee.finalizado = TRUE
+            GROUP BY e.id, e.nome
+            HAVING COUNT(ee.id) > 1
+               AND MAX(ee.carga_executada) > MIN(ee.carga_executada)
+            ORDER BY evolucao DESC
+            LIMIT 1;
+            """, nativeQuery = true)
     List<Object[]> findMaiorEvolucaoExercicioPorAlunoMesAtual(@Param("alunoId") Long alunoId);
 
     @Query(value = """
