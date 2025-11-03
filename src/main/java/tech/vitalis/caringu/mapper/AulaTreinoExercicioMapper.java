@@ -8,7 +8,9 @@ import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.AulaTreinoExercici
 import tech.vitalis.caringu.entity.Aula;
 import tech.vitalis.caringu.entity.AulaTreinoExercicio;
 import tech.vitalis.caringu.entity.TreinoExercicio;
+import tech.vitalis.caringu.service.ArmazenamentoFotos.ArmazenamentoService;
 
+import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.*;
@@ -16,9 +18,14 @@ import java.util.*;
 @Component
 public class AulaTreinoExercicioMapper {
 
+    private final ArmazenamentoService armazenamentoInterface;
     private static final DateTimeFormatter FORMATO_DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter FORMATO_HORA = DateTimeFormatter.ofPattern("HH:mm");
     private static final Locale LOCALE_PT_BR = new Locale("pt", "BR");
+
+    public AulaTreinoExercicioMapper(ArmazenamentoService armazenamentoInterface) {
+        this.armazenamentoInterface = armazenamentoInterface;
+    }
 
     // Converte TreinoExercicio → AulaTreinoExercicio vinculado à Aula
     public AulaTreinoExercicio toEntity(Aula aula, TreinoExercicio treinoExercicio, Integer ordem) {
@@ -55,6 +62,11 @@ public class AulaTreinoExercicioMapper {
         Map<Integer, AulaComTreinoDTO> aulasAgrupadas = new LinkedHashMap<>();
 
         for (AulaComTreinoModeloCruDTO dto : listaCrua) {
+
+            String urlFotoTemporaria = dto.urlFotoPerfil() != null
+                    ? armazenamentoInterface.gerarUrlPreAssinada(dto.urlFotoPerfil(), Duration.ofMinutes(5))
+                    : null;
+
             String diaSemanaCapitalizado = dto.dataHorarioInicio()
                     .getDayOfWeek()
                     .getDisplayName(TextStyle.FULL, LOCALE_PT_BR);
@@ -76,7 +88,7 @@ public class AulaTreinoExercicioMapper {
                     dto.nomeTreino(),
                     new ArrayList<>(),
                     dto.nomePersonal(),
-                    dto.urlFotoPerfil()
+                    urlFotoTemporaria
             )).exercicios().add(new ExercicioResumoDTO(
                     dto.exercicioId(),
                     dto.nomeExercicio()
