@@ -242,7 +242,8 @@ public class AulaService {
                             dto.dataHorarioInicio().format(timeFormatter),
                             dto.dataHorarioFim().format(timeFormatter),
                             dto.nomePersonal(),
-                            dto.treinoId()
+                            dto.treinoId(),
+                            dto.nomeTreino()
                     );
                 })
                 .toList();

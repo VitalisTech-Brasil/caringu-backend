@@ -319,7 +319,8 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
         a.dataHorarioInicio,
         a.dataHorarioFim,
         pt.nome,
-        t.id
+        t.id,
+        t.nome
     )
     FROM Aula a
     JOIN a.planoContratado pc

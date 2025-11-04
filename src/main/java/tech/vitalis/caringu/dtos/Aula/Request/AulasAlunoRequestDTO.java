@@ -7,6 +7,7 @@ public record AulasAlunoRequestDTO(
         LocalDateTime dataHorarioInicio,
         LocalDateTime dataHorarioFim,
         String nomePersonal,
-        Integer treinoId
+        Integer treinoId,
+        String nomeTreino
 ) {
 }
