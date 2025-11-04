@@ -7,5 +7,6 @@ public record AulasAlunoResponseDTO(
         String horarioAula,
         String horarioFim,
         String nomePersonal,
-        Integer treinoId
+        Integer treinoId,
+        String nomeTreino
 ) {}
