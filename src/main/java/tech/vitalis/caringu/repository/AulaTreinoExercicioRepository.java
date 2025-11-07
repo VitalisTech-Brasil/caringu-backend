@@ -3,6 +3,7 @@ package tech.vitalis.caringu.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.AcompanhamentoAulaCruDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.AulaComTreinoModeloCruDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.TreinoDetalhadoRepositoryDTO;
 import tech.vitalis.caringu.entity.AulaTreinoExercicio;
@@ -73,6 +74,33 @@ public interface AulaTreinoExercicioRepository extends JpaRepository<AulaTreinoE
                 ORDER BY a.dataHorarioInicio ASC
             """)
     List<AulaComTreinoModeloCruDTO> listarProximasAulas(@Param("idAluno") Integer idAluno);
+
+    @Query("""
+                SELECT new tech.vitalis.caringu.dtos.AulaTreinoExercicio.AcompanhamentoAulaCruDTO(
+                    a.id,
+                    a.dataHorarioInicio,
+                    a.dataHorarioFim,
+                    t.id,
+                    t.nome,
+                    ee.id,
+                    e.nome,
+                    ee.cargaExecutada,
+                    ee.repeticoesExecutadas,
+                    ee.seriesExecutadas,
+                    ee.descansoExecutado,
+                    ate.observacoesPersonalizadas,
+                    e.urlVideo,
+                    ee.finalizado
+                )
+                FROM AulaTreinoExercicio ate
+                JOIN ate.treinoExercicio te
+                JOIN te.treino t
+                JOIN te.exercicio e
+                JOIN ate.aula a
+                JOIN ExecucaoExercicio ee ON ee.aulaTreinoExercicio.id = ate.id
+                WHERE a.id = :idAula
+            """)
+    List<AcompanhamentoAulaCruDTO> listarAcompanharDaAula(@Param("idAula") Integer idAula);
 
     @Query("""
                 SELECT
