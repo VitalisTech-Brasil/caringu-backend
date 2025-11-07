@@ -114,6 +114,7 @@ public class AulaTreinoExercicioMapper {
                 .collect(Collectors.toList());
 
         return new AcompanhamentoAulaResponseDTO(
+                primeira.idAluno(),
                 primeira.idAula(),
                 primeira.dataInicioAula(),
                 primeira.dataFimAula(),

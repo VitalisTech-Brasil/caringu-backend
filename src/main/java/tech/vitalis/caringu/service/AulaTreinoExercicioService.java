@@ -15,6 +15,7 @@ import tech.vitalis.caringu.dtos.AulaTreinoExercicio.TreinoDetalhadoRepositoryDT
 import tech.vitalis.caringu.entity.*;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
 import tech.vitalis.caringu.exception.Aula.AulaNaoEncontradaException;
+import tech.vitalis.caringu.exception.AulaTreinoExercicio.AulaTreinoExercicioNaoEncontradaException;
 import tech.vitalis.caringu.exception.PlanoContratado.AlunoSemPlanoContratadoException;
 import tech.vitalis.caringu.exception.PlanoContratado.PlanoNaoPertenceAoAlunoException;
 import tech.vitalis.caringu.exception.Treino.TreinoNaoEncontradoException;
@@ -110,6 +111,11 @@ public class AulaTreinoExercicioService {
     public AcompanhamentoAulaResponseDTO listarAcompanhamentoDaAula(Integer idAula) {
 
         List<AcompanhamentoAulaCruDTO> linhas = aulaTreinoExercicioRepository.listarAcompanharDaAula(idAula);
+
+        if (linhas.isEmpty()) {
+            throw new AulaTreinoExercicioNaoEncontradaException("Aula Treino Exercicio não encontrado");
+        }
+
         return aulaTreinoExercicioMapper.toAcompanhamentoAulaResponseDTO(linhas);
     }
 

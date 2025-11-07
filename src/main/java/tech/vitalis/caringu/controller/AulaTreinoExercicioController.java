@@ -53,6 +53,7 @@ public class AulaTreinoExercicioController {
             @PathVariable Integer idAula
     ) {
         AcompanhamentoAulaResponseDTO acompanhamento = aulaTreinoExercicioService.listarAcompanhamentoDaAula(idAula);
+
         return ResponseEntity.ok(acompanhamento);
     }
 

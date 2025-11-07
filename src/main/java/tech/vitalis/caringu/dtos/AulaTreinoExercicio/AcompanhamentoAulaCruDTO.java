@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record AcompanhamentoAulaCruDTO(
+        Integer idAluno,
         Integer idAula,
         LocalDateTime dataInicioAula,
         LocalDateTime dataFimAula,
