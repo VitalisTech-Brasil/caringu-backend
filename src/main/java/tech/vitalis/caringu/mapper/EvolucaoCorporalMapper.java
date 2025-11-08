@@ -20,7 +20,7 @@ public class EvolucaoCorporalMapper {
         this.armazenamentoInterface = armazenamentoInterface;
     }
 
-    public EvolucaoCorporal toEntity(EvolucaoCorporalRequestPostDTO dto, Aluno aluno) {
+    public EvolucaoCorporal toEntity(EvolucaoCorporalRequestPostDTO dto) {
         EvolucaoCorporal ec = new EvolucaoCorporal();
         ec.setTipo(dto.tipo());
         ec.setUrlFotoShape(dto.urlFotoShape());

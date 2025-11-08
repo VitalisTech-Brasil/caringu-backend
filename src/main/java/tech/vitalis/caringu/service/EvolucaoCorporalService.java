@@ -57,14 +57,6 @@ public class EvolucaoCorporalService {
                         "Aluno com ID %d não encontrado".formatted(dto.alunoId()))
                 );
 
-        boolean duplicado = repository.existsByAlunoIdAndTipoAndPeriodoAvaliacao(
-                dto.alunoId(), dto.tipo(), dto.periodoAvaliacao()
-        );
-
-        if (duplicado) {
-            throw new EvolucaoCorporalJaExisteException("Já existe uma evolução corporal com esse tipo e período para o aluno.");
-        }
-
         Optional<EvolucaoCorporal> fotoAntiga = repository
                 .findByAlunoId(aluno.getId()).stream()
                 .filter(e -> e.getTipo().equals(dto.tipo()))
@@ -89,7 +81,7 @@ public class EvolucaoCorporalService {
             nomeArquivo = extrairNomeArquivo(urlCompleta);
         }
 
-        EvolucaoCorporal nova = mapper.toEntity(dto, aluno);
+        EvolucaoCorporal nova = mapper.toEntity(dto);
         nova.setAluno(aluno);
         nova.setUrlFotoShape(urlCompleta);
         nova.setDataEnvio(LocalDateTime.now());
