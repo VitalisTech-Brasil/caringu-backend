@@ -10,6 +10,7 @@ import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGet
 import tech.vitalis.caringu.dtos.Aula.Request.AulasAlunoRequestDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulasAgendadasResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
+import tech.vitalis.caringu.dtos.Feedback.FeedbackCountDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoCargaDashboardResponseDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoTreinoCumpridoResponseDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.SessaoAulasAgendadasResponseDTO;
@@ -357,4 +358,16 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
             @Param("dataFim") LocalDateTime dataFim,
             Pageable pageable
     );
+
+    @Query("""
+    SELECT new tech.vitalis.caringu.dtos.Feedback.FeedbackCountDTO(
+        a.id,
+        CAST(COUNT(f.id) AS int)
+    )
+    FROM Aula a
+    LEFT JOIN Feedback f ON f.aula.id = a.id
+    WHERE a.id IN :aulaIds
+    GROUP BY a.id
+    """)
+    List<FeedbackCountDTO> buscarQuantidadeFeedbacksPorAulas(@Param("aulaIds") List<Integer> aulaIds);
 }

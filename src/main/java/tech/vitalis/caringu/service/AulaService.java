@@ -11,11 +11,9 @@ import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDT
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoItemDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoRequestPostDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulasAlunoRequestDTO;
-import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoCriadaDTO;
-import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoResponsePostDTO;
-import tech.vitalis.caringu.dtos.Aula.Response.AulasAgendadasResponseDTO;
-import tech.vitalis.caringu.dtos.Aula.Response.AulasAlunoResponseDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.*;
 import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
+import tech.vitalis.caringu.dtos.Feedback.FeedbackCountDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.*;
 import tech.vitalis.caringu.entity.Aula;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
@@ -33,6 +31,7 @@ import tech.vitalis.caringu.strategy.SessaoTreino.StatusSessaoTreinoValidationSt
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -205,7 +204,7 @@ public class AulaService {
     }
 
     //visualizar aulas
-    public Page<AulasAlunoResponseDTO> listarAulasPorAlunoComPlano(Integer idAluno, Pageable pageable, LocalDate data) {
+    public Page<AulasAlunoFeedbackResponseDTO> listarAulasPorAlunoComPlano(Integer idAluno, Pageable pageable, LocalDate data) {
         final Map<Integer, String> diasDaSemana = Map.of(
                 7, "Domingo",
                 1, "Segunda-feira",
@@ -220,22 +219,38 @@ public class AulaService {
         LocalDateTime dataFim = null;
 
         if (data != null) {
-            dataInicio = data.atStartOfDay(); // 00:00
-            dataFim = data.plusDays(1).atStartOfDay(); // dia seguinte 00:00
+            dataInicio = data.atStartOfDay();
+            dataFim = data.plusDays(1).atStartOfDay();
         }
 
         Page<AulasAlunoRequestDTO> aulasPage = aulaRepository.listarAulasPorAlunoComPlano(
                 idAluno, data, dataInicio, dataFim, pageable
         );
 
-        List<AulasAlunoResponseDTO> mapperAula = aulasPage.getContent().stream()
+        Map<Integer, Integer> feedbacksMap = new HashMap<>();
+        if (!aulasPage.getContent().isEmpty()){
+            List<Integer> aulasIds = aulasPage.getContent().stream()
+                    .map(AulasAlunoRequestDTO::aulaId)
+                    .toList();
+
+            List<FeedbackCountDTO> feedbacksQtd = aulaRepository.buscarQuantidadeFeedbacksPorAulas(aulasIds);
+            feedbacksMap = feedbacksQtd.stream()
+                    .collect(Collectors.toMap(
+                            FeedbackCountDTO::aulaId,
+                            FeedbackCountDTO::qtdFeedbacks
+                    ));
+        }
+
+        final Map<Integer, Integer> feedbacksFinal = feedbacksMap;
+
+        List<AulasAlunoFeedbackResponseDTO> mapperAula = aulasPage.getContent().stream()
                 .map(dto -> {
                     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
                     int diaSemana = dto.dataHorarioInicio().getDayOfWeek().getValue();
 
-                    return new AulasAlunoResponseDTO(
+                    return new AulasAlunoFeedbackResponseDTO(
                             dto.aulaId(),
                             dto.dataHorarioInicio().format(dateFormatter),
                             diasDaSemana.getOrDefault(diaSemana, "Dia Desconhecido"),
@@ -243,7 +258,8 @@ public class AulaService {
                             dto.dataHorarioFim().format(timeFormatter),
                             dto.nomePersonal(),
                             dto.treinoId(),
-                            dto.nomeTreino()
+                            dto.nomeTreino(),
+                            feedbacksFinal.getOrDefault(dto.aulaId(), 0)
                     );
                 })
                 .toList();
