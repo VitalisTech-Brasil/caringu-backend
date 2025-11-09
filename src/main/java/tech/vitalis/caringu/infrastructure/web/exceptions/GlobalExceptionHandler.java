@@ -20,6 +20,7 @@ import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.exception.ApiExceptions.BadRequestException;
 import tech.vitalis.caringu.exception.Aula.AulaConflitanteException;
 import tech.vitalis.caringu.exception.Aula.AulaNaoEncontradaException;
+import tech.vitalis.caringu.exception.AulaTreinoExercicio.AulaTreinoExercicioNaoEncontradaException;
 import tech.vitalis.caringu.exception.Bairro.BairroJaExisteException;
 import tech.vitalis.caringu.exception.Bairro.BairroNaoEncontradoException;
 import tech.vitalis.caringu.exception.Cidade.CidadeJaExisteException;
@@ -27,6 +28,7 @@ import tech.vitalis.caringu.exception.Cidade.CidadeNaoEncontradaException;
 import tech.vitalis.caringu.exception.Especialidade.EspecialidadeNaoEncontrada;
 import tech.vitalis.caringu.exception.EvolucaoCorporal.EvolucaoCorporalJaExisteException;
 import tech.vitalis.caringu.exception.EvolucaoCorporal.EvolucaoCorporalNaoEncontradaException;
+import tech.vitalis.caringu.exception.ExecucaoExercicio.ExecucaoExercicioNaoEncontradaException;
 import tech.vitalis.caringu.exception.PersonalTrainer.CrefJaExisteException;
 import tech.vitalis.caringu.exception.PersonalTrainer.PersonalNaoEncontradoException;
 import tech.vitalis.caringu.exception.Pessoa.ContaBloqueadaException;
@@ -136,6 +138,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AulaNaoEncontradaException.class)
     public ResponseEntity<Map<String, Object>> handleAulaNaoEncontradaException(AulaNaoEncontradaException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(AulaTreinoExercicioNaoEncontradaException.class)
+    public ResponseEntity<Map<String, Object>> handleAulaTreinoExercicioNaoEncontradaException(AulaTreinoExercicioNaoEncontradaException ex, WebRequest request) {
+        return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(ExecucaoExercicioNaoEncontradaException.class)
+    public ResponseEntity<Map<String, Object>> handleExecucaoExercicioNaoEncontradaException(ExecucaoExercicioNaoEncontradaException ex, WebRequest request) {
         return createErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
     }
 
