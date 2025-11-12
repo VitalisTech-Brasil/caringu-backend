@@ -82,6 +82,10 @@ public class AlunoService {
         return alunoMapper.consolidarPorAluno(dadosBrutos);
     }
 
+    public Boolean validarContratacaoPlanoAluno(Integer idAluno) {
+        return alunoRepository.validarContratacaoPlanoAluno(idAluno);
+    }
+
     public Page<AlunoDetalhadoComTreinosDTO> buscarAlunosDetalhadosPaginado(Integer idPersonal, Pageable pageable) {
         // buscar tudo, sem paginação para pegar todos os registros (ou um número grande)
 

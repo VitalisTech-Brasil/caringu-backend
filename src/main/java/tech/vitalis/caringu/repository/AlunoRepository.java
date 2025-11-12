@@ -52,6 +52,23 @@ public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
                                                               @Param("startOfWeek") LocalDateTime startOfWeek,
                                                               @Param("endOfWeek") LocalDateTime endOfWeek);
 
+    @Query("""
+            SELECT
+            	CASE
+            			WHEN COUNT(*) > 0
+            			THEN false
+            		ELSE true
+                END AS alunoJaContratouPlano
+            FROM Pessoa p
+            JOIN Aluno a ON p.id = a.id
+            LEFT JOIN PlanoContratado pc ON pc.aluno.id = a.id
+            LEFT JOIN Plano pl ON pc.plano.id = pl.id
+            WHERE
+                pc.id IS NULL
+                    AND
+                a.id = :idAluno
+            """)
+    Boolean validarContratacaoPlanoAluno(@Param("idAluno") Integer idAluno);
 
     @Query("""
             SELECT pc.aluno.id as alunosId,

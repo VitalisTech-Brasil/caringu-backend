@@ -66,6 +66,12 @@ public class AlunoController {
         return ResponseEntity.ok(dados);
     }
 
+    @GetMapping("/validacao-contratacao/{idAluno}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Boolean> validarContratacaoPlanoAluno(@PathVariable Integer idAluno) {
+        return ResponseEntity.ok(service.validarContratacaoPlanoAluno(idAluno));
+    }
+
     // Esse endpoint vai ser usado pra listar os alunos com planos ativos do personal
     // (na tela de Gerenciar Alunos -> No lado direito da tela: Alunos Ativos
     @GetMapping("/detalhes/personal/paginado/{personalId}")
