@@ -12,6 +12,7 @@ import tech.vitalis.caringu.infrastructure.web.planoContratado.GetPlanoContratad
 import tech.vitalis.caringu.repository.AlunoRepository;
 import tech.vitalis.caringu.repository.NotificacoesRepository;
 import tech.vitalis.caringu.repository.PreferenciaNotificacaoRepository;
+import tech.vitalis.caringu.service.NotificacaoRecebimentoService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,12 +23,14 @@ public class PlanoContratadoUseCase {
     private final PreferenciaNotificacaoRepository preferenciaNotificacaoRepository;
     private final NotificacoesRepository notificacoesRepository;
     private final AlunoRepository alunoRepository;
+    private final NotificacaoRecebimentoService notificacaoRecebimentoService;
 
-    public PlanoContratadoUseCase(PlanoContratadoGateway planoContratadoGateway, PreferenciaNotificacaoRepository preferenciaNotificacaoRepository, NotificacoesRepository notificacoesRepository, AlunoRepository alunoRepository) {
+    public PlanoContratadoUseCase(PlanoContratadoGateway planoContratadoGateway, PreferenciaNotificacaoRepository preferenciaNotificacaoRepository, NotificacoesRepository notificacoesRepository, AlunoRepository alunoRepository, NotificacaoRecebimentoService notificacaoRecebimentoService) {
         this.planoContratadoGateway = planoContratadoGateway;
         this.preferenciaNotificacaoRepository = preferenciaNotificacaoRepository;
         this.notificacoesRepository = notificacoesRepository;
         this.alunoRepository = alunoRepository;
+        this.notificacaoRecebimentoService = notificacaoRecebimentoService;
     }
 
     public List<PlanoContratado> listSolicitacoesPendentesInteractor(Integer personalId){
@@ -59,8 +62,23 @@ public class PlanoContratadoUseCase {
                 enviarNotificacaoPagamento(planoContratado);
                 yield planoContratado.emProcesso();
             }
-            case ATIVO -> planoContratado.ativar();
-            case CANCELADO -> planoContratado.cancelar();
+            case ATIVO -> {
+                PlanoContratado planoAtivado = planoContratado.ativar();
+
+                notificacaoRecebimentoService.notificarPagamentoConfirmado(planoContratadoId);
+
+                yield planoAtivado;
+            }
+            case CANCELADO -> {
+                PlanoContratado planoCancelado = planoContratado.cancelar();
+
+                notificacaoRecebimentoService.notificarPagamentoNegado(
+                        planoContratadoId,
+                        "Pagamento negado pelo personal trainer."
+                );
+
+                yield planoCancelado;
+            }
             default -> throw new IllegalArgumentException("Status inválido: " + novoStatus);
         };
 

@@ -46,19 +46,22 @@ public class AulaService {
     private final AulaMapper aulaMapper;
     private final TreinoExercicioRepository treinoExercicioRepository;
     private final AulaTreinoExercicioRepository aulaTreinoExercicioRepository;
+    private final NotificacaoFeedbackTreinoFinalizadoService notificacaoFeedbackTreinoFinalizadoService;
 
     public AulaService(
             AulaRepository aulaRepository,
             PlanoContratadoRepository planoContratadoRepository,
             AulaMapper aulaMapper,
             TreinoExercicioRepository treinoExercicioRepository,
-            AulaTreinoExercicioRepository aulaTreinoExercicioRepository
-    ) {
+            AulaTreinoExercicioRepository aulaTreinoExercicioRepository,
+            NotificacaoFeedbackTreinoFinalizadoService notificacaoFeedbackTreinoFinalizadoService
+            ) {
         this.aulaRepository = aulaRepository;
         this.planoContratadoRepository = planoContratadoRepository;
         this.aulaMapper = aulaMapper;
         this.treinoExercicioRepository = treinoExercicioRepository;
         this.aulaTreinoExercicioRepository = aulaTreinoExercicioRepository;
+        this.notificacaoFeedbackTreinoFinalizadoService = notificacaoFeedbackTreinoFinalizadoService;
     }
 
     public AulasAgendadasResponseDTO listarInfoAulaPorPersonal(Integer idPersonal, Integer idAula) {
@@ -286,6 +289,10 @@ public class AulaService {
 
         aula.setStatus(novoStatus);
         aulaRepository.save(aula);
+
+        if (novoStatus.equals(AulaStatusEnum.REALIZADO)) {
+            notificacaoFeedbackTreinoFinalizadoService.notificarTreinoFinalizado(idAula);
+        }
     }
 
     @Transactional
