@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import tech.vitalis.caringu.dtos.Aula.AulasPendentesNotificacaoDTO;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGetDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulasAlunoRequestDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulasAgendadasResponseDTO;
@@ -370,4 +371,28 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
     GROUP BY a.id
     """)
     List<FeedbackCountDTO> buscarQuantidadeFeedbacksPorAulas(@Param("aulaIds") List<Integer> aulaIds);
+
+    @Query("""
+    SELECT new tech.vitalis.caringu.dtos.Aula.AulasPendentesNotificacaoDTO(
+        a.id,
+        pa.nome,
+        pt.id,
+        pp.nome,
+        pc.id,
+        CAST(pl.quantidadeAulas AS long),
+        CAST((SELECT COUNT(au2) FROM Aula au2 
+              WHERE au2.planoContratado.id = pc.id 
+              AND au2.status IN ('AGENDADO', 'REALIZADO', 'REAGENDADO')) AS long)
+    )
+    FROM Aluno a
+    JOIN Pessoa pa ON a.id = pa.id
+    JOIN PlanoContratado pc ON a.id = pc.aluno.id
+    JOIN Plano pl ON pl.id = pc.plano.id
+    JOIN PersonalTrainer pt ON pl.personalTrainer.id = pt.id
+    JOIN Pessoa pp ON pt.id = pp.id
+    WHERE pc.status = 'ATIVO'
+      AND CURRENT_TIMESTAMP BETWEEN pc.dataContratacao AND pc.dataFim
+    ORDER BY pl.quantidadeAulas DESC
+""")
+    List<AulasPendentesNotificacaoDTO> buscarTodosPlanosAtivos();
 }

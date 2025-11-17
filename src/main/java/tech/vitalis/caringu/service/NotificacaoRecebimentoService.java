@@ -67,7 +67,7 @@ public class NotificacaoRecebimentoService {
         Integer alunoId = planoContratado.getAluno().getId();
 
         boolean preferenciaNotificacao = preferenciaNotificacaoRepository.
-                existsByPessoaIdAndTipoAndAtivadaTrue(alunoId, TipoPreferenciaEnum.PAGAMENTO_REALIZADO);
+                existsByPessoaIdAndTipoAndAtivadaTrue(alunoId, TipoPreferenciaEnum.PAGAMENTO_CANCELADO);
 
         if(!preferenciaNotificacao){
             return;
@@ -86,7 +86,7 @@ public class NotificacaoRecebimentoService {
         Notificacoes notificacao = new Notificacoes(
                 null,
                 planoContratado.getAluno(),
-                TipoNotificacaoEnum.PAGAMENTO_REALIZADO,
+                TipoNotificacaoEnum.PAGAMENTO_CANCELADO,
                 titulo,
                 false,
                 LocalDateTime.now()
