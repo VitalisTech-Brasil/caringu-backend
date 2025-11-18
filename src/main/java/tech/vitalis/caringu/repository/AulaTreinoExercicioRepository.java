@@ -79,6 +79,7 @@ public interface AulaTreinoExercicioRepository extends JpaRepository<AulaTreinoE
                 SELECT new tech.vitalis.caringu.dtos.AulaTreinoExercicio.AcompanhamentoAulaCruDTO(
                     al.id,
                     a.id,
+                    a.status,
                     a.dataHorarioInicio,
                     a.dataHorarioFim,
                     t.id,
@@ -101,7 +102,7 @@ public interface AulaTreinoExercicioRepository extends JpaRepository<AulaTreinoE
                 JOIN ExecucaoExercicio ee ON ee.aulaTreinoExercicio.id = ate.id
                 JOIN PlanoContratado pc ON a.planoContratado.id = pc.id
                 JOIN pc.aluno as al
-                WHERE a.id = :idAula
+                WHERE a.id = :idAula AND a.status != tech.vitalis.caringu.enums.Aula.AulaStatusEnum.RASCUNHO
             """)
     List<AcompanhamentoAulaCruDTO> listarAcompanharDaAula(@Param("idAula") Integer idAula);
 

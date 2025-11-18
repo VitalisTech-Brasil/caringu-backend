@@ -1,11 +1,14 @@
 package tech.vitalis.caringu.dtos.AulaTreinoExercicio;
 
+import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record AcompanhamentoAulaCruDTO(
         Integer idAluno,
         Integer idAula,
+        AulaStatusEnum aulaStatus,
         LocalDateTime dataInicioAula,
         LocalDateTime dataFimAula,
         Integer idTreino,
