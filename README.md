@@ -1,198 +1,297 @@
-# CaringU - Backend
+# 🦘 **CaringU – Backend**
 
-## 🧠 Sobre o projeto
+Plataforma completa de gestão para profissionais de educação física, oferecendo controle de treinos, alunos, métricas de evolução, comunicação e autenticação segura para alunos e personal trainers.
 
-O CaringU é uma aplicação voltada para a área fitness, permitindo o gerenciamento completo da relação entre personal trainers e seus alunos. A plataforma oferece funcionalidades como:
+---
 
-- Cadastro de pessoas com perfis distintos: Aluno e Personal Trainer
-- Login com autenticação via JWT
-- Gestão de usuários, treinos, objetivos e evolução
-- API RESTful com boas práticas de desenvolvimento
-- Documentação completa via Swagger/OpenAPI
+# 📘 **Sumário**
 
-## 🚀 Como rodar o projeto localmente
+1. [Sobre o Projeto](#-sobre-o-projeto)
+2. [Arquitetura e Tecnologias](#-arquitetura-e-tecnologias)
+3. [Pré-requisitos](#️-pré-requisitos)
+4. [Ambientes de Execução](#-ambientes-de-execução)
 
-## ✔️ Pré-requisitos
-Antes de começar, você vai precisar ter instalado:
+    * Desenvolvimento local
+    * Execução via Docker (com mensageria e Redis)
+5. [Configuração de Perfis (Profiles)](#-configuração-de-perfis-profiles)
+6. [Configuração do IntelliJ (SENHA + Profiles)](#️-configuração-do-intellij)
+7. [Verificando o Redis em execução](#-verificando-o-redis-em-execução)
+8. [Estrutura do Projeto](#-estrutura-do-projeto)
+9. [Segurança (JWT + Spring Security)](#-segurança)
+10. [Swagger / OpenAPI](#-documentação-swagger)
+11. [Boas Práticas Aplicadas](#-boas-práticas-adotadas)
+12. [Contribuintes](#-contribuintes)
+13. [Licença](#-licença)
 
-- Java 21
-- IDE (como IntelliJ ou VSCode)
-- Postman (Insomnia ou qualquer cliente REST)
-- Git
+---
 
-## ✔️ Pré-requisitos para rodar com mensageria
-- Docker
-- Distribuição Linux
-- Repositorio de notificação (caringu-notificacao)
+# 🧠 **Sobre o Projeto**
 
-# 💻 Passos para rodar em ambiente de desenvolvimento
+O **CaringU** é uma solução corporativa voltada ao gerenciamento centralizado de interação entre **alunos e personal trainers**, oferecendo:
 
-```
-# Clone o repositório
+* Gestão de perfis (Aluno / Personal Trainer)
+* Autenticação segura via JWT
+* Estratégias de treino, objetivos e evolução física
+* Mensageria assíncrona para notificações
+* Suporte a múltiplos ambientes (dev, docker, prod)
+* Redis para controle de tentativas de login
+* Arquitetura escalável, orientada a boas práticas
 
+---
+
+# 🏗 **Arquitetura e Tecnologias**
+
+Tecnologias adotadas no projeto:
+
+* **Java 21**
+* **Spring Boot 3.4.3**
+* Spring Web
+* Spring Security
+* JWT
+* Spring Data JPA
+* Hibernate
+* MySQL 8 (docker/prod)
+* Redis 7 (controle de login)
+* RabbitMQ (mensageria)
+* Docker & Docker Compose
+* Swagger / OpenAPI
+* Linux (execução recomendada para mensageria)
+
+---
+
+# 🖥️ **Pré-requisitos**
+
+### **Ambiente de desenvolvimento**
+
+* Java 21
+* IntelliJ IDEA ou VSCode
+* Postman / Insomnia
+* Git
+
+### **Para mensageria e Redis**
+
+* Docker
+* Docker Compose
+* Redis 7
+* RabbitMQ (via Docker Compose)
+
+---
+
+# 🚀 **Ambientes de Execução**
+
+---
+
+## **1. Desenvolvimento (Local + Profile `dev`)**
+
+Clone o repositório:
+
+```bash
 git clone https://github.com/VitalisTech-Brasil/caringu-backend.git
 cd caringu-backend
 ```
-# 💻 Passos para rodar em ambiente de docker
-```
-#Clone também o repositório da notificação e deixe no mesmo caminho do de backend
 
+O backend utiliza o profile `dev` para rodar sem Redis.
+
+---
+
+## **2. Execução Completa via Docker (Redis + RabbitMQ + MySQL)**
+
+Clone também o repositório de notificações (necessário):
+
+```bash
 git clone https://github.com/VitalisTech-Brasil/caringu-notificacao.git
-
-# Pelo terminal da aplicação rodar o comando:
-
-docker compose up --build
 ```
 
-# 🔑 Passo adicional para configurar a variável de ambiente SENHA no IntelliJ:
-Para rodar o projeto em ambiente de desenvolvimento, você precisa configurar a variável de ambiente SENHA no IntelliJ (ou sua IDE preferida) para que o application-dev.properties seja utilizado corretamente.
+Ambos os repositórios devem estar no **mesmo diretório**.
 
-1. No IntelliJ, vá até `Run > Edit Configurations`.
+### Para subir toda a stack:
 
-2. Selecione a configuração de execução que você usa para rodar o Spring Boot.
+```bash
+docker compose up --build -d
+```
 
-3. No campo Environment variables, clique no ícone de mais (+) e adicione a variável:
+Isso iniciará:
 
-- Name: SENHA
+| Serviço     | Porta       | Descrição                 |
+| ----------- | ----------- | ------------------------- |
+| Backend     | 8080        | Aplicação principal       |
+| MySQL       | 3307 → 3306 | Banco principal           |
+| Redis       | 6379        | Cache / Controle de login |
+| RabbitMQ    | 15672       | Painel de mensageria      |
+| Notificação | 8081        | Microsserviço de alerta   |
 
-- Value: ``sua-senha-aqui``
+---
 
-4. Clique em ``Modify option``.
-5. Selecione a opção ``VM options``.
-6. No campo VM options, adicione:
+# 🧩 **Configuração de Perfis (Profiles)**
+
+O projeto utiliza perfis separados:
+
+| Profile          | Uso                             | Redis |
+| ---------------- | ------------------------------- | ----- |
+| `dev`            | desenvolvimento local           | ❌    |
+| `dev-with-redis` | desenvolvimento local com Redis | ✔️    |
+| `docker`         | ambiente docker                 | ✔️    |
+| `prod`           | produção                        | ✔️    |
+
+---
+
+# ⚙️ **Configuração do IntelliJ**
+
+### 1. Definir variável SENHA
+
+Vá em:
+
+> Run → Edit Configurations → Environment Variables
+
+Adicione:
+
+* **Name:** `SENHA`
+* **Value:** `sua-senha-aqui`
+
+### 2. Ativar profile `dev`
+
+Ainda em Edit Configurations → VM Options:
 
 ```
 -Dspring.profiles.active=dev
 ```
 
-### 🖥 A aplicação estará disponível em:
+---
 
-```http://localhost:8080```
+# 📌 **Verificando o Redis em execução**
 
-### Você pode acessar a documentação Swagger em:
+Quando a stack estiver rodando (Docker), é possível verificar se as tentativas de login estão sendo salvas no Redis.
 
-```http://localhost:8080/swagger-ui/index.html ou http://localhost:8080/docs```
+### 1️⃣ Acessar o container
 
-### 🖥 A aplicação da mensageria estará disponível em:
+No Windows (Git Bash ou Mintty), use `winpty`:
 
-```http://localhost:15672/```
-
-# 🛠️ Tecnologias e ferramentas utilizadas
-
-- Java 21
-
-- Spring Boot 3.4.3
-
-- Spring Web
-
-- Spring Security
-
-- JWT (JSON Web Token)
-
-- Spring Data JPA
-
-- Hibernate
-
-- H2 Database (dev)
-
-- MySQL (prod/test)
-
-- Swagger/OpenAPI 3
-
-- Maven
-
-- Docker
-
-- Linux (Ubuntu)
-
-# 🧱 Estrutura do Projeto
-
-```
-src
-├── main
-│   ├── java
-│   │   └── tech.vitalis.caringu
-│   │       ├── config                  # Configurações globais da aplicação, como Swagger e Security
-│   │       ├── consumer                # Implementação de consumidores de mensagens (ex.: RabbitMQ, Kafka)
-│   │       ├── controller              # Endpoints RESTful que expõem os serviços da aplicação
-│   │       ├── dtos                    # Objetos de Transferência de Dados usados para entrada e saída nas APIs
-│   │       ├── entity                  # Entidades JPA que representam as tabelas do banco de dados
-│   │       ├── enums                   # Enumerações utilizadas no sistema (ex: nível de atividade, tipo de usuário)
-│   │       ├── exception               # Tratamento de exceções personalizadas e handlers globais
-│   │       ├── id                      # Classes auxiliares de ID compostos que implementam Serializable (ex: chaves compostas)
-│   │       ├── mapper                  # Conversores manuais entre DTOs e entidades (seguindo boas práticas)
-│   │       ├── repository              # Interfaces que extendem JpaRepository para acesso aos dados
-│   │       ├── service                 # Camada de serviço com a lógica de negócio da aplicação
-│   │       └── strategy                # Implementações do padrão Strategy para regras de negócio variáveis (ex: cálculos, filtros, validações dinâmicas)
-│   └── resources
-│       └── application.properties      # Arquivo de configuração principal da aplicação 
-│       └── application.yml  # Arquivo de configuração de desenvolvimento da aplicação
-│       └── application-dev.properties  # Arquivo de configuração de desenvolvimento da aplicação
-│       └── application-docker.properties  # Arquivo de configuração para aplicação rodando no docker
-│       └── application-prod.properties  # Arquivo de configuração de produção da aplicação
-└── test
-    └── java
-        └── tech.vitalis.caringu        # Testes unitários e de integração
+```bash
+winpty docker exec -it caringu-redis redis-cli
 ```
 
-# 🔐 Segurança
+Em Linux/Mac:
 
-O projeto utiliza Spring Security com autenticação baseada em JWT.
+```bash
+docker exec -it caringu-redis redis-cli
+```
 
-- Após o login (rota `/auth/login`), o usuário recebe um token JWT válido por tempo limitado.
+### 2️⃣ Listar as chaves do sistema
 
-- Esse token deve ser enviado no header `Authorization` com o prefixo `Bearer`.
+```redis
+KEYS *
+```
 
-# 📚 Documentação Swagger
+Você deve ver algo como:
 
-A documentação está disponível via Swagger:
+```
+login:tentativas:email@exemplo.com
+login:bloqueado:email@exemplo.com
+```
+
+### 3️⃣ Ler o valor de uma chave
+
+```redis
+GET `login:tentativas:email@exemplo.com`
+```
+
+Ou:
+
+```redis
+TTL login:bloqueado:email@exemplo.com
+```
+
+### 4️⃣ Limpar tudo (opcional)
+
+```redis
+FLUSHALL
+```
+
+---
+
+# 📁 **Estrutura do Projeto**
+
+Organizada segundo padrões corporativos:
+
+```
+src/
+├── main/java/tech.vitalis.caringu
+│   ├── config
+│   ├── consumer
+│   ├── controller
+│   ├── dtos
+│   ├── entity
+│   ├── enums
+│   ├── exception
+│   ├── id
+│   ├── mapper
+│   ├── repository
+│   ├── service
+│   └── strategy
+└── resources
+    ├── application.properties
+    ├── application-dev.properties
+    ├── application-dev-with-redis.properties
+    ├── application-prod.properties
+```
+
+---
+
+# 🔐 **Segurança**
+
+O projeto implementa:
+
+* Spring Security 6
+* JWT com expiração controlada e armazenamento em Cookies
+* Filtro de autenticação customizado
+* Controle de tentativas de login via Redis
+* Bloqueio temporário automático após 5 falhas
+
+Fluxo de autenticação:
+
+```
+/auth/login  → validação → geração JWT → resposta
+```
+
+---
+
+# 📚 **Documentação Swagger**
+
+Disponível automaticamente em:
 
 ```
 http://localhost:8080/swagger-ui/index.html
 ```
 
-Exemplo de rota documentada:
+ou
 
 ```
-POST /auth/login
+http://localhost:8080/docs
 ```
 
-Envia um JSON com email e senha, e recebe um token de autenticação válido.
+---
 
-# ⚙️ Boas Práticas Adotadas
+# 🛠 **Boas Práticas Adotadas**
 
-- Separação de responsabilidades (Controller, Service, Repository)
+* Clean Architecture aplicada parcialmente
+* DTOs encodados com Records (Java 21)
+* Separação rigorosa entre Controller / Service / Repository
+* Mappers manuais de alta legibilidade
+* Exception Handler global
+* Profiles para isolamento de ambientes
+* Uso de Redis para operações não persistentes
+* Docker como camada de orquestração padronizada
 
-- DTOs para encapsulamento e segurança de dados
+---
 
-- MapStruct manual (Mapper customizado)
+# 👥 **Contribuintes**
 
-- Validações com anotações (@Valid, @NotNull, etc)
+Time de desenvolvimento backend:
+**Bianca, Gustavo, Lucas, Igor, Pedro e Rafael**
 
-- Tratamento global de exceções (@ControllerAdvice)
+---
 
-- Uso de padrões RESTful (HTTP Status Codes, Verbos adequados)
+# 📄 **Licença**
 
-- Código limpo, coeso e com nomes semânticos
+Licença MIT. Consulte o arquivo `LICENSE` para mais detalhes.
 
-- Testes unitários em construção
-
-# 📈 Futuras implementações
-
-- Gerenciamento de treinos com CRUD completo
-
-- Geração de gráficos e PDF de evolução
-
-- Notificações e lembretes
-
-- Integração com frontend mobile
-
-- Autenticação via redes sociais (OAuth2)
-
-# 👨‍💼 Contribuintes
-
-Bianca, Gustavo, Lucas, Igor, Pedro e Rafael - Desenvolvimento Backend
-
-# 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
