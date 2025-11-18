@@ -116,6 +116,7 @@ public class AulaTreinoExercicioMapper {
         return new AcompanhamentoAulaResponseDTO(
                 primeira.idAluno(),
                 primeira.idAula(),
+                primeira.aulaStatus(),
                 primeira.dataInicioAula(),
                 primeira.dataFimAula(),
                 primeira.idTreino(),
