@@ -70,4 +70,33 @@ public class AvaliacaoService {
 
         return ResponseEntity.status(201).body(responseDTO);
     }
+
+    public ResponseEntity<AvaliacaoResponseDTO> criarOuAtualizarAvaliacao(AvaliacaoRequestDTO avaliacaoRequestDTO) {
+        PersonalTrainer personal = personalTrainerRepository.findById(avaliacaoRequestDTO.personalId())
+                .orElseThrow(() -> new PersonalNaoEncontradoException(
+                        "Personal Trainer não encontrado com o ID: " + avaliacaoRequestDTO.personalId()));
+
+        Aluno aluno = alunoRepository.findById(avaliacaoRequestDTO.alunoId())
+                .orElseThrow(() -> new AlunoNaoEncontradoException(
+                        "Aluno não encontrado com o ID: " + avaliacaoRequestDTO.alunoId()));
+
+        java.util.Optional<Avaliacao> avaliacaoExistente = avaliacaoRepository
+                .findByAlunoIdAndPersonalTrainerId(avaliacaoRequestDTO.alunoId(), avaliacaoRequestDTO.personalId());
+
+        Avaliacao avaliacao;
+
+        if (avaliacaoExistente.isPresent()) {
+            avaliacao = avaliacaoExistente.get();
+            avaliacao.setNota(avaliacaoRequestDTO.nota());
+            avaliacao.setComentario(avaliacaoRequestDTO.comentario());
+            avaliacao.setDataAvaliacao(java.time.LocalDateTime.now());
+        } else {
+            avaliacao = avaliacaoMapper.toEntity(avaliacaoRequestDTO, aluno, personal);
+        }
+
+        Avaliacao avaliacaoSalva = avaliacaoRepository.save(avaliacao);
+        AvaliacaoResponseDTO responseDTO = avaliacaoMapper.toDto(avaliacaoSalva);
+
+        return ResponseEntity.ok(responseDTO);
+    }
 }

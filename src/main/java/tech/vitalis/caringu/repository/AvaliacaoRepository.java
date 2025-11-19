@@ -4,13 +4,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import tech.vitalis.caringu.dtos.Avaliacao.AvaliacaoRequestDTO;
-import tech.vitalis.caringu.dtos.Avaliacao.AvaliacaoResponseDTO;
 import tech.vitalis.caringu.dtos.Avaliacao.FiltroAvaliacaoResponseDTO;
 import tech.vitalis.caringu.entity.Avaliacao;
 import tech.vitalis.caringu.entity.PersonalTrainer;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Repository
@@ -36,7 +33,10 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Integer>{
             @Param("filtroNota") Double filtroNota
     );
 
-
-
+    @Query("SELECT a FROM Avaliacao a WHERE a.aluno.id = :alunoId AND a.personalTrainer.id = :personalTrainerId")
+    java.util.Optional<Avaliacao> findByAlunoIdAndPersonalTrainerId(
+            @Param("alunoId") Integer alunoId,
+            @Param("personalTrainerId") Integer personalTrainerId
+    );
 
 }
