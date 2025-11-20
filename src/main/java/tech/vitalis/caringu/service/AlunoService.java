@@ -310,7 +310,7 @@ public class AlunoService {
             return null;
         }
 
-        Object[] result = results.get(0);
+        Object[] result = results.getFirst();
 
         return new EvolucaoExercicioDTO(
                 result[0] != null ? ((Number) result[0]).longValue() : null,

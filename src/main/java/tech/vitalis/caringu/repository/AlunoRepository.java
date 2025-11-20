@@ -113,7 +113,7 @@ public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
             JOIN execucoes_exercicios ee ON ee.aulas_treinos_exercicios_id = ate.id
             JOIN treinos_exercicios te ON te.id = ate.treinos_exercicios_id
             JOIN exercicios e ON e.id = te.exercicios_id
-            WHERE al.id = 6
+            WHERE al.id = :alunoId
               AND a.status = 'REALIZADO'
               AND a.data_horario_inicio BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY) AND CURRENT_DATE()
               AND ee.carga_executada > 0
