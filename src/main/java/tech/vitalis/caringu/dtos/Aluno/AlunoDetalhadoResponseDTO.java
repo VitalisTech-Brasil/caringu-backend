@@ -9,6 +9,7 @@ import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
 import java.time.LocalDate;
 
 public record AlunoDetalhadoResponseDTO(
+        Integer idCorporal,
         Integer idAluno,
         Double peso,
         Double altura,

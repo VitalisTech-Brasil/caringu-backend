@@ -14,7 +14,7 @@ import java.util.List;
 public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
     @Query("""
                 SELECT new tech.vitalis.caringu.dtos.Aluno.AlunoDetalhadoResponseDTO(
-                    a.id, a.peso, a.altura, p.nome, p.email, p.celular, p.urlFotoPerfil, a.nivelExperiencia,
+                    ec.id, a.id, a.peso, a.altura, p.nome, p.email, p.celular, p.urlFotoPerfil, a.nivelExperiencia,
                     a.nivelAtividade, pl.nome, pl.periodo, pl.quantidadeAulas, pc.dataFim,
                     pc.id, au.id,
                     SUM(CASE WHEN au.status = 'REALIZADO' AND au.dataHorarioInicio BETWEEN :startOfWeek AND :endOfWeek
@@ -30,6 +30,7 @@ public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
                 JOIN pl.personalTrainer pt
                 JOIN pc.aluno a
                 JOIN Pessoa p ON p.id = a.id
+                LEFT JOIN EvolucaoCorporal ec ON ec.aluno.id = a.id
                 LEFT JOIN Anamnese ana ON ana.aluno.id = a.id
                 LEFT JOIN Aula au ON au.planoContratado.id = pc.id
                 WHERE pt.id = :idPersonal
@@ -42,7 +43,7 @@ public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
                   )
                   GROUP BY a.id, p.nome, p.celular, p.urlFotoPerfil, a.nivelExperiencia, a.nivelAtividade,
                                pl.nome, pl.periodo, pl.quantidadeAulas, pc.dataFim,
-                               pc.id, au.id, ana.id, ana.objetivoTreino, ana.lesao, ana.lesaoDescricao,
+                               pc.id, ec.id, au.id, ana.id, ana.objetivoTreino, ana.lesao, ana.lesaoDescricao,
                                ana.frequenciaTreino, ana.experiencia, ana.experienciaDescricao,
                                ana.desconforto, ana.desconfortoDescricao, ana.fumante, ana.proteses,
                                ana.protesesDescricao, ana.doencaMetabolica, ana.doencaMetabolicaDescricao,
