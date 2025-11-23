@@ -181,16 +181,18 @@
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
+                    <!-- Gera o relatório XML antes de executar a checagem -->
                     <execution>
                         <id>report</id>
-                        <phase>prepare-package</phase>
+                        <phase>verify</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
                     </execution>
+                    <!-- Falha o build se a cobertura ficar abaixo de 20% -->
                     <execution>
                         <id>check</id>
-                        <phase>test</phase>
+                        <phase>verify</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
