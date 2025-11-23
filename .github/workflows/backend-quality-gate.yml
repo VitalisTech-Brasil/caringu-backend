@@ -1,0 +1,103 @@
+name: Caringu Backend - Quality Gate (Build, Test & Coverage)
+
+on:
+  push:
+    branches:
+      - 'feature/*'
+      - develop
+  pull_request:
+    branches:
+      - develop
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Build, test and check coverage (min 20%)
+        run: mvn -B clean verify
+
+  create-pr-to-develop:
+    needs: build-and-test
+    # Só cria PR em push para feature/*, não em eventos de pull_request
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/feature/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Create pull request from feature/* to develop
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH_NAME="${GITHUB_REF_NAME}"
+
+          echo "Branch atual: ${BRANCH_NAME}"
+
+          # Verifica se já existe PR aberto dessa branch para develop
+          EXISTING_PR_NUMBER=$(gh pr list --head "${BRANCH_NAME}" --base develop --state open --json number --jq '.[0].number' || echo "")
+
+          if [ -n "${EXISTING_PR_NUMBER}" ]; then
+            echo "Já existe PR aberto (#${EXISTING_PR_NUMBER}) de ${BRANCH_NAME} para develop. Nada a fazer."
+            exit 0
+          fi
+
+          gh pr create \
+            --base develop \
+            --head "${BRANCH_NAME}" \
+            --title "Auto PR: ${BRANCH_NAME} -> develop" \
+            --body "Pull request automático criado pela pipeline de CI após sucesso dos testes e cobertura mínima."
+
+  create-pr-develop-to-main:
+    needs: build-and-test
+    # Só cria PR em push direto na develop
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Create pull request from develop to main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH_NAME="${GITHUB_REF_NAME}"
+
+          echo "Branch atual: ${BRANCH_NAME}"
+
+          # Verifica se já existe PR aberto de develop para main
+          EXISTING_PR_NUMBER=$(gh pr list --head develop --base main --state open --json number --jq '.[0].number' || echo "")
+
+          if [ -n "${EXISTING_PR_NUMBER}" ]; then
+            echo "Já existe PR aberto (#${EXISTING_PR_NUMBER}) de develop para main. Nada a fazer."
+            exit 0
+          fi
+
+          gh pr create \
+            --base main \
+            --head develop \
+            --title "Auto PR: develop -> main" \
+            --body "Pull request automático criado pela pipeline de CI após sucesso dos testes e cobertura mínima na branch develop."
+
+
