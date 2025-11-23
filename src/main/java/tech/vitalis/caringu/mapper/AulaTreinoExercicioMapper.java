@@ -134,6 +134,7 @@ public class AulaTreinoExercicioMapper {
                 l.descansoExecutado(),
                 l.observacoesPersonalizadas(),
                 l.urlVideo(),
+                l.grupoMuscular().getValue(),
                 l.finalizado()
         );
     }

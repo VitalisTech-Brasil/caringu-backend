@@ -10,6 +10,7 @@ public record ExercicioAcompanhamentoAulaDTO(
         Integer descansoSegundos,
         String observacoes,
         String urlExemploExecucao,
+        String grupoMuscular,
         Boolean finalizado
 ) {
 }
