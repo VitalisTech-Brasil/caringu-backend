@@ -1,10 +1,13 @@
 package tech.vitalis.caringu.mapper;
 
 import org.springframework.stereotype.Component;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.AcompanhamentoAulaCruDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.AulaComTreinoDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.AulaComTreinoModeloCruDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.ExercicioResumoDTO;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.AcompanhamentoAulaResponseDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.AulaTreinoExercicioRemarcarAulaResponseDTO;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.ExercicioAcompanhamentoAulaDTO;
 import tech.vitalis.caringu.entity.Aula;
 import tech.vitalis.caringu.entity.AulaTreinoExercicio;
 import tech.vitalis.caringu.entity.TreinoExercicio;
@@ -14,6 +17,7 @@ import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class AulaTreinoExercicioMapper {
@@ -96,5 +100,42 @@ public class AulaTreinoExercicioMapper {
         }
 
         return new ArrayList<>(aulasAgrupadas.values());
+    }
+
+    public AcompanhamentoAulaResponseDTO toAcompanhamentoAulaResponseDTO(List<AcompanhamentoAulaCruDTO> linhas) {
+        if (linhas == null || linhas.isEmpty()) {
+            return null;
+        }
+
+        AcompanhamentoAulaCruDTO primeira = linhas.getFirst();
+
+        List<ExercicioAcompanhamentoAulaDTO> exercicios = linhas.stream()
+                .map(this::toExercicioAcompanhamentoAulaDTO)
+                .collect(Collectors.toList());
+
+        return new AcompanhamentoAulaResponseDTO(
+                primeira.idAluno(),
+                primeira.idAula(),
+                primeira.aulaStatus(),
+                primeira.dataInicioAula(),
+                primeira.dataFimAula(),
+                primeira.idTreino(),
+                primeira.nomeTreino(),
+                exercicios
+        );
+    }
+
+    private ExercicioAcompanhamentoAulaDTO toExercicioAcompanhamentoAulaDTO(AcompanhamentoAulaCruDTO l) {
+        return new ExercicioAcompanhamentoAulaDTO(
+                l.idExecucaoExercicio(),
+                l.nomeExercicio(),
+                l.cargaExecutada(),
+                String.format("%dx%d", l.seriesExecutadas(), l.repeticoesExecutadas()),
+                l.descansoExecutado(),
+                l.observacoesPersonalizadas(),
+                l.urlVideo(),
+                l.grupoMuscular().getValue(),
+                l.finalizado()
+        );
     }
 }

@@ -1,6 +1,5 @@
 package tech.vitalis.caringu.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,8 +15,8 @@ import tech.vitalis.caringu.config.GerenciadorTokenJwt;
 import tech.vitalis.caringu.dtos.Pessoa.PessoaRequestPostDTO;
 import tech.vitalis.caringu.dtos.Pessoa.PessoaResponseFotoPerfilGetDTO;
 import tech.vitalis.caringu.dtos.Pessoa.PessoaResponseGetDTO;
-import tech.vitalis.caringu.dtos.Pessoa.security.ControleLogin;
 import tech.vitalis.caringu.dtos.Pessoa.security.PessoaTokenDTO;
+import tech.vitalis.caringu.dtos.Pessoa.security.strategy.ControleLogin;
 import tech.vitalis.caringu.entity.Pessoa;
 import tech.vitalis.caringu.exception.ApiExceptions;
 import tech.vitalis.caringu.exception.Pessoa.ContaBloqueadaException;
@@ -35,26 +34,27 @@ import java.util.stream.Collectors;
 @Service
 public class PessoaService {
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+    private final GerenciadorTokenJwt gerenciadorTokenJwt;
+    private final AuthenticationManager authenticationManager;
+    private final Environment env;
 
-    @Autowired
-    private GerenciadorTokenJwt gerenciadorTokenJwt;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private Environment env;
-
-    private final ControleLogin controleLogin = new ControleLogin();
-
+    private final ControleLogin controleLogin;
     private final PessoaRepository pessoaRepository;
-
     private final PessoaMapper pessoaMapper;
     private final ArmazenamentoService armazenamentoService;
 
-    public PessoaService(PessoaRepository pessoaRepository, PessoaMapper pessoaMapper, ArmazenamentoService armazenamentoService) {
+    public PessoaService(
+            PasswordEncoder passwordEncoder, GerenciadorTokenJwt gerenciadorTokenJwt,
+            AuthenticationManager authenticationManager, Environment env,
+            ControleLogin controleLogin, PessoaRepository pessoaRepository,
+            PessoaMapper pessoaMapper, ArmazenamentoService armazenamentoService
+    ) {
+        this.passwordEncoder = passwordEncoder;
+        this.gerenciadorTokenJwt = gerenciadorTokenJwt;
+        this.authenticationManager = authenticationManager;
+        this.env = env;
+        this.controleLogin = controleLogin;
         this.pessoaRepository = pessoaRepository;
         this.pessoaMapper = pessoaMapper;
         this.armazenamentoService = armazenamentoService;
@@ -104,7 +104,7 @@ public class PessoaService {
 
             final String token = gerenciadorTokenJwt.generateToken(authentication);
 
-            return pessoaMapper.of(pessoaAutenticado, token);
+            return PessoaMapper.of(pessoaAutenticado, token);
 
         } catch (AuthenticationException e) {
 
@@ -239,7 +239,7 @@ public class PessoaService {
 
         if (env.acceptsProfiles(Profiles.of("prod"))) {
             urlFinal = dto.urlFotoPerfil();
-        } else if (env.acceptsProfiles((Profiles.of("dev")))) {
+        } else if (env.acceptsProfiles((Profiles.of("dev", "dev-with-redis")))) {
             String nomeArquivo = dto.urlFotoPerfil();
             urlFinal = "http://localhost:8080/pessoas/fotos-perfil/" + nomeArquivo;
         }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.AulaComTreinoDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.AtribuicaoTreinosAulaRequestPostDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.RemarcarAulaTreinoRequestDTO;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.AcompanhamentoAulaResponseDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.AtribuicaoTreinosAulaResponsePostDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.RemarcarAulaTreinoResponseDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.VisualizarAulasResponseDTO;
@@ -44,6 +45,16 @@ public class AulaTreinoExercicioController {
     public ResponseEntity<List<AulaComTreinoDTO>> listarProximasAulas(@PathVariable Integer idAluno) {
         List<AulaComTreinoDTO> proxAulas = aulaTreinoExercicioService.listarProximasAulas(idAluno);
         return ResponseEntity.ok(proxAulas);
+    }
+
+    @GetMapping("acompanhamento-aulas/{idAula}")
+    @Operation(summary = "Listar os exercícios e treino a serem realizados na aula")
+    public ResponseEntity<AcompanhamentoAulaResponseDTO> listarAcompanhamentoDaAula(
+            @PathVariable Integer idAula
+    ) {
+        AcompanhamentoAulaResponseDTO acompanhamento = aulaTreinoExercicioService.listarAcompanhamentoDaAula(idAula);
+
+        return ResponseEntity.ok(acompanhamento);
     }
 
     @PostMapping("/atribuicao/treinos")

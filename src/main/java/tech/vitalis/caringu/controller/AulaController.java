@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulasRascunhoResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulaRascunhoRequestPostDTO;
+import tech.vitalis.caringu.dtos.Aula.Response.AulasAlunoFeedbackResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulasAlunoResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulaRascunhoResponsePostDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulasAgendadasResponseDTO;
@@ -99,13 +100,13 @@ public class AulaController {
     }
 
     @GetMapping("/aluno/{idAluno}/plano")
-    public ResponseEntity<Page<AulasAlunoResponseDTO>> listarAulasPorAlunoComPlano(
+    public ResponseEntity<Page<AulasAlunoFeedbackResponseDTO>> listarAulasPorAlunoComPlano(
             @PathVariable Integer idAluno,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "4") int size,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
     ) {
-        Page<AulasAlunoResponseDTO> aulas = aulaService.listarAulasPorAlunoComPlano(
+        Page<AulasAlunoFeedbackResponseDTO> aulas = aulaService.listarAulasPorAlunoComPlano(
                 idAluno,
                 PageRequest.of(page, size),
                 data

@@ -6,10 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import tech.vitalis.caringu.dtos.Aula.AulasPendentesNotificacaoDTO;
 import tech.vitalis.caringu.dtos.Aula.ListaAulasRascunho.AulaRascunhoResponseGetDTO;
 import tech.vitalis.caringu.dtos.Aula.Request.AulasAlunoRequestDTO;
 import tech.vitalis.caringu.dtos.Aula.Response.AulasAgendadasResponseDTO;
 import tech.vitalis.caringu.dtos.Aula.TotalAulasAgendamentoResponseGetDTO;
+import tech.vitalis.caringu.dtos.Feedback.FeedbackCountDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoCargaDashboardResponseDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.EvolucaoTreinoCumpridoResponseDTO;
 import tech.vitalis.caringu.dtos.SessaoTreino.SessaoAulasAgendadasResponseDTO;
@@ -319,7 +321,8 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
         a.dataHorarioInicio,
         a.dataHorarioFim,
         pt.nome,
-        t.id
+        t.id,
+        t.nome
     )
     FROM Aula a
     JOIN a.planoContratado pc
@@ -356,4 +359,40 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
             @Param("dataFim") LocalDateTime dataFim,
             Pageable pageable
     );
+
+    @Query("""
+    SELECT new tech.vitalis.caringu.dtos.Feedback.FeedbackCountDTO(
+        a.id,
+        CAST(COUNT(f.id) AS int)
+    )
+    FROM Aula a
+    LEFT JOIN Feedback f ON f.aula.id = a.id
+    WHERE a.id IN :aulaIds
+    GROUP BY a.id
+    """)
+    List<FeedbackCountDTO> buscarQuantidadeFeedbacksPorAulas(@Param("aulaIds") List<Integer> aulaIds);
+
+    @Query("""
+    SELECT new tech.vitalis.caringu.dtos.Aula.AulasPendentesNotificacaoDTO(
+        a.id,
+        pa.nome,
+        pt.id,
+        pp.nome,
+        pc.id,
+        CAST(pl.quantidadeAulas AS long),
+        CAST((SELECT COUNT(au2) FROM Aula au2 
+              WHERE au2.planoContratado.id = pc.id 
+              AND au2.status IN ('AGENDADO', 'REALIZADO', 'REAGENDADO')) AS long)
+    )
+    FROM Aluno a
+    JOIN Pessoa pa ON a.id = pa.id
+    JOIN PlanoContratado pc ON a.id = pc.aluno.id
+    JOIN Plano pl ON pl.id = pc.plano.id
+    JOIN PersonalTrainer pt ON pl.personalTrainer.id = pt.id
+    JOIN Pessoa pp ON pt.id = pp.id
+    WHERE pc.status = 'ATIVO'
+      AND CURRENT_TIMESTAMP BETWEEN pc.dataContratacao AND pc.dataFim
+    ORDER BY pl.quantidadeAulas DESC
+""")
+    List<AulasPendentesNotificacaoDTO> buscarTodosPlanosAtivos();
 }

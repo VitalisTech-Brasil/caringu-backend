@@ -3,6 +3,7 @@ package tech.vitalis.caringu.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.AcompanhamentoAulaCruDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.AulaComTreinoModeloCruDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.TreinoDetalhadoRepositoryDTO;
 import tech.vitalis.caringu.entity.AulaTreinoExercicio;
@@ -73,6 +74,38 @@ public interface AulaTreinoExercicioRepository extends JpaRepository<AulaTreinoE
                 ORDER BY a.dataHorarioInicio ASC
             """)
     List<AulaComTreinoModeloCruDTO> listarProximasAulas(@Param("idAluno") Integer idAluno);
+
+    @Query("""
+                SELECT new tech.vitalis.caringu.dtos.AulaTreinoExercicio.AcompanhamentoAulaCruDTO(
+                    al.id,
+                    a.id,
+                    a.status,
+                    a.dataHorarioInicio,
+                    a.dataHorarioFim,
+                    t.id,
+                    t.nome,
+                    ee.id,
+                    e.nome,
+                    ee.cargaExecutada,
+                    ee.repeticoesExecutadas,
+                    ee.seriesExecutadas,
+                    ee.descansoExecutado,
+                    ate.observacoesPersonalizadas,
+                    e.urlVideo,
+                    te.exercicio.grupoMuscular,
+                    ee.finalizado
+                )
+                FROM AulaTreinoExercicio ate
+                JOIN ate.treinoExercicio te
+                JOIN te.treino t
+                JOIN te.exercicio e
+                JOIN ate.aula a
+                JOIN ExecucaoExercicio ee ON ee.aulaTreinoExercicio.id = ate.id
+                JOIN PlanoContratado pc ON a.planoContratado.id = pc.id
+                JOIN pc.aluno as al
+                WHERE a.id = :idAula AND a.status != tech.vitalis.caringu.enums.Aula.AulaStatusEnum.RASCUNHO
+            """)
+    List<AcompanhamentoAulaCruDTO> listarAcompanharDaAula(@Param("idAula") Integer idAula);
 
     @Query("""
                 SELECT

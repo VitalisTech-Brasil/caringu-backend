@@ -14,7 +14,7 @@ import java.util.List;
 public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
     @Query("""
                 SELECT new tech.vitalis.caringu.dtos.Aluno.AlunoDetalhadoResponseDTO(
-                    a.id, a.peso, a.altura, p.nome, p.email, p.celular, p.urlFotoPerfil, a.nivelExperiencia,
+                    ec.id, a.id, a.peso, a.altura, p.nome, p.email, p.celular, p.urlFotoPerfil, a.nivelExperiencia,
                     a.nivelAtividade, pl.nome, pl.periodo, pl.quantidadeAulas, pc.dataFim,
                     pc.id, au.id,
                     SUM(CASE WHEN au.status = 'REALIZADO' AND au.dataHorarioInicio BETWEEN :startOfWeek AND :endOfWeek
@@ -30,6 +30,7 @@ public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
                 JOIN pl.personalTrainer pt
                 JOIN pc.aluno a
                 JOIN Pessoa p ON p.id = a.id
+                LEFT JOIN EvolucaoCorporal ec ON ec.aluno.id = a.id
                 LEFT JOIN Anamnese ana ON ana.aluno.id = a.id
                 LEFT JOIN Aula au ON au.planoContratado.id = pc.id
                 WHERE pt.id = :idPersonal
@@ -42,7 +43,7 @@ public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
                   )
                   GROUP BY a.id, p.nome, p.celular, p.urlFotoPerfil, a.nivelExperiencia, a.nivelAtividade,
                                pl.nome, pl.periodo, pl.quantidadeAulas, pc.dataFim,
-                               pc.id, au.id, ana.id, ana.objetivoTreino, ana.lesao, ana.lesaoDescricao,
+                               pc.id, ec.id, au.id, ana.id, ana.objetivoTreino, ana.lesao, ana.lesaoDescricao,
                                ana.frequenciaTreino, ana.experiencia, ana.experienciaDescricao,
                                ana.desconforto, ana.desconfortoDescricao, ana.fumante, ana.proteses,
                                ana.protesesDescricao, ana.doencaMetabolica, ana.doencaMetabolicaDescricao,
@@ -52,6 +53,23 @@ public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
                                                               @Param("startOfWeek") LocalDateTime startOfWeek,
                                                               @Param("endOfWeek") LocalDateTime endOfWeek);
 
+    @Query("""
+            SELECT
+            	CASE
+            			WHEN COUNT(*) > 0
+            			THEN false
+            		ELSE true
+                END AS alunoJaContratouPlano
+            FROM Pessoa p
+            JOIN Aluno a ON p.id = a.id
+            LEFT JOIN PlanoContratado pc ON pc.aluno.id = a.id
+            LEFT JOIN Plano pl ON pc.plano.id = pl.id
+            WHERE
+                pc.id IS NULL
+                    AND
+                a.id = :idAluno
+            """)
+    Boolean validarContratacaoPlanoAluno(@Param("idAluno") Integer idAluno);
 
     @Query("""
             SELECT pc.aluno.id as alunosId,
@@ -96,7 +114,7 @@ public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
             JOIN execucoes_exercicios ee ON ee.aulas_treinos_exercicios_id = ate.id
             JOIN treinos_exercicios te ON te.id = ate.treinos_exercicios_id
             JOIN exercicios e ON e.id = te.exercicios_id
-            WHERE al.id = 6
+            WHERE al.id = :alunoId
               AND a.status = 'REALIZADO'
               AND a.data_horario_inicio BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY) AND CURRENT_DATE()
               AND ee.carga_executada > 0

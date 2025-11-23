@@ -1,6 +1,5 @@
 package tech.vitalis.caringu.dtos.EvolucaoCorporal;
 
-import tech.vitalis.caringu.dtos.Aluno.AlunoResponseGetDTO;
 import tech.vitalis.caringu.enums.EvolucaoCorporal.TipoEvolucaoEnum;
 
 import java.time.LocalDateTime;
@@ -10,7 +9,6 @@ public record EvolucaoCorporalResponseGetDTO(
         TipoEvolucaoEnum tipo,
         String urlFotoShape,
         LocalDateTime dataEnvio,
-        Integer periodoAvaliacao,
-        AlunoResponseGetDTO aluno
+        Integer periodoAvaliacao
 ) {
 }

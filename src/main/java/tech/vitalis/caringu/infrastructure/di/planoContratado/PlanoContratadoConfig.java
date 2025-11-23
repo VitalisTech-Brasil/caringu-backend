@@ -13,13 +13,14 @@ import tech.vitalis.caringu.repository.AlunoRepository;
 import tech.vitalis.caringu.repository.NotificacoesRepository;
 import tech.vitalis.caringu.infrastructure.persistence.planoContratado.PlanoContratadoRepository;
 import tech.vitalis.caringu.repository.PreferenciaNotificacaoRepository;
+import tech.vitalis.caringu.service.NotificacaoRecebimentoService;
 
 @Configuration
 public class PlanoContratadoConfig {
 
     @Bean
-    PlanoContratadoUseCase planoContratadoUseCase(PlanoContratadoGateway planoContratadoGateway, PreferenciaNotificacaoRepository preferenciaNotificacaoRepository, NotificacoesRepository notificacoesRepository, AlunoRepository alunoRepository){
-        return new PlanoContratadoUseCase(planoContratadoGateway, preferenciaNotificacaoRepository,notificacoesRepository, alunoRepository);
+    PlanoContratadoUseCase planoContratadoUseCase(PlanoContratadoGateway planoContratadoGateway, PreferenciaNotificacaoRepository preferenciaNotificacaoRepository, NotificacoesRepository notificacoesRepository, AlunoRepository alunoRepository, NotificacaoRecebimentoService notificacaoRecebimentoService){
+        return new PlanoContratadoUseCase(planoContratadoGateway, preferenciaNotificacaoRepository,notificacoesRepository, alunoRepository, notificacaoRecebimentoService);
     }
 
     @Bean

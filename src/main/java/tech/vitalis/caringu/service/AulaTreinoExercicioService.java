@@ -3,6 +3,7 @@ package tech.vitalis.caringu.service;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.core.domain.valueObject.StatusEnum;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.AcompanhamentoAulaCruDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.AulaComTreinoDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.AulaComTreinoModeloCruDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.AtribuicaoTreinosAulaRequestPostDTO;
@@ -14,6 +15,7 @@ import tech.vitalis.caringu.dtos.AulaTreinoExercicio.TreinoDetalhadoRepositoryDT
 import tech.vitalis.caringu.entity.*;
 import tech.vitalis.caringu.enums.Aula.AulaStatusEnum;
 import tech.vitalis.caringu.exception.Aula.AulaNaoEncontradaException;
+import tech.vitalis.caringu.exception.AulaTreinoExercicio.AulaTreinoExercicioNaoEncontradaException;
 import tech.vitalis.caringu.exception.PlanoContratado.AlunoSemPlanoContratadoException;
 import tech.vitalis.caringu.exception.PlanoContratado.PlanoNaoPertenceAoAlunoException;
 import tech.vitalis.caringu.exception.Treino.TreinoNaoEncontradoException;
@@ -104,6 +106,17 @@ public class AulaTreinoExercicioService {
         return aulasAgrupadas.stream()
                 .limit(QUANTIDADE_AULAS_EXIBIDAS)
                 .toList();
+    }
+
+    public AcompanhamentoAulaResponseDTO listarAcompanhamentoDaAula(Integer idAula) {
+
+        List<AcompanhamentoAulaCruDTO> linhas = aulaTreinoExercicioRepository.listarAcompanharDaAula(idAula);
+
+        if (linhas.isEmpty()) {
+            throw new AulaTreinoExercicioNaoEncontradaException("Aula Treino Exercicio não encontrado");
+        }
+
+        return aulaTreinoExercicioMapper.toAcompanhamentoAulaResponseDTO(linhas);
     }
 
     @Transactional

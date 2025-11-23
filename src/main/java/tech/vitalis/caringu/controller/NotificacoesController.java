@@ -6,9 +6,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.Notificacoes.*;
-import tech.vitalis.caringu.service.NotificacaoPlanoVencimentoService;
-import tech.vitalis.caringu.service.NotificacaoTreinoVencimentoService;
-import tech.vitalis.caringu.service.NotificacoesService;
+import tech.vitalis.caringu.service.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,10 +18,14 @@ public class NotificacoesController {
 
     private final NotificacoesService notificacoesService;
     private final NotificacaoPlanoVencimentoService notificacaoPlanoVencimentoService;
+    private final NotificacaoRecebimentoService notificacaoRecebimentoService;
+    private final NotificacaoAulasPendentesService notificacaoAulasPendentesService;
 
-    public NotificacoesController(NotificacoesService notificacoesService, NotificacaoPlanoVencimentoService notificacaoPlanoVencimentoService) {
+    public NotificacoesController(NotificacoesService notificacoesService, NotificacaoPlanoVencimentoService notificacaoPlanoVencimentoService, NotificacaoRecebimentoService notificacaoRecebimentoService, NotificacaoAulasPendentesService notificacaoAulasPendentesService) {
         this.notificacoesService = notificacoesService;
         this.notificacaoPlanoVencimentoService = notificacaoPlanoVencimentoService;
+        this.notificacaoRecebimentoService = notificacaoRecebimentoService;
+        this.notificacaoAulasPendentesService = notificacaoAulasPendentesService;
     }
 
 
@@ -78,6 +80,29 @@ public class NotificacoesController {
     public ResponseEntity<Void> marcarTodasComoVisualizadas(@PathVariable Integer pessoaId){
         notificacoesService.marcarTodasComoVisualizadasPorPessoaId(pessoaId);
         return ResponseEntity.status(204).build();
+    }
+
+    @GetMapping("/testar/pagamento-confirmado")
+    @Operation(summary = "🧪 TESTE - Notificação pagamento confirmado")
+    public ResponseEntity<String> testarPagamentoConfirmado(@RequestParam Integer planoContratadoId) {
+        notificacaoRecebimentoService.notificarPagamentoConfirmado(planoContratadoId);
+        return ResponseEntity.ok("✅ Notificação enviada com sucesso!");
+    }
+
+    @GetMapping("/testar/pagamento-negado")
+    @Operation(summary = "🧪 TESTE - Notificação pagamento negado")
+    public ResponseEntity<String> testarPagamentoNegado(
+            @RequestParam Integer planoContratadoId,
+            @RequestParam(required = false) String motivo
+    ) {
+        notificacaoRecebimentoService.notificarPagamentoNegado(planoContratadoId, motivo);
+        return ResponseEntity.ok("❌ Notificação enviada com sucesso!");
+    }
+
+    @PostMapping("/aulas-pendentes/executar")
+    public ResponseEntity<String> executarNotificacao() {
+        notificacaoAulasPendentesService.notificarAulasPendentesSemanalmente();
+        return ResponseEntity.ok("Notificações processadas e salvas com sucesso!");
     }
 
     /*

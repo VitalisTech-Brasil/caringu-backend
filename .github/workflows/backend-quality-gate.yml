@@ -1,0 +1,188 @@
+name: Caringu Backend - Qualidade (Build, Testes & Cobertura)
+
+on:
+  push:
+    branches:
+      - 'feature/*'
+      - develop
+  pull_request:
+    branches:
+      - develop
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fazer checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Build, testes e verificação de cobertura (mín. 20%)
+        run: mvn -B clean verify
+
+      - name: Extrair cobertura de linhas (JaCoCo)
+        if: always()
+        run: |
+          REPORT_FILE="target/site/jacoco/jacoco.xml"
+
+          if [ ! -f "$REPORT_FILE" ]; then
+            echo "Relatório JaCoCo não encontrado em $REPORT_FILE"
+            exit 0
+          fi
+
+          python - << 'EOF'
+          import os
+          import xml.etree.ElementTree as ET
+
+          report_path = "target/site/jacoco/jacoco.xml"
+
+          if not os.path.exists(report_path):
+              print(f"Relatório JaCoCo não encontrado em {report_path}")
+              raise SystemExit(0)
+
+          tree = ET.parse(report_path)
+          root = tree.getroot()
+
+          # Usa o contador de LINHA no nível do bundle (raiz), que reflete a cobertura global
+          line_counter = None
+          for counter in root.findall("counter"):
+              if counter.get("type") == "LINE":
+                  line_counter = counter
+                  break
+
+          if line_counter is None:
+              print("Nenhum contador de LINE encontrado no relatório JaCoCo no nível do bundle")
+              raise SystemExit(0)
+
+          missed = int(line_counter.get("missed", "0"))
+          covered = int(line_counter.get("covered", "0"))
+          total = missed + covered
+
+          if total == 0:
+              pct = 0.0
+          else:
+              pct = covered * 100.0 / total
+
+          summary = f"Cobertura de linhas JaCoCo (bundle): {pct:.2f}% ({covered}/{total} linhas)"
+          print(summary)
+
+          with open("coverage-summary.txt", "w", encoding="utf-8") as f:
+              f.write(summary + "\n")
+          EOF
+
+      - name: Comentar cobertura no PR
+        if: always() && github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ ! -f coverage-summary.txt ]; then
+            echo "Nenhum resumo de cobertura gerado, pulando comentário no PR."
+            exit 0
+          fi
+
+          BODY="$(cat coverage-summary.txt)"
+
+          echo "Publicando comentário de cobertura no PR #${PR_NUMBER}: ${BODY}"
+
+          gh api \
+            repos/${{ github.repository }}/issues/${PR_NUMBER}/comments \
+            -f body="${BODY}"
+
+  create-pr-to-develop:
+    # Roda em paralelo com o build-and-test, mas só em push de feature/*
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/feature/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fazer checkout do repositório
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Criar pull request de feature/* para develop
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH_NAME="${GITHUB_REF_NAME}"
+
+          echo "Branch atual: ${BRANCH_NAME}"
+
+          # Verifica se já existe PR aberto dessa branch para develop
+          EXISTING_PR_NUMBER=$(gh pr list --head "${BRANCH_NAME}" --base develop --state open --json number --jq '.[0].number' || echo "")
+
+          if [ -n "${EXISTING_PR_NUMBER}" ]; then
+            echo "Já existe PR aberto (#${EXISTING_PR_NUMBER}) de ${BRANCH_NAME} para develop. Nada a fazer."
+            exit 0
+          fi
+
+          set +e
+          gh pr create \
+            --base develop \
+            --head "${BRANCH_NAME}" \
+            --title "PR automático: ${BRANCH_NAME} -> develop" \
+            --body "Pull request automático criado pela pipeline de qualidade após sucesso (ou tentativa) dos testes e verificação de cobertura mínima."
+          STATUS=$?
+          set -e
+
+          if [ $STATUS -ne 0 ]; then
+            echo "Não foi possível criar o PR automaticamente. Isso normalmente acontece quando a organização/repositório bloqueia o GitHub Actions de criar PRs."
+            echo "Mensagem do gh pr create foi ignorada para não falhar o pipeline."
+            exit 0
+          fi
+
+  create-pr-develop-to-main:
+    # Roda em paralelo com o build-and-test, mas só em push direto na develop
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fazer checkout do repositório
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Criar pull request de develop para main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH_NAME="${GITHUB_REF_NAME}"
+
+          echo "Branch atual: ${BRANCH_NAME}"
+
+          # Verifica se já existe PR aberto de develop para main
+          EXISTING_PR_NUMBER=$(gh pr list --head develop --base main --state open --json number --jq '.[0].number' || echo "")
+
+          if [ -n "${EXISTING_PR_NUMBER}" ]; then
+            echo "Já existe PR aberto (#${EXISTING_PR_NUMBER}) de develop para main. Nada a fazer."
+            exit 0
+          fi
+
+          set +e
+          gh pr create \
+            --base main \
+            --head develop \
+            --title "PR automático: develop -> main" \
+            --body "Pull request automático criado pela pipeline de qualidade após sucesso (ou tentativa) dos testes e verificação de cobertura mínima na branch develop."
+          STATUS=$?
+          set -e
+
+          if [ $STATUS -ne 0 ]; then
+            echo "Não foi possível criar o PR automaticamente. Isso normalmente acontece quando a organização/repositório bloqueia o GitHub Actions de criar PRs."
+            echo "Mensagem do gh pr create foi ignorada para não falhar o pipeline."
+            exit 0
+          fi
+
+

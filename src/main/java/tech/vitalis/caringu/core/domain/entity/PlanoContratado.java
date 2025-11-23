@@ -75,4 +75,8 @@ public record PlanoContratado (
         return dataFim.isBefore(dataLimite) || dataFim.isEqual(dataLimite);
     }
 
+    public PlanoContratado voltarParaPendente() {
+        return new PlanoContratado(id, aluno, plano, StatusEnum.PENDENTE, dataContratacao, dataFim);
+    }
+
 }

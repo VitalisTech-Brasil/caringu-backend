@@ -104,7 +104,7 @@ public interface TreinoExercicioRepository extends JpaRepository<TreinoExercicio
                 JOIN AulaTreinoExercicio ate ON au.id = ate.aula.id
                 JOIN TreinoExercicio te ON te.id = ate.treinoExercicio.id
                 JOIN Treino t ON t.id = te.treino.id
-                LEFT JOIN PersonalTrainer pt ON t.personal.id = pt.id
+                JOIN PersonalTrainer pt ON t.personal.id = pt.id
                 WHERE pc.aluno.id = :idAluno
                   AND (
                       :nomeTreino IS NULL
