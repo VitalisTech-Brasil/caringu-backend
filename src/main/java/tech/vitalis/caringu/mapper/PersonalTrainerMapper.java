@@ -128,7 +128,7 @@ public class PersonalTrainerMapper {
             if (env.acceptsProfiles(Profiles.of("prod"))) {
                 // produção: assume S3 e gera URL pré-assinada
                 urlFoto = armazenamentoInterface.gerarUrlPreAssinada(urlFoto, Duration.ofMinutes(5));
-            } else if (env.acceptsProfiles((Profiles.of("dev", "dev-with-redis")))) {
+            } else if (env.acceptsProfiles((Profiles.of("dev", "dev-with-redis"))) && !urlFoto.startsWith("https://lh3")) {
                 // dev/local: monta URL para servir via endpoint local
                 urlFoto = "http://localhost:8080/pessoas/fotos-perfil/" + urlFoto;
             }
@@ -193,7 +193,7 @@ public class PersonalTrainerMapper {
             if (env.acceptsProfiles(Profiles.of("prod"))) {
                 // produção: gera URL pré-assinada
                 urlFoto = armazenamentoInterface.gerarUrlPreAssinada(urlFoto, Duration.ofMinutes(5));
-            } else if (env.acceptsProfiles(Profiles.of("dev", "dev-with-redis"))) {
+            } else if (env.acceptsProfiles(Profiles.of("dev", "dev-with-redis")) && !urlFoto.startsWith("https://lh3")) {
                 // dev/local: monta URL para servir via endpoint local
                 urlFoto = "http://localhost:8080/pessoas/fotos-perfil/" + urlFoto;
             }
