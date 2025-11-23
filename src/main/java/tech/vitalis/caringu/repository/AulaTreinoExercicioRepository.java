@@ -92,6 +92,7 @@ public interface AulaTreinoExercicioRepository extends JpaRepository<AulaTreinoE
                     ee.descansoExecutado,
                     ate.observacoesPersonalizadas,
                     e.urlVideo,
+                    te.exercicio.grupoMuscular,
                     ee.finalizado
                 )
                 FROM AulaTreinoExercicio ate
