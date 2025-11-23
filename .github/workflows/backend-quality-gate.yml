@@ -122,11 +122,20 @@ jobs:
             exit 0
           fi
 
+          set +e
           gh pr create \
             --base develop \
             --head "${BRANCH_NAME}" \
             --title "PR automático: ${BRANCH_NAME} -> develop" \
             --body "Pull request automático criado pela pipeline de qualidade após sucesso (ou tentativa) dos testes e verificação de cobertura mínima."
+          STATUS=$?
+          set -e
+
+          if [ $STATUS -ne 0 ]; then
+            echo "Não foi possível criar o PR automaticamente. Isso normalmente acontece quando a organização/repositório bloqueia o GitHub Actions de criar PRs."
+            echo "Mensagem do gh pr create foi ignorada para não falhar o pipeline."
+            exit 0
+          fi
 
   create-pr-develop-to-main:
     # Roda em paralelo com o build-and-test, mas só em push direto na develop
@@ -155,10 +164,19 @@ jobs:
             exit 0
           fi
 
+          set +e
           gh pr create \
             --base main \
             --head develop \
             --title "PR automático: develop -> main" \
             --body "Pull request automático criado pela pipeline de qualidade após sucesso (ou tentativa) dos testes e verificação de cobertura mínima na branch develop."
+          STATUS=$?
+          set -e
+
+          if [ $STATUS -ne 0 ]; then
+            echo "Não foi possível criar o PR automaticamente. Isso normalmente acontece quando a organização/repositório bloqueia o GitHub Actions de criar PRs."
+            echo "Mensagem do gh pr create foi ignorada para não falhar o pipeline."
+            exit 0
+          fi
 
 
