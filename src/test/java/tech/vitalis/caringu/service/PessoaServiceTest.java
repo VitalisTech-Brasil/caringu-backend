@@ -210,6 +210,37 @@ class PessoaServiceTest {
     }
 
     @Test
+    @DisplayName("uploadFotoPerfil deve remover foto antiga (se existir) e salvar nova URL")
+    void uploadFotoPerfil_ComFotoAntiga() {
+        pessoa.setUrlFotoPerfil("antiga.jpg");
+        when(pessoaRepository.findById(1)).thenReturn(Optional.of(pessoa));
+        when(armazenamentoService.uploadArquivo(any())).thenReturn("nova.jpg");
+
+        var arquivo = mock(org.springframework.web.multipart.MultipartFile.class);
+
+        String url = pessoaService.uploadFotoPerfil(1, arquivo);
+
+        assertEquals("nova.jpg", url);
+        assertEquals("nova.jpg", pessoa.getUrlFotoPerfil());
+        verify(armazenamentoService).deletarArquivoPorUrl("antiga.jpg");
+        verify(armazenamentoService).uploadArquivo(arquivo);
+        verify(pessoaRepository).save(pessoa);
+    }
+
+    @Test
+    @DisplayName("removerFotoPerfil deve deletar arquivo quando URL existir")
+    void removerFotoPerfil_ComSucesso() {
+        pessoa.setUrlFotoPerfil("foto.jpg");
+        when(pessoaRepository.findById(1)).thenReturn(Optional.of(pessoa));
+
+        pessoaService.removerFotoPerfil(1);
+
+        assertNull(pessoa.getUrlFotoPerfil());
+        verify(armazenamentoService).deletarArquivoPorUrl("foto.jpg");
+        verify(pessoaRepository).save(pessoa);
+    }
+
+    @Test
     @DisplayName("removerPessoa deve deletar quando existir")
     void removerPessoa_ComSucesso() {
         when(pessoaRepository.existsById(1)).thenReturn(true);

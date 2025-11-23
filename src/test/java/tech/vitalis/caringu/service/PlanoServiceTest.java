@@ -172,6 +172,50 @@ class PlanoServiceTest {
         assertEquals(StatusEnum.PENDENTE, contratado.getStatus());
         assertNotNull(contratado.getDataFim());
     }
+
+    @Test
+    @DisplayName("contratarPlano deve criar plano contratado SEMESTRAL com dataFim em +6 meses")
+    void contratarPlano_Semestral() {
+        Aluno aluno = new Aluno();
+        when(alunoRepository.findById(1)).thenReturn(Optional.of(aluno));
+
+        Plano plano = new Plano();
+        plano.setPeriodo(PeriodoEnum.SEMESTRAL);
+        when(planoRepository.findById(2)).thenReturn(Optional.of(plano));
+
+        PlanoContratadoEntity contratado = new PlanoContratadoEntity();
+        when(planoContratadoRepository.save(any(PlanoContratadoEntity.class))).thenAnswer(invocation -> {
+            PlanoContratadoEntity entity = invocation.getArgument(0);
+            contratado.setAluno(entity.getAluno());
+            contratado.setPlano(entity.getPlano());
+            contratado.setStatus(entity.getStatus());
+            contratado.setDataContratacao(entity.getDataContratacao());
+            contratado.setDataFim(entity.getDataFim());
+            return contratado;
+        });
+
+        when(planoContratadoDTOMapper.toResponseContratarPlano(any()))
+                .thenReturn(mock(PlanoContratadoResponse.class));
+
+        PlanoContratadoResponse resultado = planoService.contratarPlano(1, 2);
+
+        assertNotNull(resultado);
+        assertEquals(StatusEnum.PENDENTE, contratado.getStatus());
+        assertNotNull(contratado.getDataFim());
+        // dataFim deve ser depois da data de contratação
+        assertTrue(contratado.getDataFim().isAfter(contratado.getDataContratacao()));
+    }
+
+    @Test
+    @DisplayName("contarAlunosAtivos deve delegar para planoContratadoRepository")
+    void contarAlunosAtivos_ComSucesso() {
+        when(planoContratadoRepository.countAlunosAtivosByPersonalId(5)).thenReturn(7);
+
+        Integer resultado = planoService.contarAlunosAtivos(5);
+
+        assertEquals(7, resultado);
+        verify(planoContratadoRepository).countAlunosAtivosByPersonalId(5);
+    }
 }
 
 

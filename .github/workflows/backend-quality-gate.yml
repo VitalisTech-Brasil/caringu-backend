@@ -55,9 +55,15 @@ jobs:
           tree = ET.parse(report_path)
           root = tree.getroot()
 
-          line_counter = root.find(".//counter[@type='LINE']")
+          # Usa o contador de LINHA no nível do bundle (raiz), que reflete a cobertura global
+          line_counter = None
+          for counter in root.findall("counter"):
+              if counter.get("type") == "LINE":
+                  line_counter = counter
+                  break
+
           if line_counter is None:
-              print("Nenhum contador de LINE encontrado no relatório JaCoCo")
+              print("Nenhum contador de LINE encontrado no relatório JaCoCo no nível do bundle")
               raise SystemExit(0)
 
           missed = int(line_counter.get("missed", "0"))
@@ -69,7 +75,7 @@ jobs:
           else:
               pct = covered * 100.0 / total
 
-          summary = f"Cobertura de linhas JaCoCo: {pct:.2f}% ({covered}/{total} linhas)"
+          summary = f"Cobertura de linhas JaCoCo (bundle): {pct:.2f}% ({covered}/{total} linhas)"
           print(summary)
 
           with open("coverage-summary.txt", "w", encoding="utf-8") as f:
