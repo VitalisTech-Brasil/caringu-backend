@@ -196,21 +196,14 @@ public class PessoaService {
     }
 
     public String uploadFotoPerfil(Integer id, MultipartFile arquivo) {
-        System.out.println("Entrou no service uploadFotoPerfil");
-        System.out.println("Arquivo no service: " + (arquivo != null ? arquivo.getOriginalFilename() : "null"));
-
         Pessoa pessoa = pessoaRepository.findById(id)
                 .orElseThrow(() -> new PessoaNaoEncontradaException("Pessoa não encontrada"));
 
-        System.out.println("Pessoa encontrada: " + pessoa.getNome());
-
         if (pessoa.getUrlFotoPerfil() != null) {
-            System.out.println("Deletando arquivo antigo: " + pessoa.getUrlFotoPerfil());
             armazenamentoService.deletarArquivoPorUrl(pessoa.getUrlFotoPerfil());
         }
 
         String url = armazenamentoService.uploadArquivo(arquivo);
-        System.out.println("URL do novo arquivo: " + url);
 
         pessoa.setUrlFotoPerfil(url);
         pessoaRepository.save(pessoa);
