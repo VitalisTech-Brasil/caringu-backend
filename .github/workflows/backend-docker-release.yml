@@ -29,7 +29,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            vitalis/caringu-backend:latest
-            vitalis/caringu-backend:${{ github.sha }}
+            vitalistech/caringu-backend:latest
+            vitalistech/caringu-backend:${{ github.sha }}
 
 

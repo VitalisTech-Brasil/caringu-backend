@@ -30,7 +30,7 @@ jobs:
           cache: 'maven'
 
       - name: Build, testes e verificação de cobertura (mín. 20%)
-        run: mvn -B clean verify
+        run: mvn -q -B clean verify
 
       - name: Extrair cobertura de linhas (JaCoCo)
         if: always()
