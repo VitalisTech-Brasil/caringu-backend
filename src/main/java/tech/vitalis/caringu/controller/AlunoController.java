@@ -181,11 +181,6 @@ public class AlunoController {
         AlunoRepository repository = null;
         List<Object[]> resultado = repository.findMaiorEvolucaoExercicioPorAlunoMesAtual(alunoId);
 
-        System.out.println("=== DEBUG EVOLUÇÃO ===");
-        System.out.println("Resultado é null? " + (resultado == null));
-        System.out.println("Resultado está vazio? " + (resultado != null && resultado.isEmpty()));
-        System.out.println("Tamanho: " + (resultado != null ? resultado.size() : "N/A"));
-
         if (resultado != null && !resultado.isEmpty()) {
             Object[] row = resultado.get(0);
             System.out.println("Linha encontrada com " + row.length + " colunas:");
