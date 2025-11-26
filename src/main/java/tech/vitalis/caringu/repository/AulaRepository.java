@@ -157,6 +157,10 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
                     ON pc.id = au.planoContratado.id
                 WHERE pc.status = 'ATIVO'
                   AND NOW() BETWEEN pc.dataContratacao AND pc.dataFim
+                  AND au.status IN (
+                              tech.vitalis.caringu.enums.Aula.AulaStatusEnum.AGENDADO,
+                              tech.vitalis.caringu.enums.Aula.AulaStatusEnum.REAGENDADO
+                                  )
                   AND a.id = :idAluno
             """)
     List<SessaoAulasAgendadasResponseDTO> findAllAulasPorAluno(@Param("idAluno") Integer idAluno);
