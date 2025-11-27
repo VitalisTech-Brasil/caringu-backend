@@ -316,6 +316,53 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
     );
 
     @Query(value = """
+SELECT DISTINCT new tech.vitalis.caringu.dtos.Aula.Request.AulasAlunoRequestDTO(
+    a.id,
+    a.dataHorarioInicio,
+    a.dataHorarioFim,
+    pt.nome,
+    t.id,
+    t.nome
+)
+FROM Aula a
+JOIN a.planoContratado pc
+JOIN pc.aluno al
+JOIN pc.plano p
+JOIN p.personalTrainer pt
+JOIN AulaTreinoExercicio ate ON ate.aula.id = a.id
+JOIN ate.treinoExercicio te
+JOIN te.treino t
+JOIN Feedback f ON f.aula.id = a.id
+WHERE al.id = :idAluno
+  AND pc.status = 'ATIVO'
+  AND (
+      :data IS NULL
+      OR (a.dataHorarioInicio >= :dataInicio AND a.dataHorarioInicio < :dataFim)
+  )
+ORDER BY a.dataHorarioInicio DESC
+""",
+            countQuery = """
+SELECT COUNT(DISTINCT a.id)
+FROM Aula a
+JOIN a.planoContratado pc
+JOIN pc.aluno al
+JOIN Feedback f ON f.aula.id = a.id
+WHERE al.id = :idAluno
+  AND pc.status = 'ATIVO'
+  AND (
+      :data IS NULL
+      OR (a.dataHorarioInicio >= :dataInicio AND a.dataHorarioInicio < :dataFim)
+  )
+""")
+    Page<AulasAlunoRequestDTO> listarAulasComFeedbacksPorAluno(
+            @Param("idAluno") Integer idAluno,
+            @Param("data") LocalDate data,
+            @Param("dataInicio") LocalDateTime dataInicio,
+            @Param("dataFim") LocalDateTime dataFim,
+            Pageable pageable
+    );
+
+    @Query(value = """
     SELECT DISTINCT new tech.vitalis.caringu.dtos.Aula.Request.AulasAlunoRequestDTO(
         a.id,
         a.dataHorarioInicio,
@@ -380,8 +427,8 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
         pp.nome,
         pc.id,
         CAST(pl.quantidadeAulas AS long),
-        CAST((SELECT COUNT(au2) FROM Aula au2 
-              WHERE au2.planoContratado.id = pc.id 
+        CAST((SELECT COUNT(au2) FROM Aula au2
+              WHERE au2.planoContratado.id = pc.id
               AND au2.status IN ('AGENDADO', 'REALIZADO', 'REAGENDADO')) AS long)
     )
     FROM Aluno a

@@ -57,6 +57,11 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
         }
 
         if (jwtToken != null) {
+            if (!jwtToken.contains(".") || jwtToken.chars().filter(ch -> ch == '.').count() != 2) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             try {
                 username = jwtTokenManager.getUsernameFromToken(jwtToken);
             } catch (ExpiredJwtException exception) {
