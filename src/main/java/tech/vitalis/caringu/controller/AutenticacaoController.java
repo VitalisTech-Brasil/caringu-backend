@@ -4,32 +4,20 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import jakarta.servlet.http.HttpServletResponse;
-import tech.vitalis.caringu.config.GerenciadorTokenJwt;
 import tech.vitalis.caringu.config.CookieJwtUtil;
 import tech.vitalis.caringu.dtos.Pessoa.security.PessoaLoginDTO;
 import tech.vitalis.caringu.dtos.Pessoa.security.PessoaTokenDTO;
-import tech.vitalis.caringu.entity.Aluno;
-import tech.vitalis.caringu.entity.Pessoa;
-import tech.vitalis.caringu.enums.Pessoa.GeneroEnum;
-import tech.vitalis.caringu.mapper.PessoaMapper;
-import tech.vitalis.caringu.repository.AlunoRepository;
-import tech.vitalis.caringu.repository.PessoaRepository;
-import tech.vitalis.caringu.service.PessoaService;
-import tech.vitalis.caringu.service.SingleSignOn.GoogleTokenVerifierService;
+import tech.vitalis.caringu.dtos.auth.GoogleCodeRequestDTO;
+import tech.vitalis.caringu.dtos.auth.GoogleLoginResponseDTO;
+import tech.vitalis.caringu.service.AuthService;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -37,22 +25,7 @@ import java.util.Map;
 public class AutenticacaoController {
 
     @Autowired
-    private GoogleTokenVerifierService tokenVerifier;
-
-    @Autowired
-    private PessoaRepository pessoaRepository;
-
-    @Autowired
-    private GerenciadorTokenJwt jwtService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private PessoaService pessoaService;
-
-    @Autowired
-    private AlunoRepository alunoRepository;
+    private AuthService authService;
 
     @Autowired
     private CookieJwtUtil cookieJwtUtil;
@@ -83,8 +56,7 @@ public class AutenticacaoController {
     )
     public ResponseEntity<PessoaTokenDTO> login(@RequestBody PessoaLoginDTO pessoaLoginDto, HttpServletResponse response) {
 
-        final Pessoa pessoa = PessoaMapper.of(pessoaLoginDto);
-        PessoaTokenDTO pessoaTokenDto = this.pessoaService.autenticar(pessoa);
+        PessoaTokenDTO pessoaTokenDto = authService.loginComSenha(pessoaLoginDto);
 
         // Define o cookie JWT (mais seguro que localStorage)
         cookieJwtUtil.createJwtCookie(response, pessoaTokenDto.getToken());
@@ -93,51 +65,21 @@ public class AutenticacaoController {
     }
 
     @PostMapping("/login/google")
-    public ResponseEntity<?> loginGoogle(@RequestBody Map<String, String> request, HttpServletResponse response) {
-        String code = request.get("code");
+    public ResponseEntity<GoogleLoginResponseDTO> loginGoogle(@RequestBody GoogleCodeRequestDTO request,
+                                                              HttpServletResponse response) {
+        GoogleLoginResponseDTO resultado = authService.loginComGoogle(request.codigo());
 
-        return tokenVerifier.exchangeCodeForPayload(code)
-                .map(payload -> {
-                    String email = payload.getEmail();
-                    String nome = (String) payload.get("name");
-                    String fotoPerfil = (String) payload.get("picture");
+        // Se houve erro de token Google, retorna 401 com o código esperado
+        if ("INVALID_GOOGLE_TOKEN".equals(resultado.erro())) {
+            return ResponseEntity.status(401).body(resultado);
+        }
 
-                    Pessoa pessoa = pessoaRepository.findByEmail(email)
-                            .orElseGet(() -> {
-                                Aluno aluno = new Aluno();
-                                aluno.setNome(nome);
-                                aluno.setEmail(email);
-                                aluno.setGenero(GeneroEnum.HOMEM_CISGENERO);
-                                aluno.setDataCadastro(LocalDateTime.now());
-                                aluno.setUrlFotoPerfil(fotoPerfil);
+        // Quando houver token de aplicação gerado, grava em cookie HttpOnly
+        if (Boolean.TRUE.equals(resultado.sucesso()) && resultado.token() != null) {
+            cookieJwtUtil.createJwtCookie(response, resultado.token());
+        }
 
-                                String senhaCriptografada = passwordEncoder.encode("123Ab@");
-                                aluno.setSenha(senhaCriptografada);
-
-                                alunoRepository.save(aluno);
-
-                                return aluno;
-                            });
-
-                    Authentication authentication = new UsernamePasswordAuthenticationToken(
-                            pessoa.getEmail(), null, List.of()
-                    );
-
-                    String appToken = jwtService.generateToken(authentication);
-
-                    // Define o cookie JWT (mais seguro que localStorage)
-                    cookieJwtUtil.createJwtCookie(response, appToken);
-
-                    return ResponseEntity.ok(Map.of(
-                            "token", appToken,
-                            "pessoaId", pessoa.getId(),
-                            "nome", pessoa.getNome(),
-                            "email", pessoa.getEmail(),
-                            "urlFotoPerfil", pessoa.getUrlFotoPerfil(),
-                            "tipo", "ALUNO"
-                    ));
-                })
-                .orElse(ResponseEntity.status(401).body(Map.of("erro", "Token inválido do Google.")));
+        return ResponseEntity.ok(resultado);
     }
 
     @PostMapping("/logout")
@@ -154,7 +96,7 @@ public class AutenticacaoController {
     public ResponseEntity<Map<String, String>> logout(HttpServletResponse response) {
         // Remove o cookie JWT
         cookieJwtUtil.removeJwtCookie(response);
-        
+
         return ResponseEntity.ok(Map.of("message", "Logout realizado com sucesso"));
     }
 
