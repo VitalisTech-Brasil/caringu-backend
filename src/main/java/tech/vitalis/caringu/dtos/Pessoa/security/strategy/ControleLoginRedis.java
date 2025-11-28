@@ -1,11 +1,13 @@
 package tech.vitalis.caringu.dtos.Pessoa.security.strategy;
 
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import tech.vitalis.caringu.dtos.Pessoa.security.TentativaDeLogin;
-import tech.vitalis.caringu.repository.RedisRepository;
+import tech.vitalis.caringu.repository.redis.RedisRepository;
 
 @Service
+@Primary
 @Profile({"dev-with-redis", "prod"})
 public class ControleLoginRedis implements ControleLogin {
 
