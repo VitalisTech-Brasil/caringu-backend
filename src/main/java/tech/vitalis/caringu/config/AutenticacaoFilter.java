@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 import tech.vitalis.caringu.service.AutenticacaoService;
@@ -92,25 +93,34 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            addUsernameInContext(request, username, jwtToken);
+            addUsernameInContext(request, response, username, jwtToken);
         }
 
         filterChain.doFilter(request, response);
     }
 
-    private void addUsernameInContext(HttpServletRequest request, String username, String jwtToken) {
+    private void addUsernameInContext(HttpServletRequest request,
+                                      HttpServletResponse response,
+                                      String username,
+                                      String jwtToken) {
+        try {
+            UserDetails userDetails = autenticacaoService.loadUserByUsername(username);
 
-        UserDetails userDetails = autenticacaoService.loadUserByUsername(username);
+            if (jwtTokenManager.validateToken(jwtToken, userDetails)) {
 
-        if (jwtTokenManager.validateToken(jwtToken, userDetails)) {
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities());
+                usernamePasswordAuthenticationToken
+                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            usernamePasswordAuthenticationToken
-                    .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            }
+        } catch (UsernameNotFoundException ex) {
+            LOGGER.warn("[FALHA AUTENTICACAO] - Pessoa {} nao encontrada para o token JWT. Removendo cookie e limpando contexto.", username);
+            // Remove o cookie inválido e limpa o contexto de segurança
+            cookieJwtUtil.removeJwtCookie(response);
+            SecurityContextHolder.clearContext();
         }
     }
 }

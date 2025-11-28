@@ -171,10 +171,11 @@ public class AlunoMapper {
     }
 
     public AlunoResponseGetDTO toResponseDTO(Aluno aluno) {
-        // Gera URL temporária aqui, pro front
-        String urlFoto = aluno.getUrlFotoPerfil() != null
-                ? armazenamentoInterface.gerarUrlPreAssinada(aluno.getUrlFotoPerfil(), Duration.ofMinutes(5))
-                : null;
+        // Se for um fileKey interno, gera URL temporária; se já for uma URL http(s), devolve como está
+        String urlFoto = aluno.getUrlFotoPerfil();
+        if (urlFoto != null && !urlFoto.startsWith("http")) {
+            urlFoto = armazenamentoInterface.gerarUrlPreAssinada(urlFoto, Duration.ofMinutes(5));
+        }
 
         return new AlunoResponseGetDTO(
                 aluno.getId(),

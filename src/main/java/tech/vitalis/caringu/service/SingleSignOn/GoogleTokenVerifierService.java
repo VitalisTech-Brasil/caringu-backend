@@ -64,9 +64,10 @@ public class GoogleTokenVerifierService {
             ).execute();
 
             String idTokenString = tokenResponse.getIdToken();
-            GoogleIdToken idToken = GoogleIdToken.parse(jsonFactory, idTokenString);
+            // Usa o mesmo verifier configurado com audience para validar iss, aud, exp e assinatura
+            GoogleIdToken idToken = verifier.verify(idTokenString);
 
-            if (Boolean.TRUE.equals(idToken.getPayload().getEmailVerified())) {
+            if (idToken != null && Boolean.TRUE.equals(idToken.getPayload().getEmailVerified())) {
                 return Optional.of(idToken.getPayload());
             }
         } catch (Exception e) {

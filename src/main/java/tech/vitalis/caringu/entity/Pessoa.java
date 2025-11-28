@@ -41,9 +41,16 @@ public class Pessoa {
     @CreationTimestamp
     private LocalDateTime dataCadastro;
 
+    @Column(name = "google_id")
+    private String googleId;
+
+    @Column(name = "perfil_completo", nullable = false)
+    private boolean perfilCompleto = false;
+
     public Pessoa() {}
 
-    public Pessoa(Integer id, String nome, String email, String senha, String celular, String urlFotoPerfil, LocalDate dataNascimento, GeneroEnum genero, LocalDateTime dataCadastro) {
+    public Pessoa(Integer id, String nome, String email, String senha, String celular, String urlFotoPerfil,
+                  LocalDate dataNascimento, GeneroEnum genero, LocalDateTime dataCadastro) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -53,6 +60,7 @@ public class Pessoa {
         this.dataNascimento = dataNascimento;
         this.genero = genero;
         this.dataCadastro = dataCadastro;
+        this.perfilCompleto = false;
     }
 
     public Integer getId() {
@@ -125,5 +133,21 @@ public class Pessoa {
 
     public void setDataCadastro(LocalDateTime dataCadastro) {
         this.dataCadastro = dataCadastro;
+    }
+
+    public String getGoogleId() {
+        return googleId;
+    }
+
+    public void setGoogleId(String googleId) {
+        this.googleId = googleId;
+    }
+
+    public boolean isPerfilCompleto() {
+        return perfilCompleto;
+    }
+
+    public void setPerfilCompleto(boolean perfilCompleto) {
+        this.perfilCompleto = perfilCompleto;
     }
 }
