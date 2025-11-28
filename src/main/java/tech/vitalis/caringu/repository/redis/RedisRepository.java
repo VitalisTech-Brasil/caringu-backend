@@ -1,4 +1,4 @@
-package tech.vitalis.caringu.repository;
+package tech.vitalis.caringu.repository.redis;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
