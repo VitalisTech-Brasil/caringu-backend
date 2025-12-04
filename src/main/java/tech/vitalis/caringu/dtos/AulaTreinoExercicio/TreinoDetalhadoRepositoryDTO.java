@@ -15,6 +15,7 @@ public record TreinoDetalhadoRepositoryDTO(
         String repeticoesSeries,
         String carga,
         GrupoMuscularEnum grupoMuscular,
+        Integer idAulaTreinoExercicio,
         String observacoes,
         String urlVideoExecucao,
         Boolean aulaRealizada

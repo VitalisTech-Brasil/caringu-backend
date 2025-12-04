@@ -9,6 +9,7 @@ import tech.vitalis.caringu.dtos.AulaTreinoExercicio.TreinoDetalhadoRepositoryDT
 import tech.vitalis.caringu.entity.AulaTreinoExercicio;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AulaTreinoExercicioRepository extends JpaRepository<AulaTreinoExercicio, Integer> {
 
@@ -24,6 +25,7 @@ public interface AulaTreinoExercicioRepository extends JpaRepository<AulaTreinoE
                     CONCAT(CAST(ate.series AS string), ' x ', CAST(ate.repeticoes AS string)),
                     CONCAT(CAST(ate.carga AS string), ' kg'),
                     e.grupoMuscular,
+                    ate.id,
                     COALESCE(ate.observacoesPersonalizadas, ''),
                     COALESCE(e.urlVideo, ''),
                     CASE WHEN a.status = 'REALIZADO' THEN true ELSE false END

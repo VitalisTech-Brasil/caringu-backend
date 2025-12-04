@@ -6,10 +6,7 @@ import tech.vitalis.caringu.core.domain.valueObject.StatusEnum;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.AcompanhamentoAulaCruDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.AulaComTreinoDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.AulaComTreinoModeloCruDTO;
-import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.AtribuicaoTreinosAulaRequestPostDTO;
-import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.AtribuicaoTreinosAulaTreinoDTO;
-import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.HorarioAulaDTO;
-import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.RemarcarAulaTreinoRequestDTO;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.*;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.*;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.TreinoDetalhadoRepositoryDTO;
 import tech.vitalis.caringu.entity.*;
@@ -80,6 +77,7 @@ public class AulaTreinoExercicioService {
                         formatarDuracao(d.descanso()),
                         d.repeticoesSeries(),
                         d.grupoMuscular().getValue(),
+                        d.idAulaTreinoExercicio(),
                         d.observacoes(),
                         d.urlVideoExecucao(),
                         d.aulaRealizada()
@@ -260,6 +258,21 @@ public class AulaTreinoExercicioService {
                 aula.getDataHorarioFim(),
                 exerciciosDTO
         );
+    }
+
+    @Transactional
+    public void atualizarObservacoesAula(
+            Integer idAulaTreinoExercicio,
+            AtualizarObservacoesRequestDTO requestDTO
+    ) {
+        AulaTreinoExercicio aulaTreinoExercicio = aulaTreinoExercicioRepository.findById(idAulaTreinoExercicio)
+                .orElseThrow(() -> new AulaTreinoExercicioNaoEncontradaException(
+                        "AulaTreinoExercicio não encontrada para o ID: " + idAulaTreinoExercicio
+                ));
+
+        aulaTreinoExercicio.setObservacoesPersonalizadas(requestDTO.observacoes());
+
+        aulaTreinoExercicioRepository.save(aulaTreinoExercicio);
     }
 
     private String formatarDuracao(int segundos) {

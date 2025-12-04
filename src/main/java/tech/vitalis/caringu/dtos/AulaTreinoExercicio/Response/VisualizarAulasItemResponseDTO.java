@@ -12,6 +12,7 @@ public record VisualizarAulasItemResponseDTO(
         String descanso,
         String repeticoesSeries,
         String grupoMuscular,
+        Integer idAulaTreinoExercicio,
         String observacoes,
         String urlVideoExecucao,
         boolean aulaRealizada
