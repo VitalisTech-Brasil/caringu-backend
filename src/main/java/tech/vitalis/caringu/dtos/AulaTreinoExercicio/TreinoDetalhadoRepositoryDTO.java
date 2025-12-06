@@ -18,6 +18,7 @@ public record TreinoDetalhadoRepositoryDTO(
         Integer idAulaTreinoExercicio,
         String observacoes,
         String urlVideoExecucao,
-        Boolean aulaRealizada
+        Boolean aulaRealizada,
+        Boolean exerciciosFinalizados
 ) {
 }

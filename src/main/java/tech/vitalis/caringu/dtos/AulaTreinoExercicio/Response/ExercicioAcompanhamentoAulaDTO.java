@@ -8,6 +8,7 @@ public record ExercicioAcompanhamentoAulaDTO(
         BigDecimal cargaKg,
         String repeticoesSeries,
         Integer descansoSegundos,
+        Integer idAulaTreinoExercicio,
         String observacoes,
         String urlExemploExecucao,
         String grupoMuscular,

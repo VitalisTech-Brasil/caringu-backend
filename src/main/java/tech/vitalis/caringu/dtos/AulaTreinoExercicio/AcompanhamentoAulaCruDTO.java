@@ -21,6 +21,7 @@ public record AcompanhamentoAulaCruDTO(
         Integer repeticoesExecutadas,
         Integer seriesExecutadas,
         Integer descansoExecutado,
+        Integer idAulaTreinoExercicio,
         String observacoesPersonalizadas,
         String urlVideo,
         GrupoMuscularEnum grupoMuscular,

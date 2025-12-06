@@ -48,7 +48,7 @@ public class AulaTreinoExercicioController {
         return ResponseEntity.ok(proxAulas);
     }
 
-    @GetMapping("acompanhamento-aulas/{idAula}")
+    @GetMapping("/acompanhamento-aulas/{idAula}")
     @Operation(summary = "Listar os exercícios e treino a serem realizados na aula")
     public ResponseEntity<AcompanhamentoAulaResponseDTO> listarAcompanhamentoDaAula(
             @PathVariable Integer idAula

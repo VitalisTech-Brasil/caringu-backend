@@ -132,6 +132,7 @@ public class AulaTreinoExercicioMapper {
                 l.cargaExecutada(),
                 String.format("%dx%d", l.seriesExecutadas(), l.repeticoesExecutadas()),
                 l.descansoExecutado(),
+                l.idAulaTreinoExercicio(),
                 l.observacoesPersonalizadas(),
                 l.urlVideo(),
                 l.grupoMuscular().getValue(),

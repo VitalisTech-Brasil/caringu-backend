@@ -80,7 +80,8 @@ public class AulaTreinoExercicioService {
                         d.idAulaTreinoExercicio(),
                         d.observacoes(),
                         d.urlVideoExecucao(),
-                        d.aulaRealizada()
+                        d.aulaRealizada(),
+                        d.exerciciosFinalizados()
                 ))
                 .toList();
 
