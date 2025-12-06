@@ -55,6 +55,7 @@ class AulaTreinoExercicioServiceTest {
                 1,
                 "Manter postura",
                 "https://video.com/supino",
+                false,
                 false
         );
 
@@ -121,6 +122,7 @@ class AulaTreinoExercicioServiceTest {
                 null,
                 null,
                 null,
+                1,
                 null,
                 null,
                 GrupoMuscularEnum.PEITORAL,
