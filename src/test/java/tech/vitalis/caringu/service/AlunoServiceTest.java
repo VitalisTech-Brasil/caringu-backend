@@ -31,7 +31,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,6 +49,9 @@ class AlunoServiceTest {
 
     @Mock
     private AlunoRepository alunoRepository;
+
+    @Mock
+    private PreferenciaNotificacaoService preferenciaNotificacaoService;
 
     @Mock
     private PessoaRepository pessoaRepository;
@@ -159,6 +163,7 @@ class AlunoServiceTest {
         when(alunoMapper.toEntity(dtoAluno)).thenReturn(aluno);
         when(pessoaRepository.existsByEmail(aluno.getEmail())).thenReturn(false);
         when(passwordEncoder.encode(aluno.getSenha())).thenReturn("SenhaCriptografada");
+        when(alunoRepository.save(any())).thenReturn(aluno);
 
         AlunoResponseGetDTO respostaMock = new AlunoResponseGetDTO(
                 1,
@@ -185,6 +190,7 @@ class AlunoServiceTest {
         verify(alunoMapper).toEntity(dtoAluno);
         verify(passwordEncoder).encode(anyString());
         verify(alunoRepository).save(aluno);
+        verify(preferenciaNotificacaoService).criarPreferenciasPadrao(aluno);
         verify(alunoMapper).toResponseDTO(aluno);
     }
 

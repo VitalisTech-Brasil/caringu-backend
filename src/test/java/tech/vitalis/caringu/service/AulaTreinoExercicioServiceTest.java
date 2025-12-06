@@ -52,6 +52,7 @@ class AulaTreinoExercicioServiceTest {
                 "3x10",
                 "40kg",
                 GrupoMuscularEnum.PEITORAL,
+                1,
                 "Manter postura",
                 "https://video.com/supino",
                 false
