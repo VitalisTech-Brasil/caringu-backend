@@ -1,0 +1,141 @@
+name: Caringu Backend - CD (Deploy via Docker Compose)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DOCKER_IMAGE: vitalistech/caringu-backend
+
+jobs:
+  ci-pr:
+    name: Build & Test (Maven)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar JDK 21 (Temurin) com cache Maven
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build, testes e verificação (mvn verify)
+        run: mvn -q -B clean verify
+
+  ssh-check:
+    name: Verificação SSH (Proxy → Backends)
+    runs-on: ubuntu-latest
+    needs: ci-pr
+
+    env:
+      PROXY_HOST: ${{ secrets.PROXY_HOST }}
+      BACKEND1_HOST_IP: ${{ secrets.BACKEND1_HOST_IP }}
+      BACKEND2_HOST_IP: ${{ secrets.BACKEND2_HOST_IP }}
+
+    steps:
+      - name: Checkout repositório (para acessar scripts)
+        uses: actions/checkout@v4
+
+      - name: Clonar repositório de infra (caringu-infra)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/caringu-infra
+          path: caringu-infra
+
+      - name: Preparar chave SSH a partir do repositório de infra
+        run: |
+          cp caringu-infra/iac/caringu.pem ssh_key.pem
+          chmod 600 ssh_key.pem
+
+      - name: Tornar script executável
+        run: chmod +x scripts/backend-ssh-check.sh
+
+      - name: Rodar verificação de conectividade SSH
+        run: |
+          ./scripts/backend-ssh-check.sh \
+            "$PROXY_HOST" \
+            "$BACKEND1_HOST_IP" \
+            "$BACKEND2_HOST_IP" \
+            "ssh_key.pem"
+
+  docker-publish:
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+    needs: ci-pr
+
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v4
+
+      - name: Login no Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build e push da imagem Docker
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ env.DOCKER_IMAGE }}:latest
+            ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+
+  remote-deploy:
+    name: Remote Deploy via Proxy → Backends
+    runs-on: ubuntu-latest
+    needs:
+      - docker-publish
+      - ssh-check
+
+    env:
+      PROXY_HOST: ${{ secrets.PROXY_HOST }}
+      BACKEND1_HOST_IP: ${{ secrets.BACKEND1_HOST_IP }}
+      BACKEND2_HOST_IP: ${{ secrets.BACKEND2_HOST_IP }}
+      REMOTE_APP_DIR_BACKEND: /home/ubuntu/caringu-backend
+      # Opcional: se quiser health-check HTTP remoto, defina a URL aqui (ex: http://localhost:8080/actuator/health)
+      BACKEND_HEALTHCHECK_URL: ""
+
+    steps:
+      - name: Checkout repositório (para acessar scripts)
+        uses: actions/checkout@v4
+
+      - name: Clonar repositório de infra (caringu-infra)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/caringu-infra
+          path: caringu-infra
+
+      - name: Preparar chave SSH a partir do repositório de infra
+        run: |
+          cp caringu-infra/iac/caringu.pem ssh_key.pem
+          chmod 600 ssh_key.pem
+
+      - name: Tornar script executável
+        run: chmod +x scripts/backend-deploy.sh
+
+      - name: Executar deploy remoto
+        run: |
+          ./scripts/backend-deploy.sh \
+            "$PROXY_HOST" \
+            "ssh_key.pem" \
+            "$REMOTE_APP_DIR_BACKEND" \
+            "$BACKEND1_HOST_IP" \
+            "$BACKEND2_HOST_IP" \
+            "$BACKEND_HEALTHCHECK_URL"
+
+
