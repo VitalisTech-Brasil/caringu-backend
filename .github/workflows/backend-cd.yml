@@ -109,6 +109,8 @@ jobs:
       REMOTE_APP_DIR_BACKEND: /home/ubuntu/caringu-infra/cloud/backend
       # Opcional: se quiser health-check HTTP remoto, defina a URL aqui (ex: http://localhost:8080/actuator/health)
       BACKEND_HEALTHCHECK_URL: ""
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
     steps:
       - name: Checkout repositório (para acessar scripts)
