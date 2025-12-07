@@ -106,7 +106,7 @@ jobs:
       PROXY_HOST: ${{ secrets.PROXY_HOST }}
       BACKEND1_HOST_IP: ${{ secrets.BACKEND1_HOST_IP }}
       BACKEND2_HOST_IP: ${{ secrets.BACKEND2_HOST_IP }}
-      REMOTE_APP_DIR_BACKEND: /home/ubuntu/caringu-backend
+      REMOTE_APP_DIR_BACKEND: /home/ubuntu/caringu-infra/cloud/backend/caringu-backend
       # Opcional: se quiser health-check HTTP remoto, defina a URL aqui (ex: http://localhost:8080/actuator/health)
       BACKEND_HEALTHCHECK_URL: ""
 
