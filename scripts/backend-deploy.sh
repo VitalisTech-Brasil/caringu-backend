@@ -20,7 +20,10 @@ deploy_host() {
 
   echo "🚀 Iniciando deploy no backend $host via Proxy $PROXY_HOST..."
 
-  ssh -i "$SSH_KEY_FILE" -o StrictHostKeyChecking=no -J "$SSH_USER@$PROXY_HOST" "$SSH_USER@$host" bash -s <<EOF
+  ssh -i "$SSH_KEY_FILE" -o StrictHostKeyChecking=no "$SSH_USER@$PROXY_HOST" bash -s <<EOF
+set -euo pipefail
+
+ssh -i /home/ubuntu/caringu-infra/iac/caringu.pem -o StrictHostKeyChecking=no $SSH_USER@$host "cd '$REMOTE_APP_DIR' && bash -s" <<'INNER'
 set -euo pipefail
 
 echo "📁 Entrando no diretório da aplicação: $REMOTE_APP_DIR"
@@ -55,6 +58,7 @@ else
   echo "ℹ️ Nenhuma HEALTHCHECK_URL definida. Exibindo últimos logs para conferência:"
   docker compose logs -n 50 || true
 fi
+INNER
 EOF
 
   echo "✅ Deploy concluído com sucesso em $host"

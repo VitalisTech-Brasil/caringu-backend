@@ -23,7 +23,7 @@ test_target() {
   [[ -z "$target_host" ]] && return 0
 
   echo "🔍 Testando conexão SSH Proxy → Target ($target_host)..."
-  ssh -i "$SSH_KEY_FILE" -o StrictHostKeyChecking=no -J "$SSH_USER@$PROXY_HOST" "$SSH_USER@$target_host" "echo OK" || {
+  ssh -i "$SSH_KEY_FILE" -o StrictHostKeyChecking=no "$SSH_USER@$PROXY_HOST" "ssh -i /home/ubuntu/caringu-infra/iac/caringu.pem -o StrictHostKeyChecking=no $SSH_USER@$target_host 'echo OK'" || {
     echo "❌ Falha ao conectar (Proxy → $target_host)"
     exit 1
   }
