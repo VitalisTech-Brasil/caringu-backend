@@ -11,9 +11,6 @@ permissions:
 
 env:
   DOCKER_IMAGE: vitalistech/caringu-backend
-  REMOTE_APP_DIR_BACKEND: /home/ubuntu/caringu-backend
-  # Opcional: se quiser health-check HTTP remoto, defina:
-  # BACKEND_HEALTHCHECK_URL: http://localhost:8080/actuator/health
 
 jobs:
   ci-pr:
@@ -109,8 +106,9 @@ jobs:
       PROXY_HOST: ${{ secrets.PROXY_HOST }}
       BACKEND1_HOST_IP: ${{ secrets.BACKEND1_HOST_IP }}
       BACKEND2_HOST_IP: ${{ secrets.BACKEND2_HOST_IP }}
-      REMOTE_APP_DIR_BACKEND: ${{ env.REMOTE_APP_DIR_BACKEND }}
-      BACKEND_HEALTHCHECK_URL: ${{ env.BACKEND_HEALTHCHECK_URL }}
+      REMOTE_APP_DIR_BACKEND: /home/ubuntu/caringu-backend
+      # Opcional: se quiser health-check HTTP remoto, defina a URL aqui (ex: http://localhost:8080/actuator/health)
+      BACKEND_HEALTHCHECK_URL: ""
 
     steps:
       - name: Checkout repositório (para acessar scripts)
