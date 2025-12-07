@@ -35,6 +35,16 @@ sudo docker compose down || sudo docker compose -f docker-compose-hub.yml down |
 echo "🧹 Limpando imagens antigas (docker image prune -f)..."
 sudo docker image prune -f
 
+if [[ -n "$DOCKERHUB_USERNAME" && -n "$DOCKERHUB_TOKEN" ]]; then
+  echo "🔐 Fazendo login no Docker Hub..."
+  echo "$DOCKERHUB_TOKEN" | sudo docker login -u "$DOCKERHUB_USERNAME" --password-stdin || {
+    echo "❌ Falha no login no Docker Hub"
+    exit 1
+  }
+else
+  echo "⚠️ DOCKER_HUB credentials não definidos, tentando pull sem login..."
+fi
+
 echo "⬇️  Pull da nova imagem (docker compose pull)..."
 sudo docker compose -f docker-compose-hub.yml pull
 
