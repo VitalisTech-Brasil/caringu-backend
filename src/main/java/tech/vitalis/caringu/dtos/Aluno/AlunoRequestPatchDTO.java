@@ -42,11 +42,9 @@ public record AlunoRequestPatchDTO(
         @Positive(message = "A altura deve ser um número positivo.")
         Double altura,
 
-        @NotNull(message = "O nível de atividade é obrigatório.")
         @Schema(description = "Nível de atividade do aluno", allowableValues = {"SEDENTARIO", "LEVEMENTE_ATIVO", "MODERADAMENTE_ATIVO", "MUITO_ATIVO", "EXTREMAMENTE_ATIVO"})
         NivelAtividadeEnum nivelAtividade,
 
-        @NotNull(message = "O nível de experiência é obrigatório.")
         @Schema(description = "Nível de experiência do aluno", allowableValues = {"INICIANTE", "INTERMEDIARIO", "AVANCADO"})
         NivelExperienciaEnum nivelExperiencia
 ) {

@@ -1,9 +1,5 @@
 package tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response;
 
-import tech.vitalis.caringu.enums.Exercicio.GrupoMuscularEnum;
-
-import java.math.BigDecimal;
-
 public record VisualizarAulasItemResponseDTO(
         Integer idAula,
         Integer idExecucaoExercicio,
@@ -12,8 +8,10 @@ public record VisualizarAulasItemResponseDTO(
         String descanso,
         String repeticoesSeries,
         String grupoMuscular,
+        Integer idAulaTreinoExercicio,
         String observacoes,
         String urlVideoExecucao,
-        boolean aulaRealizada
+        boolean aulaRealizada,
+        boolean exerciciosFinalizados
 ) {
 }

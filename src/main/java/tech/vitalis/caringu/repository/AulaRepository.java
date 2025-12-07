@@ -125,8 +125,11 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
                     ON a.id = pa.id
                 JOIN Aula au
                     ON pc.id = au.planoContratado.id
-                WHERE pc.status = 'ATIVO'
-                  AND NOW() BETWEEN pc.dataContratacao AND pc.dataFim
+                WHERE au.status IN (
+                              tech.vitalis.caringu.enums.Aula.AulaStatusEnum.AGENDADO,
+                              tech.vitalis.caringu.enums.Aula.AulaStatusEnum.REAGENDADO,
+                              tech.vitalis.caringu.enums.Aula.AulaStatusEnum.REALIZADO
+                                  )
                   AND pt.id = :idPersonal
             """)
     List<SessaoAulasAgendadasResponseDTO> findAllAulasPorPersonal(@Param("idPersonal") Integer idPersonal);
@@ -155,11 +158,10 @@ public interface AulaRepository extends JpaRepository<Aula, Integer> {
                     ON pc.aluno.id = a.id
                 JOIN Aula au
                     ON pc.id = au.planoContratado.id
-                WHERE pc.status = 'ATIVO'
-                  AND NOW() BETWEEN pc.dataContratacao AND pc.dataFim
-                  AND au.status IN (
+                WHERE au.status IN (
                               tech.vitalis.caringu.enums.Aula.AulaStatusEnum.AGENDADO,
-                              tech.vitalis.caringu.enums.Aula.AulaStatusEnum.REAGENDADO
+                              tech.vitalis.caringu.enums.Aula.AulaStatusEnum.REAGENDADO,
+                              tech.vitalis.caringu.enums.Aula.AulaStatusEnum.REALIZADO
                                   )
                   AND a.id = :idAluno
             """)

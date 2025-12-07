@@ -122,7 +122,8 @@ public class SecurityConfiguracao {
         configuracao.setAllowedOrigins(Arrays.asList(
                 "http://localhost:5173",
                 "https://caringu.ddns.net",
-                "https://caringu.zapto.org"
+                "https://caringu.zapto.org",
+                "https://caringu.hopto.org"
         ));
         configuracao.setAllowedMethods(
                 Arrays.asList(

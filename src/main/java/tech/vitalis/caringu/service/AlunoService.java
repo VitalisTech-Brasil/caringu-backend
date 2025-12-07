@@ -41,17 +41,20 @@ public class AlunoService {
     private final AlunoMapper alunoMapper;
     private final AlunoRepository alunoRepository;
     private final PessoaRepository pessoaRepository;
+    private final PreferenciaNotificacaoService preferenciaNotificacaoService;
 
     public AlunoService(PasswordEncoder passwordEncoder,
                         AlunoMapper alunoMapper,
 
                         AlunoRepository alunoRepository,
-                        PessoaRepository pessoaRepository
+                        PessoaRepository pessoaRepository,
+                        PreferenciaNotificacaoService preferenciaNotificacaoService
     ) {
         this.passwordEncoder = passwordEncoder;
         this.alunoMapper = alunoMapper;
         this.alunoRepository = alunoRepository;
         this.pessoaRepository = pessoaRepository;
+        this.preferenciaNotificacaoService = preferenciaNotificacaoService;
     }
 
     public List<AlunoResponseGetDTO> listar() {
@@ -126,7 +129,9 @@ public class AlunoService {
         String senhaCriptografada = passwordEncoder.encode(aluno.getSenha());
         aluno.setSenha(senhaCriptografada);
 
-        alunoRepository.save(aluno);
+        Aluno salvo = alunoRepository.save(aluno);
+        preferenciaNotificacaoService.criarPreferenciasPadrao(salvo);
+
         return alunoMapper.toResponseDTO(aluno);
     }
 

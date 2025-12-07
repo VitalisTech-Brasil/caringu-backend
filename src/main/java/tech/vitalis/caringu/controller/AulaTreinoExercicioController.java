@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.AulaComTreinoDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.AtribuicaoTreinosAulaRequestPostDTO;
+import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.AtualizarObservacoesRequestDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Request.RemarcarAulaTreinoRequestDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.AcompanhamentoAulaResponseDTO;
 import tech.vitalis.caringu.dtos.AulaTreinoExercicio.Response.AtribuicaoTreinosAulaResponsePostDTO;
@@ -47,7 +48,7 @@ public class AulaTreinoExercicioController {
         return ResponseEntity.ok(proxAulas);
     }
 
-    @GetMapping("acompanhamento-aulas/{idAula}")
+    @GetMapping("/acompanhamento-aulas/{idAula}")
     @Operation(summary = "Listar os exercícios e treino a serem realizados na aula")
     public ResponseEntity<AcompanhamentoAulaResponseDTO> listarAcompanhamentoDaAula(
             @PathVariable Integer idAula
@@ -71,5 +72,14 @@ public class AulaTreinoExercicioController {
     ) {
         RemarcarAulaTreinoResponseDTO response = aulaTreinoExercicioService.remarcarAulaTreino(request);
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/observacoes-aula/{idAulaTreinoExercicio}")
+    public ResponseEntity<Void> atualizarObservacoesAula(
+            @PathVariable Integer idAulaTreinoExercicio,
+            @Valid @RequestBody AtualizarObservacoesRequestDTO requestDTO
+    ) {
+        aulaTreinoExercicioService.atualizarObservacoesAula(idAulaTreinoExercicio, requestDTO);
+        return ResponseEntity.noContent().build();
     }
 }

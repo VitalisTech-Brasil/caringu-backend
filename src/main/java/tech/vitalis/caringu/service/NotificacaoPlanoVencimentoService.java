@@ -68,26 +68,6 @@ public class NotificacaoPlanoVencimentoService {
         return planoContratadoRepository.findNotificacoesPlanoVencimentoPorPersonal(dataLimite, personalId);
     }
   
-  //    public void notificarPersonais(){
-//        LocalDate hoje = LocalDate.now();
-//        LocalDate daquiDuasSemanas = hoje.plusWeeks(2);
-//
-//        List<NotificacaoPlanoVencimentoDto> notificacoes =
-//                planoContratadoRepository.findNotificacoesPlanoVencimento(daquiDuasSemanas);
-//
-//        Map<Integer, List<NotificacaoPlanoVencimentoDto>> porPersonal = notificacoes.stream()
-//                .collect(Collectors.groupingBy(NotificacaoPlanoVencimentoDto::personalTrainerId));
-//
-//        for (Map.Entry<Integer, List<NotificacaoPlanoVencimentoDto>> entry : porPersonal.entrySet()) {
-//            Integer personalId = entry.getKey();
-//            List<NotificacaoPlanoVencimentoDto> itens = entry.getValue();
-//
-//            String mensagem = montarMensagem(itens);
-//
-//            notificacaoEnviarService.enviarNotificacao(personalId, mensagem);
-//        }
-//    }
-  
   private void processarPlanoVencimento(PlanoContratadoEntity planoContratado) {
         Pessoa alunoPessoa = planoContratado.getAluno();
         Plano plano = planoContratado.getPlano();
